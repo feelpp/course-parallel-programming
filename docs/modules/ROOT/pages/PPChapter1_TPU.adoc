@@ -1,4 +1,4 @@
-= TPU (Tensor Processing Unit) form Google
+= TPU (Tensor Processing Unit) from Google
 
 image::GPGPU.jpg[xref=#fragment03,width=322,height=220]
 

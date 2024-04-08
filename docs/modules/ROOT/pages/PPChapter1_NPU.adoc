@@ -1,0 +1,49 @@
+= NPU (Neural Processing Unit)
+
+image::GPGPU.jpg[xref=#fragment03,width=322,height=220]
+
+
+[.text-justify]
+== What’s an NPU (Neural Processing Unit)?
+An NPU, or Neural Processing Unit, is a specialized hardware accelerator designed for executing artificial neural network tasks efficiently and with high throughput. NPUs deliver high performance while minimizing power consumption, making them suitable for mobile devices, edge computing, and other energy-sensitive applications. With the spike in GPU prices, which is a limited supply  despite the increasing demand starting with crypto mining, hardware companies have invested in NPUs to position them as an alternative to GPUs. While an NPU is not a perfect substitute for a GPU, it helps run inference on mobile or embedded.
+
+[.text-justify]
+== What’s a TPU (Tensor Processing Unit)?
+A TPU, or Tensor Processing Unit, is a specialized application-specific integrated circuit (ASIC) developed by Google for accelerating machine learning workloads. TPUs efficiently perform essential neural network tasks, such as matrix multiplications or other tensor operations. Since TPUs are optimized for the specific mathematical operations in neural network training and inference, they offer superior performance and energy efficiency. However, machine learning developers may prefer GPUs, especially NVIDIA GPUs, over TPUs due to the network effect. NVIDIA’s brand, mature software stack, simple documentation, and integration with major frameworks give NVIDIA a competitive advantage over other GPU manufacturers or alternatives.
+
+[.text-justify]
+== NPUs are vital for efficiency
+
+Neural Processing Unit, NPU for short, is an AI chip designed to perform AI tasks faster than GPUs (Graphics Processing Units) and CPUs (Computer Processing Units). This reduces some of the load on GPUs and CPUs by taking on small repetitive processes so that a computer can work more efficiently when fulfilling AI-driven requests.
+
+For example, NPUs can help keep a computer's GPU and CPU running efficiently by taking care of blurring backgrounds in video calls or for object detection in video or photo editing, thus leaving the CPU and GPU free to handle other tasks.
+The CPU, GPU, and NPU are all vital to a computer's overall operation but designed to handle different rendering and computing tasks so that, ideally, no one processor ever gets too overwhelmed with their load. Keeping a processor from getting overtaxed is vital as this determines how smoothly a computer can run.
+
+All three processors can do some image rendering, but they take on different aspects of this workload. GPUs are the heavy lifters here, specifically designed to render complex imagery for video editing and gaming tasks. However, NPUs are designed to work faster with short and repetitive AI tasks, such as working with AI assistants. In other words, an NPU takes some work off of the GPU's hands so the GPU can concentrate on its larger assigned tasks, and a system can work more efficiently overall. 
+
+With all this being said, the OS will look at your computer's hardware and determine whether the GPU or NPU is better suited to a specific AI task based on your system's specs and available resources.
+To start things off, having a basic understanding of processors is essential. As you can see in my Intel vs. AMD vs. NVIDIA guide, these semiconductor chip manufacturers tend to specialize in different areas. Intel is the CPU Industry leader, NVIDIA is the GPU industry leader, and AMD is a good mixture of both.
+We'll be seeing more and more NPUs in processors going forward. This is evidenced by the new Intel Core Ultra processors (formerly codenamed Meteor Lake,) which all feature an NPU and are widely utilized by various computer companies in their latest Ultrabook and Notebook laptops. Additionally, Qualcomm has been working with NPUs for years and is ahead of the competition in this way. Its Snapdragon X Elite processor, which utilizes a CPU, GPU, and NPU, will soon find itself on Windows laptops. Qualcomm has already demonstrated how powerful this chip is against the Apple MacBook Pro. According to Qualcomm, the Snapdragon X Elite can perform 75 Tera operations per second (TOPs) in bursts, which is especially impressive.
+Including NPUs in the latest generation of devices means the industry is equipped to move forward with the latest AI technologies. In other words, new apps will be able to leverage the latest AI software thanks to the inclusion of NPUs in the latest laptops. This, in turn, will make it so that more AI-related conveniences and efficient AI processes will be available to you as a user as time goes on. You might be able to perform video editing functions via AI faster than ever before. Or perhaps additional AI filters and options will be available in your most-used programs. At any rate, the focus is all on making computers more efficient, so you won't have to waste as much time on menial tasks, whether for personal, creative, or office projects.
+Qualcomm's NPU has also been proven to handle generative AI imagery, so we'll likely see this ability on Qualcomm-based phones soon, too. This could open up several new possibilities with gaming handhelds as well.
+
+[.text-justify]
+== Is NPU better than GPU ?
+It depends on what context you are comparing a Neural Processing Unit (NPU) against a Graphics Processing Unit (GPU) since both are integral parts of a computer's processing abilities. GPUs are specifically designed to render complex imagery to handle tasks like video editing and gaming. However, NPUs are designed to work faster with AI tasks, reducing some GPU loads so a system can work more efficiently. The thing is, NPUs tend to be more limited to small, repetitive tasks, whereas GPUs can handle larger and new tasks better. The important thing is that both processors work together to improve a system's overall performance, like in a laptop.
+
+[.text-justify]
+== What can I use an NPU for ?
+A Neural Processing Unit (NPU) can accelerate AI machine learning tasks such as speech recognition, background blurring in video calls, and photo or video editing processes like object detection.
+
+[.text-justify]
+== What does NPU stand for ?
+NPU stands for Neural Processing Unit. An NPU is an AI chip that performs AI tasks faster than GPUs and CPUs. This reduces some of the load on GPUs and CPUs so a computer can work more efficiently when performing AI tasks.
+
+
+[.text-justify]
+== Is an NPU helpful for gaming laptops ?
+Yes and no. A dedicated GPU does most of the heavy lifting regarding intensive gaming graphics, whereas an NPU is intended mainly for small AI assistance. As such, NPUs are designed more for use in Ultrabook and Notebook laptops rather than gaming laptops and gaming desktops.
+However, an NPU will take some tasks off of a GPUs hands in order to allow it to work more effectively. This can lead to better frames per second and smoother gameplay if the rest of the system jives well with the CPU.
+As an example, when you close games and return to the Windows desktop, AI can help detect when your laptop should switch back to integrated graphics and continue the same operations from an NPU. They feature in modern gaming laptops but aren't as strong of a focus as the dedicated graphics card for raw gaming performance.
+
+
