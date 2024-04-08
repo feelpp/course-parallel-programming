@@ -73,6 +73,11 @@ if(FALSE)
     add_subdirectory(HIP/Array_Addition)
     add_subdirectory(HIP/Matrix_Summation)
     add_subdirectory(HIP/Practice)
+    add_subdirectory(HIP/Practice2)
+    add_subdirectory(HIP/Practice3)
+    add_subdirectory(HIP/Practice4)
+    add_subdirectory(HIP/Practice5)
+    add_subdirectory(HIP/Practice6)
 endif()
 #END:HIP
 
