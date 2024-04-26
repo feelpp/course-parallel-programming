@@ -367,7 +367,7 @@ void getHipInformation()
 /*********************************************************************************************************************************************************/
 /*********************************************************************************************************************************************************/
 
-bool isFileExiste(std::string ch)
+bool isFileExist(std::string ch)
 {
     std::ifstream myfile;
     myfile.open(ch); bool qOK=false;
@@ -379,11 +379,10 @@ bool isFileExiste(std::string ch)
 int main(int argc, char** argv) {
 
     //mpirun -np 12 ./main
-
-
-    if (argc < 1) 
+    if (argc < 3) 
     {
-      std::cout<<"add param"<< "\n";
+      //std::cout<<"add param"<< "\n";
+      //getchar();
       exit (0);
     }
 
@@ -399,16 +398,27 @@ int main(int argc, char** argv) {
     MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
     MPI_Comm_size(MPI_COMM_WORLD, &world_size);
 
-    
-	  
+    char processor_name[MPI_MAX_PROCESSOR_NAME];
+    int name_len;
+    MPI_Get_processor_name(processor_name,&name_len);
 
+    if (world_rank == 0) { 
+      int numCPU = sysconf(_SC_NPROCESSORS_ONLN);
+      std::cout << "[INFO]: Name worlds processor: "<<processor_name<<"\n";
+      std::cout << "[INFO]: Nb CPU available: "<<numCPU<< "\n";
+      std::cout <<"\n";
+      std::cout << "[INFO]: Scan..."<<"\n";
+    }
+    std::cout << "[INFO]: rank: "<<world_rank<<" out of "<<world_size<<"\n";
+   
+    MPI_Barrier(MPI_COMM_WORLD); 
+	  
     double M[n][n];
     if (world_rank == 0) { 
+      std::cout << "\n";
       MatA = create_positive_definite_matrix(n,n); 
       for (int i = 0; i <n; i++){
-          for (int j = 0; j <n; j++){
-            M[i][j]=MatA.elements[i * n + j];
-            }
+          for (int j = 0; j <n; j++){ M[i][j]=MatA.elements[i * n + j]; }
       }		
       printf("\n");
       if (qView) { writeMatrix(MatA);	}
@@ -456,7 +466,7 @@ int main(int argc, char** argv) {
 
             std::string chName="./DATA/DataMPI.csv";
             std::ofstream myfile;
-            if (!isFileExiste(chName)) {  myfile.open (chName); } else { myfile.open(chName,std::ios::app); }
+            if (!isFileExist(chName)) {  myfile.open (chName); } else { myfile.open(chName,std::ios::app); }
             myfile<<world_size<<","<<n<<","<<t_laps<<"\n";
             myfile.close();
           }
