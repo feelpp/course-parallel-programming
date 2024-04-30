@@ -18,7 +18,7 @@ set(CMAKE_CXX_STANDARD 20)
 #string(REGEX REPLACE "/MD" "/02" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
 
-if(FALSE)
+if(TRUE)
     find_package(MPI REQUIRED)
     if (MPI_FOUND)
         MESSAGE("{MPI_CXX_LIBRARIES}")
@@ -27,7 +27,7 @@ if(FALSE)
     endif(MPI_FOUND)
 endif()
 
-if(FALSE)
+if(TRUE)
     find_package(OpenMP)
     if (OpenMP_CXX_FOUND)
         MESSAGE("{OpenMP_CXX_LIBRARIES}")
@@ -147,6 +147,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../../Specx20/specx/Src)
 
 #END::SPECX
 
+include_directories(SYSTEM ${MPI_INCLUDES_PATH})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../Test13)
 
 set(include_dirs "../Test13")
@@ -163,6 +164,10 @@ target_link_libraries(main
     ${PTHREADS}
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/../../../Specx20/specx/build/Src/libspecx.a 
+    PUBLIC 
+        ${MPI_CXX_LIBRARIES}
+    PUBLIC 
+        OpenMP::OpenMP_CXX
     #PUBLIC
         #TBB::tbb
     #PRIVATE
@@ -186,5 +191,9 @@ target_include_directories(
     main
     PRIVATE
         ${header_specx_dir_list}
+    PUBLIC 
+        ${MPI_CXX_INCLUDE_DIRS}
+    PUBLIC 
+        OpenMP::OpenMP_CXX
 )
 
