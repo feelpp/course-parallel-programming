@@ -77,7 +77,8 @@
 	#include <omp.h>
 #endif
 
-
+//#define UseCUDA
+#define UseHIP
 
 
 #define HIP_CHECK(command) {               \
@@ -213,6 +214,13 @@ __global__ void matrix_equal(volatile bool *Q, double* A, double* B, int nb, dou
 		if (abs(A[idx]-B[idx])>deltaError) { Q[0]=false;  } 
 }
 
+
+__global__ void parallelComputation(int* gpuData, int startIndex, int endIndex) {
+    int tid = blockIdx.x * blockDim.x + threadIdx.x;
+    if (startIndex+tid < endIndex) {
+        gpuData[startIndex+tid] *= 2; 
+    }
+}
 
 
 
@@ -497,10 +505,46 @@ bool isFileExist(std::string ch)
     return (qOK);
 }
 
+
+void distributeVectorData(std::vector<int>& dataset, int numGPUs) {
+    int dataSize = dataset.size();
+    int chunkSize = dataSize / numGPUs; 
+    for (int deviceId = 0; deviceId < numGPUs; ++deviceId) {
+        hipSetDevice(deviceId);
+        // Calculate the start and end indices for the chunk assigned to this GPU
+        int startIndex = deviceId * chunkSize;
+        int endIndex = (deviceId == numGPUs - 1) ? dataSize : (deviceId + 1) * chunkSize;
+        // Copy the corresponding chunk of data to the GPU
+        int* gpuData; hipMalloc((void**)&gpuData, sizeof(int) * (endIndex - startIndex));
+        hipMemcpy(gpuData, &dataset[startIndex], sizeof(int) * (endIndex - startIndex), hipMemcpyHostToDevice);
+        std::cout << "Data for GPU " << deviceId << " transferred successfully." << "\n";
+        // ...
+        hipFree(gpuData);
+    }
+}
+
+void launchParallelComputations(int* gpuData, int startIndex, int endIndex) {
+    int blockSize = 256;
+    int numBlocks = (endIndex - startIndex + blockSize - 1) / blockSize;
+	hipLaunchKernelGGL(parallelComputation,numBlocks, blockSize,0,0,gpuData, startIndex, endIndex); 
+    hipDeviceSynchronize(); 
+}
+
+void synchronizeAndAggregate(int* gpuData, int dataSize, int numGPUs) {
+    for (int deviceId = 0; deviceId < numGPUs; ++deviceId) {
+        hipSetDevice(deviceId);
+        hipDeviceSynchronize(); 
+        std::cout << "[INFO]: GPU " << deviceId << " synchronization completed." << "\n";
+    }
+    int sum = 0; for (int i = 0; i < dataSize; ++i) { sum += gpuData[i]; }
+    std::cout << "[INFO]: Aggregate result: " << sum << "\n";
+}
+
+
 /*********************************************************************************************************************************************************/
 
 /*********************************************************************************************************************************************************/
-//BEGIN::Product Matrix
+//BEGIN::Product Matrix and ...
 
 Matrix matrix_product_GPU(const Matrix A, const Matrix B) 
 {
@@ -793,7 +837,7 @@ void getCholeskyMPIVers2(int argc, char *argv[])
             if (1==1) {
                   std::cout << "[INFO]: Controle matrix product if A=tU*U \n";
                   Matrix MatMt=matrix_tanspose(MatM);
-                  //Matrix MatT=matrix_product(MatL,MatLt);
+                  //Matrix MatT=matrix_product(MatM,MatLMt);
 				  Matrix MatT=matrix_product_GPU(MatM,MatMt); 
                   if (qView) { writeMatrix(MatT); }
                   //checkSolution(MatA,MatT);
@@ -848,6 +892,38 @@ Matrix getCholeskyGPUVers2(Matrix A)
     hipEventCreate(&start);
     hipEventCreate(&stop);
     int threads_per_block = 256; 
+    int stride = threads_per_block;    
+    hipEventRecord(start, 0);    
+    Matrix gpu_u = allocate_matrix_on_gpu(U);
+    copy_matrix_to_device(gpu_u, A);
+    int k;
+    for (k = 0; k < matrixSize; k++) {
+        int isize = (matrixSize - 1) - (k + 1) + 1;
+        int num_blocks = isize;
+        if (num_blocks <= 0) { num_blocks = 1; }
+        dim3 thread_block(threads_per_block, 1, 1);
+        dim3 grid(num_blocks, 1);
+        hipLaunchKernelGGL(chol_kernel_optimized_div,grid, thread_block,0,0,gpu_u.elements,k,stride,matrixSize); 
+        hipLaunchKernelGGL(chol_kernel_optimized,grid, thread_block,0,0,gpu_u.elements,k,stride,matrixSize); 
+    }
+    copy_matrix_from_device(U, gpu_u);  				 
+    hipEventRecord(stop, 0);
+    hipEventSynchronize(stop);
+    hipFree(gpu_u.elements);
+
+	matrix_lower_triangular(U);
+		
+    return U;
+}
+
+Matrix getCholeskyGPUVers3(Matrix A,int threads_per_block)
+{
+	int matrixSize=A.num_rows;
+    Matrix U= allocate_matrix(matrixSize,matrixSize,0);
+    hipEvent_t start, stop;
+    hipEventCreate(&start);
+    hipEventCreate(&stop);
+    //int threads_per_block = 256; 
     int stride = threads_per_block;    
     hipEventRecord(start, 0);    
     Matrix gpu_u = allocate_matrix_on_gpu(U);
@@ -1123,6 +1199,38 @@ Matrix getCholesky_pthreads(const Matrix A,int NbThread)
 
 
 
+void getShortInformationGPU()
+{
+	int deviceCount=0;
+	std::cout <<"\n";
+	std::cout << "[INFO]: Information GPU"<<"\n";
+
+	#ifdef  UseHIP
+		hipGetDeviceCount(&deviceCount);
+		if (deviceCount>0) {
+			std::cout << "[INFO]: Number of available GPUs AMD: " << deviceCount << "\n";
+			for (int deviceId = 0; deviceId < deviceCount; ++deviceId) {
+				hipSetDevice(deviceId);
+				std::cout << "[INFO]: GPU " << deviceId << " initialized and resources allocated." << "\n";
+			}
+		}
+	#endif
+
+	#ifdef UseCUDA
+		cudaGetDeviceCount(&deviceCount);
+		if (deviceCount>0) {
+			std::cout << "[INFO]: Number of available GPUs NVIDIA: " << deviceCount << "\n";
+			for (int deviceId = 0; deviceId < deviceCount; ++deviceId) {
+				cudaSetDevice(deviceId);
+				std::cout << "[INFO]: GPU " << deviceId << " initialized and resources allocated." << "\n";
+			}
+		}
+	#endif
+	std::cout <<"\n";
+	if (deviceCount == 0) { std::cerr << "[INFO]: No GPUs found. Exiting." << "\n"; }
+}
+
+
 void getHipInformation()
 {
   //BEGIN::INFO HIP AMD
@@ -1219,6 +1327,8 @@ void getMpiInformation(int argc, char *argv[])
 	//END::INFO MPI
 }
 #endif
+
+
 
 
 /*********************************************************************************************************************************************************/
@@ -1418,6 +1528,50 @@ void TestLevel003()
 	myfile.close();
 }
 
+
+
+void TestLevel004()
+{
+	std::ofstream myfile;
+	myfile.open ("DataTpB.csv");
+	long int t_laps;
+    bool qView=true;
+    qView=false;	
+	bool qCTRL=true;
+	qCTRL=false;
+
+	myfile <<"DimMatrix";	for (int k = 3; k <= 9; k++) { myfile<<","<<pow(2,k); } myfile <<"\n";
+	std::chrono::steady_clock::time_point t_begin,t_end;
+
+	for (int i = 1; i <= 22; i++)
+    {
+		const int matrixSize=i*500;
+		Matrix MatA; MatA = create_positive_definite_matrix(matrixSize,matrixSize); 
+		myfile <<matrixSize;
+			std::cout << "[INFO]: Method GPU HIP AMD"<< "\n";
+
+			for (int k = 3; k <= 9; k++)
+   			{
+				myfile<<",";
+				int threads_per_block=pow(2,k);
+				t_begin = std::chrono::steady_clock::now();
+				Matrix MatU_gpu2=getCholeskyGPUVers3(MatA,threads_per_block);
+				t_end = std::chrono::steady_clock::now();
+				if (qView) { writeMatrix(MatU_gpu2); }
+				t_laps= std::chrono::duration_cast<std::chrono::microseconds>(t_end - t_begin).count();
+				std::cout << "[INFO]: i="<<i<<" threads_per_block "<<threads_per_block<<" Elapsed microseconds inside: "<<t_laps<< " us\n";
+				std::cout << "\n";
+				myfile<<t_laps;
+				free(MatU_gpu2.elements);
+				
+			}
+		myfile<<"\n";
+		free(MatA.elements);
+		sleep(1);
+	}
+	myfile.close();
+}
+
 #ifdef UseOpenMP
 void TestOpenMP()
 {
@@ -1487,20 +1641,23 @@ void TestMPI(int argc, char *argv[])
 
 
 
+
+
 int main(int argc, char *argv[])
  {
-	//scanInformationSystem();
-	//getInformationCPU();
-	//getInformationGPU();
-    //getHipInformation();
+	scanInformationSystem();
+	getInformationCPU();
+	getInformationGPU();
+    getHipInformation();
+	//getShortInformationGPU();
 	//getMpiInformation(argc,argv);
 	
 	//TestMPI(argc,argv);
-	TestOpenMP();
+	//TestOpenMP();
 
 	//TestLevel001();
 	//TestLevel002();	
 	//TestLevel003();
 	//TestLevel004();
-	
+	//TestLevel004();
 }
