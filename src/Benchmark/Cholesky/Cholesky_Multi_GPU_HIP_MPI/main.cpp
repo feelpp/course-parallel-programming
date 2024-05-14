@@ -187,7 +187,6 @@ __global__ void matrix_equal(volatile bool *Q, double* A, double* B, int nb, dou
 		//if (abs(A[idx]-B[idx])>deltaError) { Q[0]=false; printf("F"); } else  { printf("T"); }
 		if (abs(A[idx]-B[idx])>deltaError) { Q[0]=false;  } 
 }
-
 /*********************************************************************************************************************************************************/
 
 
@@ -266,6 +265,7 @@ bool is_matrix_equal_GPU(const Matrix A, const Matrix B,const double deltaError)
 
 	return (h_Q[0]);
 }
+
 
 bool is_matrix_equal_GPU(const Matrix A, const Matrix B) 
 {
@@ -354,27 +354,49 @@ void writeMatrix(const Matrix M)
 {
 	for(unsigned int i = 0; i < M.num_rows; i++){
 		for(unsigned int j = 0; j < M.num_columns; j++)
-			printf("%.2f ", M.elements[i*M.num_rows + j]);
+		{
+			printf("%f ", M.elements[i*M.num_columns + j]);
+		}
 		printf("\n");
 	} 
 	printf("\n");
 }
 
-void saveMatrix(const Matrix M, char *filename) 
+void saveMatrixView(const Matrix M, char *filename) 
 {
     FILE* FICH = fopen(filename,"w");
     for (unsigned int i = 0; i < M.num_rows; i++) {
         for (unsigned int j = 0; j < M.num_columns; j++)
-            fprintf(FICH,"%f ", M.elements[i * M.num_rows + j]);
+            fprintf(FICH,"%f ", M.elements[i*M.num_columns + j]);
         fprintf(FICH,"\n");
     }
     fprintf(FICH,"\n");
     fclose(FICH);
 }
 
-void readMatrix(const Matrix M, char *filename) 
-{
 
+void saveMatrix(const Matrix M, char *filename) 
+{
+    std::ofstream myfile;
+    for (unsigned int i = 0; i < M.num_rows; i++) {
+        for (unsigned int j = 0; j < M.num_columns; j++)
+			myfile<<M.elements[i*M.num_columns + j];
+    }
+    myfile<<"\n";
+    myfile.close();
+}
+
+Matrix readMatrix(char *filename,const int num_rows,const int num_columns) 
+{
+	Matrix M= allocate_matrix(num_rows,num_columns,0);
+	std::ifstream myfile;
+	myfile.open (filename);
+    for (unsigned int i = 0; i < M.num_rows; i++) {
+        for (unsigned int j = 0; j < M.num_columns; j++)
+			myfile>>M.elements[i*M.num_columns + j];
+    }
+    myfile.close();
+	return M;
 }
 
 int check_if_symmetric(const Matrix M)
@@ -955,7 +977,9 @@ int main(int argc, char** argv)
           for (int j=0;j<MAT_SIZE;j++) { bigx[i*MAT_SIZE+j]=MatA.elements[i * MAT_SIZE + j]; }
         }
         std::cout<<"[INFO]: View matrix A\n";
-        writeMatrix(MatA);
+        writeMatrix(MatA); 
+        std::cout << "\n";
+
         //for (i=0;i<MAT_SIZE;i+=100) { printf("m[%i][%i]=%f\n",i,i,bigx[i*MAT_SIZE+i]); }
         std::cout << "=====================================================================\n";		
         printf("MAT_SIZE=%i.\n",MAT_SIZE);
@@ -989,6 +1013,7 @@ int main(int argc, char** argv)
     std::cout << "[INFO]: Cholesky factorizing...\n";
 
     if (myrank==0){
+      /*
       std::cout<<"[INFO]: CTRL Matrix\n";
       for (int i=0;i<MAT_SIZE;i++)
         {
@@ -996,6 +1021,7 @@ int main(int argc, char** argv)
           std::cout << "\n";
         }
         std::cout << "\n";
+      */
     }
 
     if (1==1) {
@@ -1039,6 +1065,7 @@ int main(int argc, char** argv)
           for (j=0;j<MAT_SIZE;j++) { 
             printf("%.2f ",bigxptr[i*MAT_SIZE+j]); 
             MatL.elements[i * MAT_SIZE + j]=bigxptr[i*MAT_SIZE + j]; 
+            //MatL.elements[i * MAT_SIZE + j]=bigx[i*MAT_SIZE + j]; 
           }
           printf("\n");
         }
@@ -1047,12 +1074,20 @@ int main(int argc, char** argv)
       matrix_lower_triangular(MatL);
       //writeMatrix(MatL); 
 
-      			if (1==0) {
+      			if (1==1) {
               std::cout << "[INFO]: Controle matrix product if A=tU*U \n";
               Matrix MatLt=matrix_tanspose(MatL);
               //Matrix MatT=matrix_product(MatU_OpenMPt,MatU_OpenMP);
-              Matrix MatT=matrix_product_GPU(MatL,MatLt);
+              //Matrix MatT=matrix_product_GPU(MatL,MatLt);
+              Matrix MatT=matrix_product_GPU(MatLt,MatL);
+
+               std::cout<<"Matrix A\n";
+               writeMatrix(MatA); 
+               std::cout << "\n";
+
+              std::cout << "Matrix R=tL.L\n";
               writeMatrix(MatT); 
+              std::cout << "\n";
               //checkSolution(MatA,MatT);
               checkSolution_GPU(MatA,MatT);
               std::cout << "\n";
@@ -1061,7 +1096,7 @@ int main(int argc, char** argv)
 			    }
 
       free(MatL.elements);
-      std::cout << "[INFO]: Well done"<< "\n";
+      std::cout << "[INFO]: FINISHED"<< "\n";
       free(bigx);
     }
 
