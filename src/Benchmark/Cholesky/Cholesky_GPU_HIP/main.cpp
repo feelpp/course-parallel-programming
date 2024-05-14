@@ -222,6 +222,19 @@ __global__ void parallelComputation(int* gpuData, int startIndex, int endIndex) 
     }
 }
 
+__global__ void matrix_copy(double *R, double *A, int nb) {
+	int idx = blockIdx.x * blockDim.x + threadIdx.x; 
+	if (idx < nb)
+		R[idx]=A[idx];
+  
+}
+
+__global__ void matrix_transpose(double *R, double *A, int r, int c) {
+	int idx = blockIdx.x * blockDim.x + threadIdx.x; 
+	unsigned int i,j;
+	if (idx < r*c) { i=idx/r; j=idx-i*r;  R[i * r + j] = A[j * c + i]; }
+}
+
 
 
 // END::HIP AMD GPU
@@ -331,11 +344,25 @@ Matrix create_positive_definite_matrix(unsigned int num_rows, unsigned int num_c
 }
 
 
+Matrix create_index_matrix(const int num_rows,const int num_columns) 
+{
+	unsigned int index=0;
+    Matrix R= allocate_matrix(num_rows,num_columns,0);
+	for(unsigned int i = 0; i < num_rows; i++){
+		for(unsigned int j = 0; j < num_columns; j++) { index++;R.elements[i*R.num_columns + j]=index; }
+	} 
+	//printf("\n");
+	return R;
+}
+
+
 void writeMatrix(const Matrix M)
 {
 	for(unsigned int i = 0; i < M.num_rows; i++){
 		for(unsigned int j = 0; j < M.num_columns; j++)
-			printf("%f ", M.elements[i*M.num_rows + j]);
+		{
+			printf("%f ", M.elements[i*M.num_columns + j]);
+		}
 		printf("\n");
 	} 
 	printf("\n");
@@ -365,9 +392,9 @@ void saveMatrix(const Matrix M, char *filename)
     myfile.close();
 }
 
-Matrix readMatrix(char *filename,const int nc,const int nr) 
+Matrix readMatrix(char *filename,const int num_rows,const int num_columns) 
 {
-	Matrix M= allocate_matrix(nc,nr,0);
+	Matrix M= allocate_matrix(num_rows,num_columns,0);
 	std::ifstream myfile;
 	myfile.open (filename);
     for (unsigned int i = 0; i < M.num_rows; i++) {
@@ -433,7 +460,7 @@ Matrix matrix_product(const Matrix A, const Matrix B)
 
 Matrix matrix_tanspose(const Matrix M) 
 {
-  Matrix R= allocate_matrix(M.num_columns,M.num_rows,0);
+  Matrix R= allocate_matrix(M.num_rows,M.num_columns,0);
   int i,j;
   for(i = 0; i < M.num_rows; i++)
 		for(j = 0; j < M.num_columns; j++)
@@ -443,7 +470,7 @@ Matrix matrix_tanspose(const Matrix M)
 
 Matrix matrix_copy(const Matrix M) 
 {
-  Matrix R= allocate_matrix(M.num_columns,M.num_rows,0);
+  Matrix R= allocate_matrix(M.num_rows,M.num_columns,0);
   int i,j;
   for(i = 0; i < M.num_rows; i++)
 		for(j = 0; j < M.num_columns; j++)
@@ -581,6 +608,40 @@ Matrix matrix_product_GPU(const Matrix A, const Matrix B)
 	hipFree(gpu_C.elements);
 
 	return C;
+}
+
+
+Matrix matrix_transpose_GPU(const Matrix A) 
+{
+	int block_size = 512;
+    //Matrix R= allocate_matrix(A.num_rows,A.num_columns,0);
+	Matrix R= allocate_matrix(A.num_columns,A.num_rows,0);
+
+	hipEvent_t start, stop;
+    hipEventCreate(&start);
+    hipEventCreate(&stop);
+
+	Matrix gpu_A = allocate_matrix_on_gpu(A);
+	Matrix gpu_R = allocate_matrix_on_gpu(R);
+
+	hipEventRecord(start, 0);   
+
+	copy_matrix_to_device(gpu_A, A );
+	copy_matrix_to_device(gpu_R, R );
+	
+	int num_blocks = (A.num_columns*A.num_rows + block_size - 1) / block_size;
+	
+	dim3 thread_block(block_size, 1, 1);
+	dim3 grid(num_blocks, 1);
+
+	hipLaunchKernelGGL(matrix_transpose,grid, thread_block,0,0,gpu_R.elements,gpu_A.elements,A.num_rows,A.num_columns); 
+
+	copy_matrix_from_device(R,gpu_R);
+	hipEventRecord(stop, 0);
+    hipEventSynchronize(stop);
+	hipFree(gpu_A.elements);
+	hipFree(gpu_R.elements);
+	return R;
 }
 
 
@@ -882,7 +943,6 @@ Matrix getCholeskyGPUVers1(Matrix A)
 	matrix_lower_triangular(U);
 	return U;
 }
-
 
 Matrix getCholeskyGPUVers2(Matrix A)
 {
@@ -1572,6 +1632,23 @@ void TestLevel004()
 	myfile.close();
 }
 
+
+void TestLevel005()
+{
+	long int t_laps;
+    bool qView=true;
+	const int r=2,c=r+4;
+	Matrix MatA, MatR; 
+	MatA = create_index_matrix(r,c);
+	MatR = matrix_transpose_GPU(MatA);
+	std::cout << "\n"; 
+	std::cout << "Test Transpose GPU\n"; 
+	if (qView) { std::cout << "Matrix A\n";	writeMatrix(MatA); std::cout << "\n"; }
+	if (qView) { std::cout << "Matrix R\n"; writeMatrix(MatR); std::cout << "\n"; }
+	free(MatA.elements);
+	free(MatR.elements);
+}
+
 #ifdef UseOpenMP
 void TestOpenMP()
 {
@@ -1645,10 +1722,10 @@ void TestMPI(int argc, char *argv[])
 
 int main(int argc, char *argv[])
  {
-	scanInformationSystem();
-	getInformationCPU();
-	getInformationGPU();
-    getHipInformation();
+	//scanInformationSystem();``
+	//getInformationCPU();
+	//getInformationGPU();
+    //getHipInformation();
 	//getShortInformationGPU();
 	//getMpiInformation(argc,argv);
 	
@@ -1659,5 +1736,6 @@ int main(int argc, char *argv[])
 	//TestLevel002();	
 	//TestLevel003();
 	//TestLevel004();
-	//TestLevel004();
+	//TestLevel005();
+	
 }
