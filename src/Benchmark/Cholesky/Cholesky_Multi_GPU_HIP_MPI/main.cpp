@@ -236,12 +236,12 @@ bool is_matrix_equal_GPU(const Matrix A, const Matrix B,const double deltaError)
 	int block_size = 512;
 	int matrixSize=A.num_columns;
 	int sizeQ = sizeof(bool) * 1;
-    bool *h_Q = (bool *)malloc(sizeQ);
+  bool *h_Q = (bool *)malloc(sizeQ);
 	h_Q[0]=true;
 
 	hipEvent_t start, stop;
-    hipEventCreate(&start);
-    hipEventCreate(&stop);
+  hipEventCreate(&start);
+  hipEventCreate(&stop);
 
 	Matrix gpu_A = allocate_matrix_on_gpu(A);
 	Matrix gpu_B = allocate_matrix_on_gpu(B);
@@ -258,7 +258,7 @@ bool is_matrix_equal_GPU(const Matrix A, const Matrix B,const double deltaError)
 	hipLaunchKernelGGL(matrix_equal,grid, thread_block,0,0,d_Q,gpu_A.elements,gpu_B.elements,matrixSize*matrixSize,deltaError); 
 	hipMemcpy(h_Q,d_Q,sizeof(bool), hipMemcpyDeviceToHost);
 	hipEventRecord(stop, 0);
-    hipEventSynchronize(stop);
+  hipEventSynchronize(stop);
 	hipFree(gpu_A.elements);
 	hipFree(gpu_B.elements);
 	hipFree(d_Q);

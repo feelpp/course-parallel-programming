@@ -100,8 +100,10 @@
  typedef struct {
  	  unsigned int num_columns;
    	  unsigned int num_rows;
+	  unsigned int dimension; 
+      unsigned int dimensionSizeof; 
  	  unsigned int pitch; 
- 	  double* elements;
+ 	  double* data;
   } Matrix;
 
 
@@ -118,7 +120,7 @@
 // BEGIN::INTRODUCTION
 int check_if_symmetric                 (const Matrix M); 
 int check_if_diagonal_dominant         (const Matrix M);
-Matrix create_positive_definite_matrix (unsigned int, unsigned int);
+Matrix build_init_matrix               (unsigned int, unsigned int);
 Matrix allocate_matrix                 (int num_rows, int num_columns, int init);
 
 void writeMatrix                       (const Matrix);
@@ -214,6 +216,12 @@ __global__ void matrix_equal(volatile bool *Q, double* A, double* B, int nb, dou
 		if (abs(A[idx]-B[idx])>deltaError) { Q[0]=false;  } 
 }
 
+__global__ void matrix_copy(double *R, double *A, int r, int c) {
+	int idx = blockIdx.x * blockDim.x + threadIdx.x; 
+	unsigned int i,j;
+	if (idx < r*c) { i=idx/r; j=idx-i*r;  R[j * c + i] = A[j * c + i]; }
+}
+
 
 __global__ void parallelComputation(int* gpuData, int startIndex, int endIndex) {
     int tid = blockIdx.x * blockDim.x + threadIdx.x;
@@ -235,6 +243,11 @@ __global__ void matrix_transpose(double *R, double *A, int r, int c) {
 	if (idx < r*c) { i=idx/r; j=idx-i*r;  R[i * r + j] = A[j * c + i]; }
 }
 
+__global__ void matrix_lower_triangular(double *R, int r, int c) {
+	int idx = blockIdx.x * blockDim.x + threadIdx.x; 
+	unsigned int i,j;
+	if (idx < r*c) { i=idx/r; j=idx-i*r;  if (j<i) { R[i * r + j]=0.0; } }
+}
 
 
 // END::HIP AMD GPU
@@ -245,111 +258,112 @@ __global__ void matrix_transpose(double *R, double *A, int r, int c) {
 //BEGIN::TOOLS MEMORY TRANSFER HIP AMD GPU
 
 Matrix allocate_matrix(int num_rows, int num_columns, int init) {
-    Matrix M;
+   	Matrix M;
     M.num_columns = M.pitch = num_columns;
     M.num_rows = num_rows;
-    int size = M.num_rows * M.num_columns;
-
-    M.elements = (double *) malloc(size * sizeof (double));
+    M.dimension=M.num_rows * M.num_columns;
+    unsigned int size = M.num_rows * M.num_columns;
+    M.dimension=size;
+    M.dimensionSizeof=size*sizeof(double);
+	M.data = (double *)malloc(M.dimensionSizeof);
     for (unsigned int i = 0; i < size; i++) {
-        if (init == 0) M.elements[i] = 0;
+        if (init == 0) M.data[i] = 0;
         else
-            M.elements[i] = (double) rand() / (double) RAND_MAX;
+            M.data[i] = (double) rand() / (double) RAND_MAX;
     }
     return M;
 }
 
 Matrix allocate_matrix_on_gpu(const Matrix M){
     Matrix Mdevice = M;
-    int size = M.num_rows * M.num_columns * sizeof(double);
-    hipMalloc((void**)&Mdevice.elements, size);
+    hipMalloc((void**)&Mdevice.data, M.dimensionSizeof);
     return Mdevice;
 }
 
 void copy_matrix_to_device(Matrix Mdevice, const Matrix Mhost)
 {
-    int size = Mhost.num_rows * Mhost.num_columns * sizeof(double);
     Mdevice.num_rows = Mhost.num_rows;
     Mdevice.num_columns = Mhost.num_columns;
     Mdevice.pitch = Mhost.pitch;
-    hipMemcpy(Mdevice.elements, Mhost.elements, size, hipMemcpyHostToDevice);
+    hipMemcpy(Mdevice.data, Mhost.data,Mhost.dimensionSizeof,hipMemcpyHostToDevice);
 }
 
 void copy_matrix_from_device(Matrix Mhost, const Matrix Mdevice){
-    int size = Mdevice.num_rows * Mdevice.num_columns * sizeof(double);
-    hipMemcpy(Mhost.elements, Mdevice.elements, size, hipMemcpyDeviceToHost);
+    hipMemcpy(Mhost.data, Mdevice.data,Mdevice.dimensionSizeof,hipMemcpyDeviceToHost);
 }
+
 //END::TOOLS MEMORY TRANSFER HIP AMD GPU
 /*********************************************************************************************************************************************************/
 
 /*********************************************************************************************************************************************************/
 //BEGIN:: BUILD INIT MATRIX
 
-Matrix create_positive_definite_matrix(unsigned int num_rows, unsigned int num_columns)
+
+Matrix build_init_matrix(unsigned int num_rows, unsigned int num_columns)
 {
 	Matrix M;
-	M.num_columns = M.pitch = num_columns;
-	M.num_rows = num_rows; 
-	unsigned int size = M.num_rows * M.num_columns;
-	M.elements = (double *)malloc(size * sizeof(double));
+	M.num_columns     = M.pitch = num_columns;
+	M.num_rows        = num_rows; 
+    unsigned int size = M.num_rows * M.num_columns;
+    M.dimension       = size;
+    M.dimensionSizeof = size*sizeof(double);
+	M.data            = (double *)malloc(M.dimensionSizeof);
 
 	// Step 1: Create a matrix with random numbers between [-.5 and .5]
-	printf("Creating a %d x %d matrix with random numbers between [-.5, .5]...", num_rows, num_columns);
+    std::cout<<"[INFO]: Create Matrix definite positiv"<<"\n";
+    std::cout<<"[INFO]: Creating a "<<num_rows<<"x"<<num_columns<<" matrix with random numbers between [-.5, .5]... ";
 	unsigned int i;
 	unsigned int j;
 	for(i = 0; i < size; i++)
-		M.elements[i] = ((double)rand()/(double)RAND_MAX) - 0.5;
-       	printf("done. \n");
-	// writeMatrix(M);
-	// getchar();
+		M.data[i] = ((double)rand()/(double)RAND_MAX) - 0.5;
+        std::cout<<"done"<<"\n";
 
 	// Step 2: Make the matrix symmetric by adding its transpose to itself
-	printf("Generating the symmetric matrix...");
+    std::cout<<"[INFO]: Generating the symmetric matrix...";
 	Matrix transpose;
 	transpose.num_columns = transpose.pitch = num_columns;
 	transpose.num_rows = num_rows; 
 	size = transpose.num_rows * transpose.num_columns;
-	transpose.elements = (double *)malloc(size * sizeof(double));
+	transpose.data = (double *)malloc(size * sizeof(double));
 
 	for(i = 0; i < M.num_rows; i++)
 		for(j = 0; j < M.num_columns; j++)
-			transpose.elements[i * M.num_rows + j] = M.elements[j * M.num_columns + i];
+			transpose.data[i * M.num_rows + j] = M.data[j * M.num_columns + i];
 	// writeMatrix(transpose);
 
 	for(i = 0; i < size; i++)
-		M.elements[i] += transpose.elements[i];
+		M.data[i] += transpose.data[i];
 	if (check_if_symmetric(M))
-		printf("done. \n");
+		std::cout<<"done"<<"\n";
 	else{ 
-		printf("error. \n");
-		free(M.elements);
-		M.elements = NULL;
+        std::cout<<"error !!!"<<"\n";
+		free(M.data);
+		M.data = NULL;
 	}
 	// Step 3: Make the diagonal entries large with respect to the row and column entries
-	printf("Generating the positive definite matrix...");
+    std::cout<<"Generating the positive definite matrix...";
 	for(i = 0; i < num_rows; i++)
 		for(j = 0; j < num_columns; j++){
 			if(i == j) 
-				M.elements[i * M.num_rows + j] += 0.5 * M.num_rows;
+				M.data[i * M.num_rows + j] += 0.5 * M.num_rows;
 		}
 	if(check_if_diagonal_dominant(M))
-		printf("done. \n");
+		std::cout<<"done"<<"\n";
 	else{
-		printf("error. \n");
-		free(M.elements);
-		M.elements = NULL;
+		std::cout<<"error !!!"<<"\n";
+		free(M.data);
+		M.data = NULL;
 	}
-	free(transpose.elements);
+	free(transpose.data);
 	return M;
 }
-
 
 Matrix create_index_matrix(const int num_rows,const int num_columns) 
 {
 	unsigned int index=0;
     Matrix R= allocate_matrix(num_rows,num_columns,0);
 	for(unsigned int i = 0; i < num_rows; i++){
-		for(unsigned int j = 0; j < num_columns; j++) { index++;R.elements[i*R.num_columns + j]=index; }
+		for(unsigned int j = 0; j < num_columns; j++) { index++;R.data[i*R.num_columns + j]=index; }
 	} 
 	//printf("\n");
 	return R;
@@ -361,7 +375,7 @@ void writeMatrix(const Matrix M)
 	for(unsigned int i = 0; i < M.num_rows; i++){
 		for(unsigned int j = 0; j < M.num_columns; j++)
 		{
-			printf("%f ", M.elements[i*M.num_columns + j]);
+			printf("%f ", M.data[i*M.num_columns + j]);
 		}
 		printf("\n");
 	} 
@@ -373,7 +387,7 @@ void saveMatrixView(const Matrix M, char *filename)
     FILE* FICH = fopen(filename,"w");
     for (unsigned int i = 0; i < M.num_rows; i++) {
         for (unsigned int j = 0; j < M.num_columns; j++)
-            fprintf(FICH,"%f ", M.elements[i * M.num_rows + j]);
+            fprintf(FICH,"%f ", M.data[i*M.num_columns + j]);
         fprintf(FICH,"\n");
     }
     fprintf(FICH,"\n");
@@ -386,7 +400,7 @@ void saveMatrix(const Matrix M, char *filename)
     std::ofstream myfile;
     for (unsigned int i = 0; i < M.num_rows; i++) {
         for (unsigned int j = 0; j < M.num_columns; j++)
-			myfile<<M.elements[i * M.num_rows + j];
+			myfile<<M.data[i*M.num_columns + j];
     }
     myfile<<"\n";
     myfile.close();
@@ -399,7 +413,7 @@ Matrix readMatrix(char *filename,const int num_rows,const int num_columns)
 	myfile.open (filename);
     for (unsigned int i = 0; i < M.num_rows; i++) {
         for (unsigned int j = 0; j < M.num_columns; j++)
-			myfile>>M.elements[i * M.num_rows + j];
+			myfile>>M.data[i*M.num_columns + j];
     }
     myfile.close();
 	return M;
@@ -418,7 +432,7 @@ int check_if_symmetric(const Matrix M)
 {
 	for(unsigned int i = 0; i < M.num_rows; i++)
 		for(unsigned int j = 0; j < M.num_columns; j++)
-			if(M.elements[i * M.num_rows + j] != M.elements[j * M.num_columns + i]) return 0;
+			if(M.data[i * M.num_rows + j] != M.data[j * M.num_columns + i]) return 0;
 	return 1;
 }
 
@@ -428,9 +442,9 @@ int check_if_diagonal_dominant(const Matrix M)
 	float sum;
 	for(unsigned int i = 0; i < M.num_rows; i++){
 		sum = 0.0; 
-		diag_element = M.elements[i * M.num_rows + i];
+		diag_element = M.data[i * M.num_rows + i];
 		for(unsigned int j = 0; j < M.num_columns; j++){
-			if(i != j) sum += abs(M.elements[i * M.num_rows + j]);
+			if(i != j) sum += abs(M.data[i * M.num_rows + j]);
 		}
 		if(diag_element <= sum) return 0;
 	}
@@ -443,17 +457,17 @@ Matrix matrix_product(const Matrix A, const Matrix B)
     C.num_columns = C.pitch = A.num_columns;
     C.num_rows = A.num_rows;
     unsigned int size = C.num_rows * C.num_columns;
-    C.elements = (double *) malloc(size * sizeof (double));
+    C.data = (double *) malloc(size * sizeof (double));
 
     for (unsigned int i = 0; i < A.num_columns; i++)
         for (unsigned int j = 0; j < B.num_rows; j++) {
             double sum = 0.0f;
             for (unsigned int k = 0; k < A.num_columns; k++) {
-                double a = A.elements[i * A.num_columns + k];
-                double b = B.elements[k * B.num_rows + j];
+                double a = A.data[i * A.num_columns + k];
+                double b = B.data[k * B.num_rows + j];
                 sum += a * b;
             }
-            C.elements[i * B.num_rows + j] = (double) sum;
+            C.data[i * B.num_rows + j] = (double) sum;
         }
     return C;
 }
@@ -464,7 +478,7 @@ Matrix matrix_tanspose(const Matrix M)
   int i,j;
   for(i = 0; i < M.num_rows; i++)
 		for(j = 0; j < M.num_columns; j++)
-			R.elements[i * M.num_rows + j] = M.elements[j * M.num_columns + i];
+			R.data[i * M.num_rows + j] = M.data[j * M.num_columns + i];
   return R;
 }
 
@@ -474,16 +488,16 @@ Matrix matrix_copy(const Matrix M)
   int i,j;
   for(i = 0; i < M.num_rows; i++)
 		for(j = 0; j < M.num_columns; j++)
-			R.elements[i * M.num_rows + j] = M.elements[i * M.num_rows + j];
+			R.data[i * M.num_rows + j] = M.data[i * M.num_rows + j];
   return R;
 }
 
-void matrix_copy_elements(Matrix R,const Matrix M) 
+void matrix_copy_data(Matrix R,const Matrix M) 
 {
   int i,j;
   for(i = 0; i < M.num_rows; i++)
 		for(j = 0; j < M.num_columns; j++)
-			R.elements[i * M.num_rows + j] = M.elements[i * M.num_rows + j];
+			R.data[i * M.num_rows + j] = M.data[i * M.num_rows + j];
 }
 
 
@@ -492,7 +506,7 @@ void matrix_lower_triangular(Matrix M)
     int i, j;
     for (i = 0; i < M.num_rows; i++)
         for (j = 0; j < i; j++)
-            M.elements[i * M.num_rows + j] = 0.0;
+            M.data[i * M.num_rows + j] = 0.0;
 }
 
 
@@ -518,7 +532,7 @@ unsigned compareArrays(double *reference,double * device, int size)
 
 void checkSolution(Matrix MatRef,Matrix MatRes)
 {
-    unsigned res = compareArrays(MatRef.elements, MatRes.elements,MatRef.num_rows);
+    unsigned res = compareArrays(MatRef.data, MatRes.data,MatRef.num_rows);
     printf("[INFO]:	%s\n", (1 == res) ? "WELL DONE PASSED :-)" : "FAILED");
 }
 
@@ -598,16 +612,50 @@ Matrix matrix_product_GPU(const Matrix A, const Matrix B)
 	dim3 thread_block(block_size, 1, 1);
 	dim3 grid(num_blocks, 1);
 
-	hipLaunchKernelGGL(matrix_mult,grid, thread_block,0,0,gpu_C.elements,gpu_A.elements,gpu_B.elements,matrixSize,matrixSize); 
+	hipLaunchKernelGGL(matrix_mult,grid, thread_block,0,0,gpu_C.data,gpu_A.data,gpu_B.data,matrixSize,matrixSize); 
 
 	copy_matrix_from_device(C,gpu_C);
 	hipEventRecord(stop, 0);
     hipEventSynchronize(stop);
-	hipFree(gpu_A.elements);
-	hipFree(gpu_B.elements);
-	hipFree(gpu_C.elements);
+	hipFree(gpu_A.data);
+	hipFree(gpu_B.data);
+	hipFree(gpu_C.data);
 
 	return C;
+}
+
+
+Matrix matrix_copy_GPU(const Matrix A) 
+{
+	int block_size = 512;
+    //Matrix R= allocate_matrix(A.num_rows,A.num_columns,0);
+	Matrix R= allocate_matrix(A.num_rows,A.num_columns,0);
+
+	hipEvent_t start, stop;
+    hipEventCreate(&start);
+    hipEventCreate(&stop);
+
+	Matrix gpu_A = allocate_matrix_on_gpu(A);
+	Matrix gpu_R = allocate_matrix_on_gpu(R);
+
+	hipEventRecord(start, 0);   
+
+	copy_matrix_to_device(gpu_A, A );
+	copy_matrix_to_device(gpu_R, R );
+	
+	int num_blocks = (A.num_columns*A.num_rows + block_size - 1) / block_size;
+	
+	dim3 thread_block(block_size, 1, 1);
+	dim3 grid(num_blocks, 1);
+
+	hipLaunchKernelGGL(matrix_copy,grid, thread_block,0,0,gpu_R.data,gpu_A.data,A.num_rows,A.num_columns); 
+
+	copy_matrix_from_device(R,gpu_R);
+	hipEventRecord(stop, 0);
+    hipEventSynchronize(stop);
+	hipFree(gpu_A.data);
+	hipFree(gpu_R.data);
+	return R;
 }
 
 
@@ -634,15 +682,42 @@ Matrix matrix_transpose_GPU(const Matrix A)
 	dim3 thread_block(block_size, 1, 1);
 	dim3 grid(num_blocks, 1);
 
-	hipLaunchKernelGGL(matrix_transpose,grid, thread_block,0,0,gpu_R.elements,gpu_A.elements,A.num_rows,A.num_columns); 
+	hipLaunchKernelGGL(matrix_transpose,grid, thread_block,0,0,gpu_R.data,gpu_A.data,A.num_rows,A.num_columns); 
 
 	copy_matrix_from_device(R,gpu_R);
 	hipEventRecord(stop, 0);
     hipEventSynchronize(stop);
-	hipFree(gpu_A.elements);
-	hipFree(gpu_R.elements);
+	hipFree(gpu_A.data);
+	hipFree(gpu_R.data);
 	return R;
 }
+
+Matrix matrix_lower_triangular_GPU(const Matrix A) 
+{
+	int block_size = 512;
+	hipEvent_t start, stop;
+    hipEventCreate(&start);
+    hipEventCreate(&stop);
+
+	Matrix gpu_A = allocate_matrix_on_gpu(A);
+	hipEventRecord(start, 0);   
+
+	copy_matrix_to_device(gpu_A, A );
+	
+	int num_blocks = (A.dimension + block_size - 1) / block_size;
+	
+	dim3 thread_block(block_size, 1, 1);
+	dim3 grid(num_blocks, 1);
+
+	hipLaunchKernelGGL(matrix_lower_triangular,grid, thread_block,0,0,gpu_A.data,A.num_rows,A.num_columns); 
+
+	copy_matrix_from_device(A,gpu_A);
+	hipEventRecord(stop, 0);
+    hipEventSynchronize(stop);
+	hipFree(gpu_A.data);
+	return A;
+}
+
 
 
 bool is_matrix_equal_GPU(const Matrix A, const Matrix B,const double deltaError) 
@@ -669,12 +744,12 @@ bool is_matrix_equal_GPU(const Matrix A, const Matrix B,const double deltaError)
 	
 	dim3 thread_block(block_size, 1, 1);
 	dim3 grid(num_blocks, 1);
-	hipLaunchKernelGGL(matrix_equal,grid, thread_block,0,0,d_Q,gpu_A.elements,gpu_B.elements,matrixSize*matrixSize,deltaError); 
+	hipLaunchKernelGGL(matrix_equal,grid, thread_block,0,0,d_Q,gpu_A.data,gpu_B.data,matrixSize*matrixSize,deltaError); 
 	hipMemcpy(h_Q,d_Q,sizeof(bool), hipMemcpyDeviceToHost);
 	hipEventRecord(stop, 0);
     hipEventSynchronize(stop);
-	hipFree(gpu_A.elements);
-	hipFree(gpu_B.elements);
+	hipFree(gpu_A.data);
+	hipFree(gpu_B.data);
 	hipFree(d_Q);
 
 	return (h_Q[0]);
@@ -710,8 +785,8 @@ Matrix getCholeskySerial(Matrix A)
       for (j = 0; j < (i+1); j++) {
             double s = 0;
             for (k = 0; k < j; k++)
-                s += L.elements[i * n + k] * L.elements[j * n + k];
-            L.elements[i * n + j] = (i == j) ? sqrt(A.elements[i * n + i] - s) : (1.0 / L.elements[j * n + j] * (A.elements[i * n + j] - s));
+                s += L.data[i * n + k] * L.data[j * n + k];
+            L.data[i * n + j] = (i == j) ? sqrt(A.data[i * n + i] - s) : (1.0 / L.data[j * n + j] * (A.data[i * n + j] - s));
   }
   Matrix U=matrix_tanspose(L);
   return U;
@@ -729,17 +804,17 @@ Matrix getCholeskyOpenMPVers1(Matrix A,int num_threads)
 	t1 = omp_get_wtime();
 	for(k=0; k<n; k++)
 	{
-		c=sqrt(U.elements[k*n+k]);  U.elements[k*n+k]=c;
+		c=sqrt(U.data[k*n+k]);  U.data[k*n+k]=c;
 		#pragma omp parallel for
 		for(i=k+1; i<=n; i++) {
-			U.elements[i+k*n]=U.elements[i+k*n]/c;
+			U.data[i+k*n]=U.data[i+k*n]/c;
 		}
 		#pragma omp parallel for private(l,j)
 		for (l=k+1; l<n; l++) {
 			for (j=k+1; j<=l-1; j++) {
-				U.elements[l+j*n]=U.elements[l+j*n]-U.elements[l+k*n]*U.elements[j+k*n];
+				U.data[l+j*n]=U.data[l+j*n]-U.data[l+k*n]*U.data[j+k*n];
 			}
-			U.elements[l*n+l]=U.elements[l*n+l]-U.elements[l+k*n]*U.elements[l+k*n];
+			U.data[l*n+l]=U.data[l*n+l]-U.data[l+k*n]*U.data[l+k*n];
 		}
 	}
 	t2 = omp_get_wtime();
@@ -759,20 +834,20 @@ Matrix getCholeskyOpenMPVers2(Matrix A,int num_threads)
 	t1 = omp_get_wtime();
 	for(k=0; k<n; k++)
 	{
-		c=sqrt(U.elements[k*n+k]); U.elements[k*n+k]=c;
+		c=sqrt(U.data[k*n+k]); U.data[k*n+k]=c;
 		for(i=k+1; i<=n; i++) {
 			#pragma omp task
-			U.elements[i+k*n]=U.elements[i+k*n]/c;
+			U.data[i+k*n]=U.data[i+k*n]/c;
 		}
 
 		#pragma omp taskwait
 		for (l=k+1; l<=n; l++) {
 			for (j=k+1; j<=l-1; j++) {
 				#pragma omp task
-				U.elements[l+j*n]=U.elements[l+j*n]-U.elements[l+k*n]*U.elements[j+k*n];
+				U.data[l+j*n]=U.data[l+j*n]-U.data[l+k*n]*U.data[j+k*n];
 			}
 			#pragma omp task
-			U.elements[l*n+l]=U.elements[l*n+l]-U.elements[l+k*n]*U.elements[l+k*n];
+			U.data[l*n+l]=U.data[l*n+l]-U.data[l+k*n]*U.data[l+k*n];
 		}
 	}
 	matrix_lower_triangular(U);
@@ -820,8 +895,8 @@ void getCholeskyMPIVers2(int argc, char *argv[])
 
     if (world_rank_mpi == 0) { 
       std::cout << "\n";
-      MatA = create_positive_definite_matrix(n,n); 
-	  matrix_copy_elements(MatM,MatA);	
+      MatA = build_init_matrix(n,n); 
+	  matrix_copy_data(MatM,MatA);	
       if (qView) { writeMatrix(MatA);	}
       t_begin = std::chrono::steady_clock::now();
     }
@@ -834,9 +909,9 @@ void getCholeskyMPIVers2(int argc, char *argv[])
       if (world_rank_mpi == 0){
         for (int j=0; j<k; j++)
         {
-          MatM.elements[k * n + k]-=(MatM.elements[k * n + j] * MatM.elements[k * n + j]);	
+          MatM.data[k * n + k]-=(MatM.data[k * n + j] * MatM.data[k * n + j]);	
         }
-        MatM.elements[k * n + k]=sqrt(MatM.elements[k * n + k]);
+        MatM.data[k * n + k]=sqrt(MatM.data[k * n + k]);
         
         for (int p=1; p<n-k; p++) 
         {	
@@ -844,10 +919,10 @@ void getCholeskyMPIVers2(int argc, char *argv[])
           {
             for (int r=c; r<n; r++)
             {	
-              MPI_Send(&MatM.elements[r * n + c], 1, MPI_DOUBLE, p, 0, MPI_COMM_WORLD);
+              MPI_Send(&MatM.data[r * n + c], 1, MPI_DOUBLE, p, 0, MPI_COMM_WORLD);
             }
           }
-          MPI_Recv(&MatM.elements[( p + k )* n + k], 1, MPI_DOUBLE, p, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+          MPI_Recv(&MatM.data[( p + k )* n + k], 1, MPI_DOUBLE, p, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         }	
         if (k==n-1)
         {	
@@ -855,7 +930,7 @@ void getCholeskyMPIVers2(int argc, char *argv[])
           {
             for(int j=i+1; j<n; j++)
             {
-              MatM.elements[i * n + j]=0;	
+              MatM.data[i * n + j]=0;	
             }	
           }
         }	
@@ -866,16 +941,16 @@ void getCholeskyMPIVers2(int argc, char *argv[])
         {
           for (int r=c; r<n; r++)
           {
-            MPI_Recv(&MatM.elements[r * n + c], 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            MPI_Recv(&MatM.data[r * n + c], 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
           }
         }
         
-        for (int g=0; g<k; g++) //calculating non-diagonal elements concurrently
+        for (int g=0; g<k; g++) //calculating non-diagonal data concurrently
         {
-          MatM.elements[(k+world_rank_mpi) * n + k]-=MatM.elements[k * n + g] * MatM.elements[(k+world_rank_mpi) * n + g];		
+          MatM.data[(k+world_rank_mpi) * n + k]-=MatM.data[k * n + g] * MatM.data[(k+world_rank_mpi) * n + g];		
         }	
-        MatM.elements[(k+world_rank_mpi) * n + k]/=MatM.elements[k * n + k];
-        MPI_Send(&MatM.elements[(k+world_rank_mpi) * n + k], 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
+        MatM.data[(k+world_rank_mpi) * n + k]/=MatM.data[k * n + k];
+        MPI_Send(&MatM.data[(k+world_rank_mpi) * n + k], 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
       }   
     }	
 
@@ -903,13 +978,13 @@ void getCholeskyMPIVers2(int argc, char *argv[])
                   if (qView) { writeMatrix(MatT); }
                   //checkSolution(MatA,MatT);
 				  checkSolution_GPU(MatA,MatT);
-                  free(MatMt.elements);
-                  free(MatT.elements);
+                  free(MatMt.data);
+                  free(MatT.data);
             }
             
           }
 		  
-		free(MatM.elements);
+		free(MatM.data);
 	}
     MPI_Finalize();
 }
@@ -933,14 +1008,20 @@ Matrix getCholeskyGPUVers1(Matrix A)
 	dim3 thread_block(threads_per_block, 1, 1);
 	dim3 grid(num_blocks, 1);
 
-	hipLaunchKernelGGL(chol_kernel,grid, thread_block,0,0,gpu_u.elements,ops_per_thread,matrixSize); 
+	hipLaunchKernelGGL(chol_kernel,grid, thread_block,0,0,gpu_u.data,ops_per_thread,matrixSize); 
+
+	const unsigned int block_size_2 = 256;
+    const unsigned int num_blocks_2 = (A.dimension+ block_size_2 - 1) / block_size_2;
+    dim3 thread_block_2(block_size_2, 1, 1);
+    dim3 grid_2(num_blocks_2, 1);
+	hipLaunchKernelGGL(matrix_lower_triangular,grid_2, thread_block_2,0,0,gpu_u.data,matrixSize,matrixSize);
+
 	hipDeviceSynchronize();
 	copy_matrix_from_device(U,gpu_u);
 	hipEventRecord(stop, 0);
 	hipEventSynchronize(stop);
-	hipFree(gpu_u.elements);
+	hipFree(gpu_u.data);
   
-	matrix_lower_triangular(U);
 	return U;
 }
 
@@ -963,18 +1044,26 @@ Matrix getCholeskyGPUVers2(Matrix A)
         if (num_blocks <= 0) { num_blocks = 1; }
         dim3 thread_block(threads_per_block, 1, 1);
         dim3 grid(num_blocks, 1);
-        hipLaunchKernelGGL(chol_kernel_optimized_div,grid, thread_block,0,0,gpu_u.elements,k,stride,matrixSize); 
-        hipLaunchKernelGGL(chol_kernel_optimized,grid, thread_block,0,0,gpu_u.elements,k,stride,matrixSize); 
+        hipLaunchKernelGGL(chol_kernel_optimized_div,grid, thread_block,0,0,gpu_u.data,k,stride,matrixSize); 
+        hipLaunchKernelGGL(chol_kernel_optimized,grid, thread_block,0,0,gpu_u.data,k,stride,matrixSize); 
     }
+
+	const unsigned int block_size_2 = 256;
+    const unsigned int num_blocks_2 = (A.dimension+ block_size_2 - 1) / block_size_2;
+    dim3 thread_block_2(block_size_2, 1, 1);
+    dim3 grid_2(num_blocks_2, 1);
+	hipLaunchKernelGGL(matrix_lower_triangular,grid_2, thread_block_2,0,0,gpu_u.data,matrixSize,matrixSize);
+
     copy_matrix_from_device(U, gpu_u);  				 
     hipEventRecord(stop, 0);
     hipEventSynchronize(stop);
-    hipFree(gpu_u.elements);
+    hipFree(gpu_u.data);
 
-	matrix_lower_triangular(U);
+	//matrix_lower_triangular(U);
 		
     return U;
 }
+
 
 Matrix getCholeskyGPUVers3(Matrix A,int threads_per_block)
 {
@@ -995,16 +1084,21 @@ Matrix getCholeskyGPUVers3(Matrix A,int threads_per_block)
         if (num_blocks <= 0) { num_blocks = 1; }
         dim3 thread_block(threads_per_block, 1, 1);
         dim3 grid(num_blocks, 1);
-        hipLaunchKernelGGL(chol_kernel_optimized_div,grid, thread_block,0,0,gpu_u.elements,k,stride,matrixSize); 
-        hipLaunchKernelGGL(chol_kernel_optimized,grid, thread_block,0,0,gpu_u.elements,k,stride,matrixSize); 
+        hipLaunchKernelGGL(chol_kernel_optimized_div,grid, thread_block,0,0,gpu_u.data,k,stride,matrixSize); 
+        hipLaunchKernelGGL(chol_kernel_optimized,grid, thread_block,0,0,gpu_u.data,k,stride,matrixSize); 
     }
+
+	const unsigned int block_size_2 = threads_per_block;
+    const unsigned int num_blocks_2 = (A.dimension+ block_size_2 - 1) / block_size_2;
+    dim3 thread_block_2(block_size_2, 1, 1);
+    dim3 grid_2(num_blocks_2, 1);
+	hipLaunchKernelGGL(matrix_lower_triangular,grid_2, thread_block_2,0,0,gpu_u.data,matrixSize,matrixSize);
+
     copy_matrix_from_device(U, gpu_u);  				 
     hipEventRecord(stop, 0);
     hipEventSynchronize(stop);
-    hipFree(gpu_u.elements);
-
-	matrix_lower_triangular(U);
-		
+    hipFree(gpu_u.data);
+			
     return U;
 }
 
@@ -1036,22 +1130,22 @@ void range_splitter(int size, int num_threads, int * items_per_thread, int * ite
 	//Divide up total size by number of threads
 	//How many are left over?
 	int elems_left_over = size%num_threads;
-	int elements_per_thread = size/num_threads;
-	int last_thread_elements = elements_per_thread;
+	int data_per_thread = size/num_threads;
+	int last_thread_data = data_per_thread;
 
 	if(elems_left_over !=0)
 	{
-		last_thread_elements = elements_per_thread+elems_left_over;
+		last_thread_data = data_per_thread+elems_left_over;
 	}
 
 	//Double check because math is hard
-	if( (((num_threads-1)*elements_per_thread) + last_thread_elements) != size || (last_thread_elements<0))
+	if( (((num_threads-1)*data_per_thread) + last_thread_data) != size || (last_thread_data<0))
 	{
-		printf("AH! MATH! threads:%d elementsperthread:%d lastthreadelm:%d size:%d leftover:%d\n", num_threads,elements_per_thread,last_thread_elements,size,elems_left_over);
+		printf("AH! MATH! threads:%d dataperthread:%d lastthreadelm:%d size:%d leftover:%d\n", num_threads,data_per_thread,last_thread_data,size,elems_left_over);
 		exit(-1);
 	}
-	*items_per_thread = elements_per_thread;
-	*items_last_thread = last_thread_elements;
+	*items_per_thread = data_per_thread;
+	*items_last_thread = last_thread_data;
 }
 
 
@@ -1153,7 +1247,7 @@ void * chol_pthread(void * arg)
 	//Copy the contents of the A matrix into the working matrix U
 	for (i = copyi_start; i <= copyi_end; i ++)
 	{
-		U.elements[i] = A.elements[i];
+		U.data[i] = A.data[i];
 	}
 
 	//Sync threads!!!
@@ -1166,8 +1260,8 @@ void * chol_pthread(void * arg)
 		if(id==0)
 		{
 			// Take the square root of the diagonal element
-			U.elements[k * U.num_rows + k] = sqrt(U.elements[k * U.num_rows + k]);
-			if(U.elements[k * U.num_rows + k] <= 0){
+			U.data[k * U.num_rows + k] = sqrt(U.data[k * U.num_rows + k]);
+			if(U.data[k * U.num_rows + k] <= 0){
 					 printf("Cholesky decomposition failed. \n");
 					 return 0;
 			}
@@ -1175,7 +1269,7 @@ void * chol_pthread(void * arg)
 			// Division step
 			for(j = (k + 1); j < U.num_rows; j++)
 			{
-				U.elements[k * U.num_rows + j] /= U.elements[k * U.num_rows + k]; // Division step
+				U.data[k * U.num_rows + j] /= U.data[k * U.num_rows + k]; // Division step
 			}
 		}
 
@@ -1210,7 +1304,7 @@ void * chol_pthread(void * arg)
 		{
 			for(j = i; j < U.num_rows; j++)
 			{
-				U.elements[i * U.num_rows + j] -= U.elements[k * U.num_rows + i] * U.elements[k * U.num_rows + j];
+				U.data[i * U.num_rows + j] -= U.data[k * U.num_rows + i] * U.data[k * U.num_rows + j];
 			}
 		}
 
@@ -1226,7 +1320,7 @@ void * chol_pthread(void * arg)
 	{
 		for(j = 0; j < i; j++)
 		{
-			U.elements[i * U.num_rows + j] = 0.0;
+			U.data[i * U.num_rows + j] = 0.0;
 		}
 	}
 	//Don't sync, will join outside here
@@ -1404,7 +1498,7 @@ void TestLevel001()
 	long int t_laps;
 	
 	Matrix MatA; 
-    MatA = create_positive_definite_matrix(matrixSize,matrixSize); 
+    MatA = build_init_matrix(matrixSize,matrixSize); 
     //une matrice définie positive est une matrice positive inversible. XtMX>0.
 	if (qView) { writeMatrix(MatA);	}
 	
@@ -1458,23 +1552,43 @@ void TestLevel001()
         Matrix MatT=matrix_product(MatU_gpu2t,MatU_gpu2);
         if (qView) { writeMatrix(MatT); }
         checkSolution(MatA,MatT);
-        free(MatU_gpu2t.elements);
-        free(MatT.elements);
+        free(MatU_gpu2t.data);
+        free(MatT.data);
     }
 	
-	free(MatU_Serial.elements);
-	//free(MatU_gpu1.elements);
-	free(MatU_gpu2.elements);
-	free(MatU_pthreads.elements);
-	free(MatA.elements);
+	free(MatU_Serial.data);
+	//free(MatU_gpu1.data);
+	free(MatU_gpu2.data);
+	free(MatU_pthreads.data);
+	free(MatA.data);
 }
 
 void TestLevel001beta()
 {
-	int matrixSize=1000;
-	Matrix MatA; MatA = create_positive_definite_matrix(matrixSize,matrixSize); 
-	Matrix MatU_gpu2=getCholeskyGPUVers2(MatA);
-	free(MatU_gpu2.elements);
+	bool qView=true;
+	int matrixSize=10;
+	Matrix MatA; MatA = build_init_matrix(matrixSize,matrixSize); 
+
+	if (qView) { 
+        std::cout<<"\n";
+        std::cout << "Matrix A ===>\n\n";	writeMatrix(MatA); std::cout << "\n";
+    }  
+
+	Matrix MatU=getCholeskyGPUVers2(MatA);
+	
+	if (qView) { 
+        std::cout<<"\n";
+        std::cout << "Matrix U ===>\n\n";	writeMatrix(MatU); std::cout << "\n";
+    }
+
+	std::cout<<"[INFO]: CheckSolution"<<"\n";
+    Matrix MatUt=matrix_transpose_GPU(MatU);
+    Matrix MatT=matrix_product_GPU(MatUt,MatU);
+    checkSolution_GPU(MatA,MatT);
+
+	free(MatU.data);
+	free(MatUt.data);
+	free(MatA.data);
 }
 
 void TestLevel002()
@@ -1493,7 +1607,7 @@ void TestLevel002()
 	for (int i = 1; i <= 22; i++)
     {
 		const int matrixSize=i*500;
-		Matrix MatA; MatA = create_positive_definite_matrix(matrixSize,matrixSize); 
+		Matrix MatA; MatA = build_init_matrix(matrixSize,matrixSize); 
 		myfile <<matrixSize<<",";
 
 
@@ -1535,11 +1649,11 @@ void TestLevel002()
 		
 			myfile<<t_laps;
 
-			free(MatU_Serial.elements);
-			//free(MatU_gpu1.elements);
-			free(MatU_gpu2.elements);
-			free(MatU_pthreads.elements);
-			free(MatA.elements);
+			free(MatU_Serial.data);
+			//free(MatU_gpu1.data);
+			free(MatU_gpu2.data);
+			free(MatU_pthreads.data);
+			free(MatA.data);
 
 			sleep(2);
 		myfile<<"\n";
@@ -1567,7 +1681,7 @@ void TestLevel003()
 		int NbThread=pow(2,i);
 		const int matrixSize=NbThread*100;
 
-		Matrix MatA; MatA = create_positive_definite_matrix(matrixSize,matrixSize); 
+		Matrix MatA; MatA = build_init_matrix(matrixSize,matrixSize); 
 		myfile <<matrixSize<<","<<NbThread<<",";
 
 			std::cout << "[INFO]: Method pthread"<< "\n";
@@ -1580,8 +1694,8 @@ void TestLevel003()
 			std::cout << "[INFO]: Elapsed microseconds inside: "<<t_laps<< " us\n";
 			std::cout << "\n";			
 			myfile<<t_laps;
-			free(MatU_pthreads.elements);
-			free(MatA.elements);
+			free(MatU_pthreads.data);
+			free(MatA.data);
 			sleep(2);
 		myfile<<"\n";
 	}
@@ -1606,7 +1720,7 @@ void TestLevel004()
 	for (int i = 1; i <= 22; i++)
     {
 		const int matrixSize=i*500;
-		Matrix MatA; MatA = create_positive_definite_matrix(matrixSize,matrixSize); 
+		Matrix MatA; MatA = build_init_matrix(matrixSize,matrixSize); 
 		myfile <<matrixSize;
 			std::cout << "[INFO]: Method GPU HIP AMD"<< "\n";
 
@@ -1622,11 +1736,11 @@ void TestLevel004()
 				std::cout << "[INFO]: i="<<i<<" threads_per_block "<<threads_per_block<<" Elapsed microseconds inside: "<<t_laps<< " us\n";
 				std::cout << "\n";
 				myfile<<t_laps;
-				free(MatU_gpu2.elements);
+				free(MatU_gpu2.data);
 				
 			}
 		myfile<<"\n";
-		free(MatA.elements);
+		free(MatA.data);
 		sleep(1);
 	}
 	myfile.close();
@@ -1645,9 +1759,26 @@ void TestLevel005()
 	std::cout << "Test Transpose GPU\n"; 
 	if (qView) { std::cout << "Matrix A\n";	writeMatrix(MatA); std::cout << "\n"; }
 	if (qView) { std::cout << "Matrix R\n"; writeMatrix(MatR); std::cout << "\n"; }
-	free(MatA.elements);
-	free(MatR.elements);
+	free(MatA.data);
+	free(MatR.data);
 }
+
+void TestLevel006()
+{
+	long int t_laps;
+    bool qView=true;
+	const int r=5,c=r;
+	Matrix MatA, MatR; 
+	MatA = create_index_matrix(r,c);
+	MatR = matrix_lower_triangular_GPU(MatA);
+	std::cout << "\n"; 
+	std::cout << "Test Transpose GPU\n"; 
+	if (qView) { std::cout << "Matrix A\n";	writeMatrix(MatA); std::cout << "\n"; }
+	if (qView) { std::cout << "Matrix R\n"; writeMatrix(MatR); std::cout << "\n"; }
+	free(MatA.data);
+	free(MatR.data);
+}
+
 
 #ifdef UseOpenMP
 void TestOpenMP()
@@ -1669,7 +1800,7 @@ void TestOpenMP()
 		int NbThread=pow(2,i);
 		const int matrixSize=NbThread*10;
 
-		Matrix MatA; MatA = create_positive_definite_matrix(matrixSize,matrixSize); 
+		Matrix MatA; MatA = build_init_matrix(matrixSize,matrixSize); 
 		if (qView) { writeMatrix(MatA); }
 
 		myfile <<matrixSize<<","<<NbThread<<",";
@@ -1694,12 +1825,12 @@ void TestOpenMP()
 				//checkSolution(MatA,MatT);
 				checkSolution_GPU(MatA,MatT);
 				std::cout << "\n";
-				free(MatU_OpenMPt.elements);
-				free(MatT.elements);
+				free(MatU_OpenMPt.data);
+				free(MatT.data);
 			}
 	
-			free(MatU_OpenMP.elements);
-			free(MatA.elements);
+			free(MatU_OpenMP.data);
+			free(MatA.data);
 			//sleep(2);
 		myfile<<"\n";
 	}
@@ -1737,5 +1868,7 @@ int main(int argc, char *argv[])
 	//TestLevel003();
 	//TestLevel004();
 	//TestLevel005();
+	//TestLevel006();
+	//TestLevel001beta();
 	
 }
