@@ -249,6 +249,87 @@ __global__ void matrix_lower_triangular(double *R, int r, int c) {
 	if (idx < r*c) { i=idx/r; j=idx-i*r;  if (j<i) { R[i * r + j]=0.0; } }
 }
 
+__global__ void calculat_mandelbrot(int *pos,int w,int h,int max_iteration)
+{
+	int N        = (h*w);
+    int row = blockIdx.y * blockDim.y + threadIdx.y;  
+    int col = blockIdx.x * blockDim.x + threadIdx.x;  
+    int idx = row * w + col;
+
+    if(col > w || row > h || idx > N) return;
+
+    float x0 = (float)row/w*(float)3.5-(float)2.5;
+    float y0 = (float)col/h*(float)2.0-(float)1.0; 
+
+    int x = 0, y = 0, iter = 0, xtemp = 0;
+    while((x*x-y*y <= 4) && (iter < max_iteration))
+    { 
+        xtemp = x*x-y*y+x0;
+        y = 2*x*y+y0;
+        x = xtemp;
+        iter++;
+    }
+    int color = 255 - (int)(iter/(float)max_iteration*(float)255);
+    __syncthreads();
+    pos[idx] = color;
+}
+
+
+
+
+ __global__ void convolution1DKernel(double *R,double *A, double *K,int nx, int ny, int ks)
+{
+	int tid    = threadIdx.x;
+	int iy     = blockIdx.x  + (ks - 1)/2;
+	int ix     = threadIdx.x + (ks - 1)/2;
+	int idx    = iy*nx +ix;
+	int K2     = ks*ks;
+	int center = (ks -1)/2;
+	int ii, jj;
+	double sum = 0.0;
+	extern __shared__ float sdata[];
+	if (tid<K2)
+		sdata[tid] = K[tid];
+	__syncthreads();      
+	if (idx<nx*ny){
+		for (int ki = 0; ki<ks; ki++)
+			for (int kj = 0; kj<ks; kj++){
+					ii = kj + ix - center;
+					jj = ki + iy - center;
+					sum+=A[jj*nx+ii]*sdata[ki*ks + kj];
+			}	
+		R[idx] = sum;
+	}
+}
+
+
+__global__ void convolution2DKernel(const double *input, const double *kernel, double *output,
+                          int inputWidth, int inputHeight,
+                          int kernelWidth, int kernelHeight) {
+    int col = blockIdx.x * blockDim.x + threadIdx.x;
+    int row = blockIdx.y * blockDim.y + threadIdx.y;
+
+    if (col < inputWidth && row < inputHeight) {
+        int halfKernelWidth = kernelWidth / 2;
+        int halfKernelHeight = kernelHeight / 2;
+
+        double result = 0.0f;
+
+        for (int i = 0; i < kernelHeight; ++i) {
+            for (int j = 0; j < kernelWidth; ++j) {
+                int inputRow = row - halfKernelHeight + i;
+                int inputCol = col - halfKernelWidth + j;
+
+                if (inputRow >= 0 && inputRow < inputHeight && inputCol >= 0 && inputCol < inputWidth) {
+                    result += input[inputRow * inputWidth + inputCol] * kernel[i * kernelWidth + j];
+                }
+            }
+        }
+
+        output[row * inputWidth + col] = result;
+    }
+}
+
 
 // END::HIP AMD GPU
 /*********************************************************************************************************************************************************/
@@ -341,7 +422,7 @@ Matrix build_init_matrix(unsigned int num_rows, unsigned int num_columns)
 		M.data = NULL;
 	}
 	// Step 3: Make the diagonal entries large with respect to the row and column entries
-    std::cout<<"Generating the positive definite matrix...";
+    std::cout<<"[INFO]: Generating the positive definite matrix...";
 	for(i = 0; i < num_rows; i++)
 		for(j = 0; j < num_columns; j++){
 			if(i == j) 
@@ -358,7 +439,7 @@ Matrix build_init_matrix(unsigned int num_rows, unsigned int num_columns)
 	return M;
 }
 
-Matrix create_index_matrix(const int num_rows,const int num_columns) 
+Matrix build_index_matrix(const int num_rows,const int num_columns) 
 {
 	unsigned int index=0;
     Matrix R= allocate_matrix(num_rows,num_columns,0);
@@ -376,6 +457,18 @@ void writeMatrix(const Matrix M)
 		for(unsigned int j = 0; j < M.num_columns; j++)
 		{
 			printf("%f ", M.data[i*M.num_columns + j]);
+		}
+		printf("\n");
+	} 
+	printf("\n");
+}
+
+void writeMatrix2(const Matrix M)
+{
+	for(unsigned int i = 0; i < M.num_rows; i++){
+		for(unsigned int j = 0; j < M.num_columns; j++)
+		{
+			printf("%1.2f ", M.data[i*M.num_columns + j]);
 		}
 		printf("\n");
 	} 
@@ -494,8 +587,8 @@ Matrix matrix_copy(const Matrix M)
 
 void matrix_copy_data(Matrix R,const Matrix M) 
 {
-  int i,j;
-  for(i = 0; i < M.num_rows; i++)
+   	int i,j;
+    for(i = 0; i < M.num_rows; i++)
 		for(j = 0; j < M.num_columns; j++)
 			R.data[i * M.num_rows + j] = M.data[i * M.num_rows + j];
 }
@@ -508,6 +601,92 @@ void matrix_lower_triangular(Matrix M)
         for (j = 0; j < i; j++)
             M.data[i * M.num_rows + j] = 0.0;
 }
+
+
+void get_matrix_min_max(double &m,double &M,Matrix R) 
+{
+	int k;
+	m=R.data[0]; M=m;
+	for(k = 0; k < R.dimension; k++) { m=std::min(R.data[k],m); M=std::max(R.data[k],M); }
+}
+
+
+Matrix getConvolutionCPU(Matrix M, Matrix K)
+{
+	Matrix R= allocate_matrix(M.num_rows,M.num_columns,0);
+	int kernel_size=K.num_rows;
+	float sum = 0;
+  	int center = (kernel_size -1)/2;;
+  	int ii, jj;
+  
+	/*
+	for (int i = center; i<(M.num_columns-center); i++)
+		for (int j = center; j<(M.num_rows-center); j++){
+		sum = 0;
+		for (int ki = 0; ki<kernel_size; ki++)
+			for (int kj = 0; kj<kernel_size; kj++){
+				ii = kj + j - center;
+				jj = ki + i - center;
+				sum+=M.data[jj*M.num_rows+ii]*K.data[ki*kernel_size + kj];
+			}
+			R.data[i*M.num_rows +j] = sum;
+		}
+	*/
+
+	for (int i = 0; i<(M.num_columns); i++)
+		for (int j = 0; j<(M.num_rows); j++){
+		sum = 0;
+		for (int ki = 0; ki<kernel_size; ki++)
+			for (int kj = 0; kj<kernel_size; kj++){
+				ii = kj + j - center;
+				jj = ki + i - center;
+				if ((ii>=0.0) && (jj>=0.0) && (ii<M.num_columns) && (jj<M.num_rows))
+				{
+					sum+=M.data[jj*M.num_rows+ii]*K.data[ki*kernel_size + kj];
+				}
+			}
+			R.data[i*M.num_rows +j] = sum;
+		}
+
+	return(R);
+}
+
+
+Matrix build_kernel_Gaussian(int ks, double sigma)
+{
+	const double pi=3.14159265359;
+	Matrix K= allocate_matrix(ks,ks,0);
+	double x,y, center;
+	double sg2=sigma*sigma;
+	center = (ks-1)/2.0;
+	for (int i = 0; i<(ks*ks); i++){
+		x = (double)(i%ks)-center; y = (double)(i/ks)-center;
+		K.data[i] = (1.0/(2.0*pi*sg2))*exp(-0.5*(x*x+y*y)/(sg2));
+	}
+	return(K);
+}
+
+Matrix build_kernel_LaplacianOfGaussian(int ks, double sigma)
+{
+	const double pi=3.14159265359;
+	Matrix K= allocate_matrix(ks,ks,0);
+	double x,y, center;
+	center = (ks-1)/2.0;
+	for (int i = 0; i<(ks*ks); i++){
+		x = (double)(i%ks)-center; y = (double)(i/ks)-center;
+		K.data[i] = -(1.0/pi*pow(sigma,4))*(1.0 - 0.5*(x*x+y*y)/(sigma*sigma))*exp(-0.5*(x*x+y*y)/(sigma*sigma));
+	}
+	return(K);
+}
+
+Matrix build_kernel_identity(int ks)
+{
+	Matrix K= allocate_matrix(ks,ks,0);
+	int center = (ks-1)/2.0;
+	K.data[center*ks+center] = 1.0;
+	return(K);
+}
+
 
 
 //END:: BUILD INIT MATRIX
@@ -1048,11 +1227,13 @@ Matrix getCholeskyGPUVers2(Matrix A)
         hipLaunchKernelGGL(chol_kernel_optimized,grid, thread_block,0,0,gpu_u.data,k,stride,matrixSize); 
     }
 
+
 	const unsigned int block_size_2 = 256;
     const unsigned int num_blocks_2 = (A.dimension+ block_size_2 - 1) / block_size_2;
     dim3 thread_block_2(block_size_2, 1, 1);
     dim3 grid_2(num_blocks_2, 1);
 	hipLaunchKernelGGL(matrix_lower_triangular,grid_2, thread_block_2,0,0,gpu_u.data,matrixSize,matrixSize);
+
 
     copy_matrix_from_device(U, gpu_u);  				 
     hipEventRecord(stop, 0);
@@ -1098,16 +1279,107 @@ Matrix getCholeskyGPUVers3(Matrix A,int threads_per_block)
     hipEventRecord(stop, 0);
     hipEventSynchronize(stop);
     hipFree(gpu_u.data);
-			
+
+	//matrix_lower_triangular(U);
+
     return U;
 }
 
 //END::Cholesky Factoristation
 /*********************************************************************************************************************************************************/
 
+/*********************************************************************************************************************************************************/
+//BEGIN::Convolution Matrix
+
+Matrix getConvolutionGPUVers1(Matrix A,Matrix K)
+{
+	hipEvent_t start, stop;
+	hipEventCreate(&start);
+	hipEventCreate(&stop);
+	float milliseconds = 0;
+	int block_size = 512;
+    //Matrix R= allocate_matrix(A.num_rows,A.num_columns,0);
+	Matrix R= allocate_matrix(A.num_columns,A.num_rows,0);
+
+	Matrix gpu_A = allocate_matrix_on_gpu(A);
+	Matrix gpu_K = allocate_matrix_on_gpu(K);
+	Matrix gpu_R = allocate_matrix_on_gpu(R);
+	 
+	copy_matrix_to_device(gpu_A, A );
+	copy_matrix_to_device(gpu_K, K );
+	copy_matrix_to_device(gpu_R, R );
+
+	int nx=A.num_columns;
+	int ny=A.num_rows;
+
+	int kernel_size = K.num_columns;
+	int Nblocks  = ny - (kernel_size-1);
+    int Nthreads = nx - (kernel_size-1);	
+
+	hipEventRecord(start);
+	hipLaunchKernelGGL(convolution1DKernel,Nblocks, Nthreads, kernel_size*kernel_size*sizeof(double),0,
+		gpu_R.data,
+		gpu_A.data,
+		gpu_K.data,
+		nx,ny,kernel_size);
+	hipDeviceSynchronize();
+	hipEventRecord(stop);
+	hipEventElapsedTime(&milliseconds, start, stop);
+	copy_matrix_from_device(R,gpu_R);
+	hipFree(gpu_A.data);
+	hipFree(gpu_K.data);
+	hipFree(gpu_R.data);
+
+  	//std::cout<<"[INFO]: Convolution Completed !!! \n";
+  	//std::cout<<"[INFO]: Ellapsed Time (GPU): "<<milliseconds<<" ms\n";
+  	//std::cout<<"\n";
+
+	return R;
+}
+
+Matrix getConvolutionGPUVers2(Matrix A,Matrix K)
+{
+	hipEvent_t start, stop;
+	hipEventCreate(&start);
+	hipEventCreate(&stop);
+	float milliseconds = 0;
+	int block_size = 512;
+    //Matrix R= allocate_matrix(A.num_rows,A.num_columns,0);
+	Matrix R= allocate_matrix(A.num_columns,A.num_rows,0);
+
+	Matrix gpu_A = allocate_matrix_on_gpu(A);
+	Matrix gpu_K = allocate_matrix_on_gpu(K);
+	Matrix gpu_R = allocate_matrix_on_gpu(R);
 
 
+	copy_matrix_to_device(gpu_A, A );
+	copy_matrix_to_device(gpu_K, K );
+	copy_matrix_to_device(gpu_R, R );
 
+	dim3 blockSize(16, 16);
+    dim3 gridSize((A.num_columns + blockSize.x - 1) / blockSize.x, (A.num_rows + blockSize.y - 1) / blockSize.y);
+
+	hipEventRecord(start);
+	hipLaunchKernelGGL(convolution2DKernel,gridSize, blockSize, 0,0,
+		gpu_A.data,gpu_K.data,gpu_R.data,
+		A.num_columns,A.num_rows,
+		K.num_columns,K.num_rows);
+	hipDeviceSynchronize();
+	hipEventRecord(stop);
+	hipEventElapsedTime(&milliseconds, start, stop);
+	copy_matrix_from_device(R,gpu_R);
+	hipFree(gpu_A.data);
+	hipFree(gpu_K.data);
+	hipFree(gpu_R.data);
+
+  	//std::cout<<"[INFO]: Convolution Completed !!! \n";
+  	//std::cout<<"[INFO]: Ellapsed Time (GPU): "<<milliseconds<<" ms\n";
+  	//std::cout<<"\n";
+
+	return R;
+}
+//END::Convolution Matrix
+/*********************************************************************************************************************************************************/
 
 
 /*********************************************************************************************************************************************************/
@@ -1352,6 +1624,331 @@ Matrix getCholesky_pthreads(const Matrix A,int NbThread)
 /*********************************************************************************************************************************************************/
 
 
+/*********************************************************************************************************************************************************/
+//BEGIN::Tools save data to image 0-255
+
+namespace intarray2bmp
+{
+	struct lwrite
+	{
+		unsigned long value;
+		unsigned      size;
+		lwrite( unsigned long value, unsigned size ):
+		value( value ), size( size )
+		{ }
+	};
+
+	//--------------------------------------------------------------------------
+	inline std::ostream& operator << ( std::ostream& outs, const lwrite& v )
+	{
+		unsigned long value = v.value;
+		for (unsigned cntr = 0; cntr < v.size; cntr++, value >>= 8)
+		outs.put( static_cast <char> (value & 0xFF) );
+		return outs;
+	}
+
+
+	template <typename IntType>
+	bool intarray2bmp(
+		const std::string& filename,
+		IntType**          intarray,
+		unsigned           rows,
+		unsigned           columns,
+		IntType            min_value,
+		IntType            max_value
+		) {
+		// This is the difference between each color based upon
+		// the number of distinct values in the input array.
+		double granularity = 360.0 / ((double)( max_value - min_value ) + 1);
+
+		// Open the output BMP file
+		std::ofstream f( filename.c_str(),
+						std::ios::out | std::ios::trunc | std::ios::binary );
+		if (!f) return false;
+
+		// Some basic
+		unsigned long headers_size    = 14  // sizeof( BITMAPFILEHEADER )
+									+ 40; // sizeof( BITMAPINFOHEADER )
+		unsigned long padding_size    = (4 - ((columns * 3) % 4)) % 4;
+		unsigned long pixel_data_size = rows * ((columns * 3) + padding_size);
+
+		// Write the BITMAPFILEHEADER
+		f.put( 'B' ).put( 'M' );                           // bfType
+		f << lwrite( headers_size + pixel_data_size, 4 );  // bfSize
+		f << lwrite( 0,                              2 );  // bfReserved1
+		f << lwrite( 0,                              2 );  // bfReserved2
+		f << lwrite( headers_size,                   4 );  // bfOffBits
+
+		// Write the BITMAPINFOHEADER
+		f << lwrite( 40,                             4 );  // biSize
+		f << lwrite( columns,                        4 );  // biWidth
+		f << lwrite( rows,                           4 );  // biHeight
+		f << lwrite( 1,                              2 );  // biPlanes
+		f << lwrite( 24,                             2 );  // biBitCount
+		f << lwrite( 0,                              4 );  // biCompression=BI_RGB
+		f << lwrite( pixel_data_size,                4 );  // biSizeImage
+		f << lwrite( 0,                              4 );  // biXPelsPerMeter
+		f << lwrite( 0,                              4 );  // biYPelsPerMeter
+		f << lwrite( 0,                              4 );  // biClrUsed
+		f << lwrite( 0,                              4 );  // biClrImportant
+
+		// Write the pixel data
+		for (unsigned row = rows; row; row--)           // bottom-to-top
+		{
+		for (unsigned col = 0; col < columns; col++)  // left-to-right
+			{
+			unsigned char red, green, blue;
+			//
+			// This is how we convert an integer value to a color:
+			// by mapping it evenly along the CIECAM02 hue color domain.
+			//
+			// http://en.wikipedia.org/wiki/Hue
+			// http://en.wikipedia.org/wiki/hsl_and_hsv#conversion_from_hsv_to_rgb
+			//
+			// The following algorithm takes a few shortcuts since
+			// both 'value' and 'saturation' are always 1.0.
+			//
+			double hue = (intarray[ row - 1 ][ col ] - min_value) * granularity;
+			int    H = (int)( hue / 60 ) % 6;
+			double F = (hue / 60) - H;
+			double Q = 1.0 - F;
+
+			#define c( x ) (255 * x)
+			switch (H)
+			{
+			case 0:  red = c(1);  green = c(F);  blue = c(0);  break;
+			case 1:  red = c(Q);  green = c(1);  blue = c(0);  break;
+			case 2:  red = c(0);  green = c(1);  blue = c(F);  break;
+			case 3:  red = c(0);  green = c(Q);  blue = c(1);  break;
+			case 4:  red = c(F);  green = c(0);  blue = c(1);  break;
+			default: red = c(1);  green = c(0);  blue = c(Q);
+			}
+			#undef c
+
+			f.put( static_cast <char> (blue)  )
+			.put( static_cast <char> (green) )
+			.put( static_cast <char> (red)   );
+			}
+
+		if (padding_size) f << lwrite( 0, padding_size );
+		}
+
+		// All done!
+		return f.good();
+		}
+
+	template <typename IntType>
+	bool intarray2bmp(
+		const std::string& filename,
+		IntType*           intarray,
+		unsigned           rows,
+		unsigned           columns,
+		IntType            min_value,
+		IntType            max_value
+		)
+	{
+		IntType** ia = new( std::nothrow ) IntType* [ rows ];
+		for (unsigned row = 0; row < rows; row++)
+		{
+		ia[ row ] = intarray + (row * columns);
+		}
+		bool result = intarray2bmp(
+						filename, ia, rows, columns, min_value, max_value
+						);
+		delete [] ia;
+		return result;
+	}
+
+} 
+
+
+typedef unsigned int uint;
+int* read_bmp(const std::string filename, uint& width, uint& height) {
+    std::ifstream file(filename, std::ios::in|std::ios::binary);
+    uint w=0, h=0;
+    char header[54];
+    file.read(header, 54);
+    for(uint i=0; i<4; i++) {
+        w |= (header[18+i]&255)<<(8*i);
+        h |= (header[22+i]&255)<<(8*i);
+    }
+    const int pad=(4-(3*w)%4)%4, imgsize=(3*w+pad)*h;
+    char* img = new char[imgsize];
+    file.read(img, imgsize);
+    file.close();
+    int* data = new int[w*h];
+    for(uint y=0; y<h; y++) {
+        for(uint x=0; x<w; x++) {
+            const int i = 3*x+y*(3*w+pad);
+            data[x+(h-1-y)*w] = (img[i]&255)|(img[i+1]&255)<<8|(img[i+2]&255)<<16;
+        }
+    }
+    delete[] img;
+    width = w;
+    height = h;
+    return data;
+}
+
+
+void write_bmp(const std::string filename, const uint width, const uint height, const int* const data)
+ {
+    const int pad=(4-(3*width)%4)%4, filesize=54+(3*width+pad)*height; // horizontal line must be a multiple of 4 bytes long, header is 54 bytes
+    char header[54] = { 'B','M', 0,0,0,0, 0,0,0,0, 54,0,0,0, 40,0,0,0, 0,0,0,0, 0,0,0,0, 1,0,24,0 };
+    for(uint i=0; i<4; i++) {
+        header[ 2+i] = (char)((filesize>>(8*i))&255);
+        header[18+i] = (char)((width   >>(8*i))&255);
+        header[22+i] = (char)((height  >>(8*i))&255);
+    }
+    char* img = new char[filesize];
+    for(uint i=0; i<54; i++) img[i] = header[i];
+    for(uint y=0; y<height; y++) {
+        for(uint x=0; x<width; x++) {
+            const int color = data[x+(height-1-y)*width];
+            const int i = 54+3*x+y*(3*width+pad);
+            img[i  ] = (char)( color     &255);
+			img[i+1] = (char)( color     &255);
+			img[i+2] = (char)( color     &255);
+            //img[i+1] = (char)((color>> 8)&255);
+            //img[i+2] = (char)((color>>16)&255);
+        }
+        for(uint p=0; p<pad; p++) img[54+(3*width+p)+y*(3*width+pad)] = 0;
+    }
+    std::ofstream file(filename, std::ios::out|std::ios::binary);
+    file.write(img, filesize);
+    file.close();
+    delete[] img;
+}
+
+
+
+void saveMatrixToImageBMP2(const std::string name,Matrix A)
+{
+	bool qView=true;
+	//qView=false;
+	int* img; img = (int *)malloc(A.dimensionSizeof);
+	double min,max; get_matrix_min_max(min,max,A);
+
+	//std::cout << "min ="<<min<<"\n";
+	//std::cout << "max ="<<max<<"\n";
+
+	int i, j;
+    for (i = 0; i < A.num_rows; i++)
+	{
+        for(j = 0; j < A.num_columns; j++)
+		{
+		   double v=A.data[i*A.num_columns + j];
+           img[i*A.num_columns + j] = int(std::round(((v-min)/(max-min))*255.0));
+		   if (v==0.0) {  img[i*A.num_columns + j] = 0; }
+		   if (qView) { printf("%i ",img[i*A.num_columns + j]); }
+		}
+		if (qView) { printf("\n"); }
+	}
+	if (qView) { printf("\n"); }
+
+	write_bmp(name, A.num_rows,A.num_columns,img);
+
+	std::cout << "[INFO]: Save IMG Matrix"<<"\n";
+}
+
+
+
+
+void saveMatrixToImageBMP(const std::string name,Matrix A)
+{
+	bool qView=true;
+	//qView=false;
+	int* img; img = (int *)malloc(A.dimensionSizeof);
+	double min,max; get_matrix_min_max(min,max,A);
+
+	//std::cout << "min ="<<min<<"\n";
+	//std::cout << "max ="<<max<<"\n";
+
+	int i, j;
+    for (i = 0; i < A.num_rows; i++)
+	{
+        for(j = 0; j < A.num_columns; j++)
+		{
+		   double v=A.data[i*A.num_columns + j];
+           img[i*A.num_columns + j] = int(std::round(((v-min)/(max-min))*255.0));
+		   if (v==0.0) {  img[i*A.num_columns + j] = min; }
+		   if (qView) { printf("%i ",img[i*A.num_columns + j]); }
+		}
+		if (qView) { printf("\n"); }
+	}
+	if (qView) { printf("\n"); }
+
+	bool result = intarray2bmp::intarray2bmp(name,img,A.num_rows,A.num_columns,0,9);
+	std::cout << "[INFO]: Save IMG Matrix ="<<result<<"\n";
+}
+
+
+void saveMatrixToImagePGM(const std::string name,Matrix A)
+{
+	double min,max; get_matrix_min_max(min,max,A);
+	typedef unsigned char pixval_t;
+	auto float_to_pixval = [](float img_val) -> pixval_t {
+		int tmpval = static_cast<int>(::std::floor(256 * img_val));
+		if (tmpval < 0) {
+			return 0u;
+		} else if (tmpval > 255) {
+			return 255u;
+		} else {
+			return tmpval & 0xffu;
+		}
+	};
+
+	std::ofstream out(name, std::ios::binary | std::ios::out | std::ios::trunc);
+	//out << "P5\n512 512\n255\n";
+	out << "P5\n"<<A.num_rows<<" "<<A.num_columns<<"\n255\n";
+	int i, j,v;
+    for (i = 0; i < A.num_rows; i++)
+        for(j = 0; j < A.num_columns; j++)
+		{
+    		v = int(std::round(((A.data[i*A.num_columns + j]-min)/(max-min))*255.0));
+			const pixval_t pixval = float_to_pixval(v);
+			const char outpv = static_cast<const char>(pixval);
+			out.write(&outpv, 1);
+		}
+}
+
+//END::Tools save data to image 0-255
+/*********************************************************************************************************************************************************/
+
+
+/*********************************************************************************************************************************************************/
+//BEGIN::mandelbro demo
+
+void mandelbrot(unsigned int w,unsigned h)
+{
+	int N=h*w;
+    int *pos = (int *)malloc(h*w*sizeof(int));
+    int *d_pgmData;
+    hipMalloc((void **)&d_pgmData, sizeof(int)*w*h);
+    hipMemcpy(d_pgmData, pos ,h*w*sizeof(int) ,hipMemcpyHostToDevice);
+    dim3 block_size(16, 16);
+    dim3 grid_size((N)/block_size.x, (int) N / block_size.y);
+    hipLaunchKernelGGL(calculat_mandelbrot,grid_size,block_size,0,0,d_pgmData,512,512,1000);
+    hipMemcpy(pos,d_pgmData,h*w*sizeof(int) ,hipMemcpyDeviceToHost);
+    hipFree(d_pgmData);
+
+	for(unsigned int i = 0; i < h; i++){
+		for(unsigned int j = 0; j < w; j++)
+		{
+			printf("%i ",pos[i*w + j]);
+		}
+		printf("\n");
+	} 
+	printf("\n");
+
+	bool result = intarray2bmp::intarray2bmp("mandelbrot.bmp",pos,h,w,0,9);
+	std::cout << "[INFO]: Save IMG Mandelbro ="<<result<<"\n";
+}
+
+//END::mandelbro demo
+/*********************************************************************************************************************************************************/
+
+
+
 
 void getShortInformationGPU()
 {
@@ -1483,8 +2080,6 @@ void getMpiInformation(int argc, char *argv[])
 #endif
 
 
-
-
 /*********************************************************************************************************************************************************/
 /*********************************************************************************************************************************************************/
 /*********************************************************************************************************************************************************/
@@ -1566,25 +2161,29 @@ void TestLevel001()
 void TestLevel001beta()
 {
 	bool qView=true;
-	int matrixSize=10;
+	//qView=false;
+	const int matrixSize=64;
 	Matrix MatA; MatA = build_init_matrix(matrixSize,matrixSize); 
 
 	if (qView) { 
         std::cout<<"\n";
-        std::cout << "Matrix A ===>\n\n";	writeMatrix(MatA); std::cout << "\n";
+        std::cout << "Matrix A ===>\n\n";	writeMatrix2(MatA); std::cout << "\n";
     }  
 
 	Matrix MatU=getCholeskyGPUVers2(MatA);
 	
 	if (qView) { 
         std::cout<<"\n";
-        std::cout << "Matrix U ===>\n\n";	writeMatrix(MatU); std::cout << "\n";
+        std::cout << "Matrix U ===>\n\n";	writeMatrix2(MatU); std::cout << "\n";
     }
 
 	std::cout<<"[INFO]: CheckSolution"<<"\n";
     Matrix MatUt=matrix_transpose_GPU(MatU);
     Matrix MatT=matrix_product_GPU(MatUt,MatU);
     checkSolution_GPU(MatA,MatT);
+
+	saveMatrixToImagePGM("MatU.pgm",MatU);
+	saveMatrixToImageBMP("MatU.bmp",MatU);
 
 	free(MatU.data);
 	free(MatUt.data);
@@ -1599,7 +2198,7 @@ void TestLevel002()
     bool qView=true;
     qView=false;	
 	bool qCTRL=true;
-	qCTRL=false;
+	//qCTRL=false;
 
 	myfile <<"DimMatrix,ModeSerial,ModeGpuHipAMD,pthread"<<"\n";	
 	std::chrono::steady_clock::time_point t_begin,t_end;
@@ -1753,7 +2352,7 @@ void TestLevel005()
     bool qView=true;
 	const int r=2,c=r+4;
 	Matrix MatA, MatR; 
-	MatA = create_index_matrix(r,c);
+	MatA = build_index_matrix(r,c);
 	MatR = matrix_transpose_GPU(MatA);
 	std::cout << "\n"; 
 	std::cout << "Test Transpose GPU\n"; 
@@ -1769,7 +2368,7 @@ void TestLevel006()
     bool qView=true;
 	const int r=5,c=r;
 	Matrix MatA, MatR; 
-	MatA = create_index_matrix(r,c);
+	MatA = build_index_matrix(r,c);
 	MatR = matrix_lower_triangular_GPU(MatA);
 	std::cout << "\n"; 
 	std::cout << "Test Transpose GPU\n"; 
@@ -1778,6 +2377,57 @@ void TestLevel006()
 	free(MatA.data);
 	free(MatR.data);
 }
+
+
+void TestLevel007()
+{
+	long int t_laps;
+	std::chrono::steady_clock::time_point t_begin,t_end;
+    bool qView=true;
+	const int r=9,c=r;
+	Matrix MatA,MatK, MatR_CPU, MatR_GPU; 
+	MatA = build_index_matrix(r,c);
+	
+
+	Matrix MatKI= build_kernel_identity(3);
+	if (qView) { std::cout << "Matrix KI\n";	writeMatrix(MatKI); std::cout << "\n"; }
+
+	MatK = build_kernel_LaplacianOfGaussian(3,1.0);
+	if (qView) { std::cout << "Matrix K\n";	writeMatrix(MatK); std::cout << "\n"; }
+
+
+	t_begin = std::chrono::steady_clock::now();
+	MatR_CPU = getConvolutionCPU(MatA,MatK);
+	t_end = std::chrono::steady_clock::now();
+	t_laps= std::chrono::duration_cast<std::chrono::microseconds>(t_end - t_begin).count();
+				std::cout << "[INFO]: Elapsed microseconds inside CPU: "<<t_laps<< " us\n";
+				std::cout << "\n";
+
+	MatA = build_index_matrix(r,c);
+
+	t_begin = std::chrono::steady_clock::now();
+	MatR_GPU = getConvolutionGPUVers2(MatA,MatK);
+	t_end = std::chrono::steady_clock::now();
+	t_laps= std::chrono::duration_cast<std::chrono::microseconds>(t_end - t_begin).count();
+				std::cout << "[INFO]: Elapsed microseconds inside GPU: "<<t_laps<< " us\n";
+				std::cout << "\n";
+
+
+	std::cout << "\n"; 
+	std::cout << "Test Covolution\n"; 
+	if (qView) { std::cout << "Matrix A\n";	writeMatrix(MatA); std::cout << "\n"; }
+	if (qView) { std::cout << "Matrix R CPU\n"; writeMatrix(MatR_CPU); std::cout << "\n"; }
+	if (qView) { std::cout << "Matrix R GPU\n"; writeMatrix(MatR_GPU); std::cout << "\n"; }
+
+	free(MatA.data);
+	free(MatK.data);
+	free(MatKI.data);
+	free(MatR_CPU.data);
+	free(MatR_GPU.data);
+}
+
+
+
 
 
 #ifdef UseOpenMP
@@ -1850,7 +2500,6 @@ void TestMPI(int argc, char *argv[])
 
 
 
-
 int main(int argc, char *argv[])
  {
 	//scanInformationSystem();``
@@ -1869,6 +2518,8 @@ int main(int argc, char *argv[])
 	//TestLevel004();
 	//TestLevel005();
 	//TestLevel006();
+	//TestLevel007();
 	//TestLevel001beta();
+	//mandelbrot(512,512);
 	
 }
