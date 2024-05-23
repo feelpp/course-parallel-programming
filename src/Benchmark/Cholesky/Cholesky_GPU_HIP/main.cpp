@@ -596,16 +596,25 @@ void matrix_copy_data(Matrix R,const Matrix M)
 
 void matrix_lower_triangular(Matrix M) 
 {
-    int i, j;
+    unsigned int i, j;
     for (i = 0; i < M.num_rows; i++)
         for (j = 0; j < i; j++)
             M.data[i * M.num_rows + j] = 0.0;
 }
 
 
+Matrix matrix_scalar(const Matrix M,double coeff) 
+{
+  	Matrix R= allocate_matrix(M.num_rows,M.num_columns,0);
+  	unsigned int k;
+  	for(k = 0; k < R.dimension; k++) { R.data[k]=coeff*M.data[k]; }
+  	return R;
+}
+
+
 void get_matrix_min_max(double &m,double &M,Matrix R) 
 {
-	int k;
+	unsigned int k;
 	m=R.data[0]; M=m;
 	for(k = 0; k < R.dimension; k++) { m=std::min(R.data[k],m); M=std::max(R.data[k],M); }
 }
@@ -652,7 +661,7 @@ Matrix getConvolutionCPU(Matrix M, Matrix K)
 }
 
 
-Matrix build_kernel_Gaussian(int ks, double sigma)
+Matrix kernel_Gaussian_nD(int ks, double sigma)
 {
 	const double pi=3.14159265359;
 	Matrix K= allocate_matrix(ks,ks,0);
@@ -666,7 +675,7 @@ Matrix build_kernel_Gaussian(int ks, double sigma)
 	return(K);
 }
 
-Matrix build_kernel_LaplacianOfGaussian(int ks, double sigma)
+Matrix kernel_LaplacianOfGaussian(int ks, double sigma)
 {
 	const double pi=3.14159265359;
 	Matrix K= allocate_matrix(ks,ks,0);
@@ -679,7 +688,7 @@ Matrix build_kernel_LaplacianOfGaussian(int ks, double sigma)
 	return(K);
 }
 
-Matrix build_kernel_identity(int ks)
+Matrix kernel_identity(int ks)
 {
 	Matrix K= allocate_matrix(ks,ks,0);
 	int center = (ks-1)/2.0;
@@ -687,6 +696,71 @@ Matrix build_kernel_identity(int ks)
 	return(K);
 }
 
+Matrix kernel_laplacian1()
+{
+	Matrix K= allocate_matrix(3,3,0);
+	K.data[1] = 1;
+	K.data[3] = 1; K.data[4] = -4; K.data[5] = 1;
+	K.data[7] = 1;
+	return(K);
+}
+
+Matrix kernel_laplacian2()
+{
+	Matrix K= allocate_matrix(3,3,-1);
+	K.data[4] = 8; 
+	return(K);
+}
+
+Matrix kernel_blur()
+{
+	Matrix K= allocate_matrix(3,3,1.0/9.0);
+	return(K);
+}
+
+Matrix kernel_sharping()
+{
+	Matrix K= allocate_matrix(3,3,0);
+	K.data[1] = 0.5;
+	K.data[3] = 0.5; K.data[4] = 3.0; K.data[5] = 0.5;
+	K.data[7] = 0.5;
+	return(K);
+}
+
+Matrix kernel_sharping(double alpha)
+{
+	Matrix T= allocate_matrix(3,3,-alpha); T.data[4] = 9.0-alpha; 
+	Matrix K=matrix_scalar(K,1.0/(9.0*(1.0-alpha))); free(T.data);
+	return(K);
+}
+
+
+Matrix kernel_edge_kx()
+{
+	Matrix K= allocate_matrix(3,3,0);
+	K.data[0] = -1;   K.data[2] = 1;
+	K.data[3] = -2;   K.data[5] = 2;
+	K.data[6] = -1;   K.data[8] = 1;
+	return(K);
+}
+
+Matrix kernel_edge_ky()
+{
+	Matrix K= allocate_matrix(3,3,0);
+	K.data[0] = -1;   K.data[1] = -2;  K.data[2] = -1;   
+	K.data[6] =  1;   K.data[7] =  2;  K.data[8] =  1;
+	return(K);
+}
+
+Matrix kernel_gaussian()
+{
+	Matrix T= allocate_matrix(3,3,0);
+	T.data[0] = 1;	 T.data[1] = 2;   T.data[2] = 1;
+	T.data[3] = 2;   T.data[4] = 4;   T.data[5] = 2;
+	T.data[6] = 1;   T.data[8] = 2;   T.data[4] = 1;
+	Matrix K=matrix_scalar(K,1.0/16.0); free(T.data);
+	return(K);
+}
 
 
 //END:: BUILD INIT MATRIX
@@ -2389,10 +2463,10 @@ void TestLevel007()
 	MatA = build_index_matrix(r,c);
 	
 
-	Matrix MatKI= build_kernel_identity(3);
+	Matrix MatKI= kernel_identity(3);
 	if (qView) { std::cout << "Matrix KI\n";	writeMatrix(MatKI); std::cout << "\n"; }
 
-	MatK = build_kernel_LaplacianOfGaussian(3,1.0);
+	MatK = kernel_LaplacianOfGaussian(3,1.0);
 	if (qView) { std::cout << "Matrix K\n";	writeMatrix(MatK); std::cout << "\n"; }
 
 
