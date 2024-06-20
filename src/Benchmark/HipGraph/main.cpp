@@ -160,7 +160,7 @@ void createGraphGPU(hipGraph_t &Graph, hipGraphExec_t &graphExec,
     //             Node000-A
     //          /     ¡       \
     //   Node001-A Node001-B Node001-C
-    //                ¡
+    //          \      ¡      /
     //             Node002-A
     //                ¡
     //             Node003-A

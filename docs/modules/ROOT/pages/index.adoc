@@ -110,6 +110,15 @@ GPUs intended to be used for specialized computer processing other than
 graphics processing.
 
 
+*TPU, NPU, LPU Architecture*
+
+* TPU: A Tensor Processing Unit (TPU) is a specialized hardware processor developed by Google to accelerate machine learning. Unlike traditional CPUs or GPUs, TPUs are specifically designed to handle tensor operations, which account for most of the computations in deep learning models. This makes them incredibly efficient at those tasks and provides an enormous speedup compared to CPUs and GPUs. In this article, we’ll explore what a TPU is, how it works, and why they are so beneficial for machine learning applications.
+
+* NPU: A Neural Processing Unit (NPU), is a specialized hardware accelerator designed for executing artificial neural network tasks efficiently and with high throughput. NPUs deliver high performance while minimizing power consumption, making them suitable for mobile devices, edge computing, and other energy-sensitive applications. NPUs use the traditional von Neumann architecture, which separates the memory and the processing units. TPUs use the systolic array architecture, which integrates the memory and the processing units into a single chip. NPUs have a higher peak performance than TPUs, but they also have a higher latency and power consumption. TPUs have a lower peak performance than NPUs, but they also have a lower latency and power consumption.
+
+* LPU: Language Processing Units (LPUs) are a relatively new addition, designed specifically for handling the complexities of natural language processing tasks. While CPUs, GPUs, and TPUs play significant roles in the broader field of AI, LPUs offer optimized performance for generative models that deal with text, such as GPT (Generative Pre-trained Transformer). They're good at these tasks and might be more efficient than Graphics Processing Units (GPUs). GPUs are still great for things like graphics and AI.The true power of generative AI comes from the interplay and integration of these processing units. CPUs handle the overarching control and coordination, GPUs accelerate the bulk of computational workloads, TPUs offer specialized efficiency for deep learning, and LPUs bring a new level of performance to natural language processing. Together, they form the backbone of generative AI systems, enabling the rapid development and deployment of models that can create highly realistic and complex outputs.
+
+
 *Why Use Parallel Computing?*
 
 The Real World Is Massively Complex
