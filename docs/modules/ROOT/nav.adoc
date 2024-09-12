@@ -12,6 +12,8 @@
 
 * xref:PPChapter1_LPU.adoc[LPU Architecture]
 
+* xref:PPChapter1_DPU.adoc[DPU Architecture]
+
 * xref:PPChapter1_SIMD.adoc[SIMD Architecture]
 
 * xref:PPChapter1_AMD_CUDA.adoc[AMD CUDA Architecture]
