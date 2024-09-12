@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>DPU (DATA Processing Unit) :: Parallel Programming</title>
+    <link rel="canonical" href="https://feelpp.github.io/parallel-programming/parallel-programming/PPChapter1_DPU.html">
+    <meta name="generator" content="Antora 3.1.3">
+    <link rel="stylesheet" href="../_/css/site.css">
+<link rel="icon" href="../_/img/favicon.ico" type="image/x-icon">
+<script>!function(l,p){if(l.protocol!==p&&l.host=="docs.antora.org"){l.protocol=p}else if(/\.gitlab\.io$/.test(l.host)){l.replace(p+"//docs.antora.org"+l.pathname.substr(l.pathname.indexOf("/",1))+l.search+l.hash)}}(location,"https:")</script>
+
+<script src="../_/js/vendor/tabs-block-extension.js"></script>
+<script src="../_/js/vendor/tabs-block-behavior.js"></script>
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  messageStyle: "none",
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$'], ['\\[','\\]']],
+    processEscapes: true,
+    processEnvironments: true,
+    ignoreClass: "nostem|nolatexmath"
+  },
+  asciimath2jax: {
+    delimiters: [["\\$", "\\$"]],
+    ignoreClass: "nostem|noasciimath"
+  },
+
+  TeX: {
+      Macros: {
+      bold: ["{\\bf #1}",1],
+      calTh: "{\\mathcal{T}_h}",
+      card: ["{\\operatorname{card}(#1)}",1],
+      card: ["{\\operatorname{card}(#1)}",1],
+      Ck: ["{\\mathcal{C}^{#1}}",1],
+      deformt: ["{\\mathbf{\\varepsilon(#1)}}",1],
+      diam: "{\\operatorname{diam}}",
+      dim: ["{\\operatorname{dim}(#1)}",1],
+      disp: ["{\\mathbf{#1}}",1],
+      domain: "{\\Omega}",
+      ds: "",
+      essinf: "{\\operatorname{ess}\\, \\operatorname{inf}}",
+      F:"{\\mathcal{F}}",
+      geo: "{\\mathrm{geo}}",
+      Ich: ["{\\mathcal{I}^{#1}_{c,h}#2}",2],
+      Id: "{\\mathcal{I}}",
+      Ilag: ["{\\mathcal{I}^{\\mathrm{lag}}_{#1}}",1],
+      jump: ["{[\\![ #1 ]\\!]}",1],
+      n:"{\\mathbf{n}}",
+      Ne: "{N_{\\mathrm{e}}}",
+      Next: "{\\mathrm{n}}",
+      nf: "{n_f}",
+      ngeo: "{n_{\\mathrm{geo}}}",
+      Nma: "{N_{\\mathrm{ma}}}",
+      NN: "{\\mathbb N}",
+      Nno: "{N_{\\mathrm{no}}}",
+      Nso: "{N_{\\mathrm{so}}}",
+      opdim: "{\\operatorname{dim}}",
+      p: "{\\mathrm{p}}",
+      P:"{\\mathcal{P}}",
+      Pch: ["{P^{#1}_{c,h}}",1],
+      Pcho: ["{P^{#1}_{c,h,0}}",1],
+      Pk: ["{\\mathcal{P}^{#1}}",1],
+      poly: ["{\\mathbb{#1}",1],
+      poly: ["{\\mathbb{#1}}",1],
+      prect: ["{\\left\\(#1\\right\\)}",1],
+      q:"{\\mathbf{q}}",
+      Qch: ["{Q^{#1}_{c,h}}",1],
+      Qk: ["{\\mathcal{Q}^{#1}}",1],
+      R: ["{\\mathbb{R}^{#1}}",1],
+      RR: "{\\mathbb R}",
+      set: ["{\\left\\{#1\\right\\}}",1],
+      stresst: ["{\\mathbf{\\sigma(#1)}}",1],
+      T:"{\\mathcal{T}}",
+      tr: "{\\operatorname{tr}}",
+      v:"{\\mathbf{v}}",
+      vertiii: ["\\left\\vert\\kern-0.25ex\\left\\vert\\kern-0.25ex\\left\\vert #1 \\right\\vert\\kern-0.25ex\\right\\vert\\kern-0.25ex\\right\\vert",1]
+  },
+  extensions: ["mhchem.js"] 
+  }
+});
+</script>
+<!--<script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.3/MathJax.js?config=TeX-MML-AM_CHTML"></script>-->
+<!-- <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML' async></script> -->
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-AMS_CHTML'></script>
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.6.0/MathJax.js?config=TeX-MML-AM_HTMLorMML"></script>-->
+
+<!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0/katex.min.css" integrity="sha384-TEMocfGvRuD1rIAacqrknm5BQZ7W7uWitoih+jMNFXQIbNl16bO8OZmylH/Vi/Ei" crossorigin="anonymous">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0/katex.min.js" integrity="sha384-jmxIlussZWB7qCuB+PgKG1uLjjxbVVIayPJwi6cG6Zb4YKq0JIw+OMnkkEC7kYCq" crossorigin="anonymous"></script>-->
+<script>var uiRootPath = '../_'</script>
+
+  </head>
+  <body class="article">
+<header class="header">
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark navbar-template-project" style="border-top: 4px solid #9E9E9E">
+        <div class="navbar-brand">
+            <div class="navbar-item feelpp-logo">
+                <a href="https://feelpp.github.io/parallel-programming">Parallel Programming</a>
+            </div>
+            <button class="navbar-burger" data-target="topbar-nav">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+
+        <div id="topbar-nav" class="navbar-menu">
+            <div class="navbar-end">
+                <div class="navbar-item">
+                    <a href="https://docs.feelpp.org/">Documentation Reference</a>
+                </div>
+                <div class="navbar-item has-dropdown is-hoverable download-item">
+                    <div class="navbar-item"><a href="https://docs.feelpp.org/user/latest/install/index.html" class="download-btn">Get Feel++</a></div>
+                </div>
+                <div class="navbar-item">
+                    <a class="navbar-brand"  href="https://www.cemosis.fr">
+                        <img class="cemosis-logo"  src="../_/img/cemosis-logo.svg" alt="Cemosis logo"/>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+</header>
+<div class="body">
+<a href="#" class="menu-expand-toggle"></a>
+<div class="nav-container" data-component="parallel-programming" data-version="">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="index.html">Main</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="index.html">Introduction</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="PPChapter1_CPU.html">CPU Architecture</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="PPChapter1_GPU.html">GPU Architecture</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="PPChapter1_GPGPU.html">GPGPU Architecture</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="PPChapter1_TPU.html">TPU Architecture</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="PPChapter1_NPU.html">NPU Architecture</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="PPChapter1_LPU.html">LPU Architecture</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="1">
+    <a class="nav-link" href="PPChapter1_DPU.html">DPU Architecture</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="PPChapter1_SIMD.html">SIMD Architecture</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="PPChapter1_AMD_CUDA.html">AMD CUDA Architecture</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="PPChapter2_MPI.html">MPI (Message Passing Interface)</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="PPChapter2_MPI_Boost.html">MPI Boost</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="PPChapter2_OpenMP.html">OpenMP (Open Multi-Processing)</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="PPChapter2_OpenMP2.html">OpenMP more information</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="PPChapter2_Hybrid.html">Hybrid MPI with OpenMP</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="PPChapter3.html">StarPU</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="PPChapter4.html">Specx</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">Main</span>
+    <span class="version"></span>
+  </div>
+  <ul class="components">
+      <li class="component">
+        <a class="title" href="../feelpp-antora-ui/index.html">Antora Feel++ UI</a>
+      </li>
+      <li class="component is-current">
+        <a class="title" href="index.html">Main</a>
+      </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+  <button class="nav-toggle"></button>
+    <a href="index.html" class="home-link"></a>
+  <nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="index.html">Main</a></li>
+    <li><a href="PPChapter1_DPU.html">DPU Architecture</a></li>
+  </ul>
+</nav>
+
+  
+    <div class="edit-this-page"><a href="https://github.com/feelpp/parallel-programming/edit/lem/docs/modules/ROOT/pages/PPChapter1_DPU.adoc">Edit this Page</a></div>
+  
+  <div class="page-downloads">
+  <span class="label">Download as</span>
+  <ul class="download-options">
+    <li>
+      <a onclick="print(this)" href="#" data-toggle="tooltip" data-placement="left" title="Print to PDF"
+         class="pdf-download">
+        <img class="pdf-file-icon icon" src="../_/img/pdf.svg"/> .pdf
+      </a>
+    </li>
+  </ul>
+</div>
+</div>
+
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="3">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">DPU (DATA Processing Unit)</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="imageblock">
+<div class="content">
+<a class="image" href="#fragment03"><img src="_images/DPU1.jpg" alt="DPU1" width="322" height="220"></a>
+</div>
+</div>
+<div class="paragraph text-justify">
+<p>Data Processing Units (DPUs) are specialized hardware components designed to optimize data-centric workloads in modern computing environments, particularly in data centers. They have emerged as a crucial element alongside Central Processing Units (CPUs) and Graphics Processing Units (GPUs), forming a triad of processing units that address different computational needs.</p>
+</div>
+<div class="paragraph text-justify">
+<p>Specialists in moving data in data centers, DPUs, or data processing units, are a new class of programmable processor and will join CPUs and GPUs as one of the three pillars of computing.</p>
+</div>
+<div class="paragraph text-justify">
+<p>Of course, you’re probably already familiar with the central processing unit. Flexible and responsive, for many years CPUs were the sole programmable element in most computers.</p>
+</div>
+<div class="paragraph text-justify">
+<p>More recently the GPU, or graphics processing unit, has taken a central role. Originally used to deliver rich, real-time graphics, their parallel processing capabilities make them ideal for accelerated computing tasks of all kinds. Thanks to these capabilities, GPUs are essential to artificial intelligence, deep learning and big data analytics applications.</p>
+</div>
+<div class="paragraph text-justify">
+<p>Over the past decade, however, computing has broken out of the boxy confines of PCs and servers — with CPUs and GPUs powering sprawling new hyperscale data centers.</p>
+</div>
+<div class="paragraph text-justify">
+<p>These data centers are knit together with a powerful new category of processors. The DPU has become the third member of the data-centric accelerated computing model.</p>
+</div>
+<div class="paragraph text-justify">
+<p>“This is going to represent one of the three major pillars of computing going forward,” NVIDIA CEO Jensen Huang said during a talk earlier this month.</p>
+</div>
+<div class="paragraph text-justify">
+<p>“The CPU is for general-purpose computing, the GPU is for accelerated computing, and the DPU, which moves data around the data center, does data processing.”</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_definition_and_functionality"><a class="anchor" href="#_definition_and_functionality"></a>1. Definition and Functionality</h2>
+<div class="sectionbody">
+<div class="imageblock">
+<div class="content">
+<a class="image" href="#fragment03"><img src="_images/DPU2.jpg" alt="DPU2" width="322" height="220"></a>
+</div>
+</div>
+<div class="paragraph">
+<p>A DPU is a programmable processor that integrates several key features:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Multi-core CPU</strong>: Provides general-purpose processing capabilities.</p>
+</li>
+<li>
+<p><strong>Hardware Accelerators</strong>: Enhance the execution of specific tasks such as AI, data analytics, and security operations.</p>
+</li>
+<li>
+<p><strong>High-speed Networking</strong>: Facilitates rapid data transfer, which is essential for data-intensive applications.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The primary role of a DPU is to offload and accelerate tasks traditionally managed by CPUs, thereby improving overall data throughput and freeing the CPU to focus on more complex computations. This capability is particularly beneficial in environments dealing with large volumes of data, such as cloud computing, artificial intelligence, and big data analytics[1][3][4].</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_evolution_and_importance"><a class="anchor" href="#_evolution_and_importance"></a>2. Evolution and Importance</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>DPUs evolved from earlier technologies like network interface cards (NICs) and smart NICs, which were designed to offload specific tasks from the CPU. As data processing demands grew, especially with the rise of AI and complex workloads, the need for dedicated processors that could efficiently manage data movement and processing became apparent. DPUs are now seen as essential for enhancing the performance and efficiency of data centers by handling tasks such as data transfer, security, and analytics, which allows CPUs to concentrate on core application cycles[2][4][5].</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_key_benefits"><a class="anchor" href="#_key_benefits"></a>3. Key Benefits</h2>
+<div class="sectionbody">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Increased Efficiency</strong>: DPUs significantly improve performance metrics, such as performance per watt and performance per dollar, by optimizing data handling tasks[3].</p>
+</li>
+<li>
+<p><strong>Cost Reduction</strong>: By offloading work from CPUs, DPUs can lower the total cost of ownership (TCO) for data centers, making them more economically viable for cloud service providers and enterprises[3].</p>
+</li>
+<li>
+<p><strong>Enhanced Scalability</strong>: DPUs support composable infrastructure architectures, allowing for more flexible and scalable data center designs[4].</p>
+</li>
+<li>
+<p><strong>Specialized Processing</strong>: They are tailored for specific data-related functions, such as encryption, data reduction, and network offloading, which enhances their effectiveness compared to general-purpose CPUs[1][3].</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_performance_comparison"><a class="anchor" href="#_performance_comparison"></a>4. Performance Comparison</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_functionality_and_specialization"><a class="anchor" href="#_functionality_and_specialization"></a>4.1. <strong>Functionality and Specialization</strong></h3>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>DPU</strong>: Primarily designed to handle data-centric workloads, DPUs excel in tasks such as data transfer, security, and network management. They integrate multiple functions, including high-performance networking and programmable accelerators, allowing them to offload tasks from CPUs and GPUs effectively. This specialization enables DPUs to manage data movement and processing more efficiently than general-purpose CPUs or even GPUs in certain contexts[8][11].</p>
+</li>
+<li>
+<p><strong>GPU</strong>: GPUs are optimized for parallel processing and are particularly effective at handling tasks that require massive parallel computations, such as graphics rendering and machine learning. However, they are not inherently designed for data management tasks, which can limit their efficiency in data-centric environments where data movement and processing are critical[9][11].</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_2_architecture_and_design"><a class="anchor" href="#_2_architecture_and_design"></a>4.2. 2. <strong>Architecture and Design</strong></h3>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>DPU Architecture</strong>: DPUs typically feature a multi-core CPU architecture combined with hardware accelerators tailored for specific data processing tasks. This design allows them to perform operations like packet processing and encryption at high speeds, often achieving data transfer rates of 100-200 Gbps[8][10].</p>
+</li>
+<li>
+<p><strong>GPU Architecture</strong>: GPUs consist of thousands of cores optimized for parallel execution, making them powerful for tasks that can be parallelized. However, their architecture is less flexible for general data processing tasks compared to DPUs, which are designed specifically for such workloads[9][11].</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_efficiency_and_power_consumption"><a class="anchor" href="#_efficiency_and_power_consumption"></a>4.3. <strong>Efficiency and Power Consumption</strong></h3>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>DPU Efficiency</strong>: DPUs are engineered to be energy-efficient by offloading tasks from CPUs and GPUs, which reduces overall power consumption in data centers. They can handle multiple workloads simultaneously while maintaining low energy usage, making them a cost-effective solution for managing data-intensive applications[9][10].</p>
+</li>
+<li>
+<p><strong>GPU Power Consumption</strong>: While GPUs are powerful, they tend to consume more power, especially when executing complex computations. Their design is focused on maximizing throughput for parallel tasks, which can lead to higher energy costs in data centers[9][11].</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_overall_impact_on_data_center_performance"><a class="anchor" href="#_overall_impact_on_data_center_performance"></a>4.4. <strong>Overall Impact on Data Center Performance</strong></h3>
+<div class="paragraph">
+<p>DPUs enhance data center performance by optimizing data flow and reducing latency in data processing. They effectively manage workloads that would otherwise burden CPUs and GPUs, leading to improved overall efficiency in data handling and processing tasks. In contrast, while GPUs excel in specific computational tasks, they do not manage data as effectively as DPUs, particularly in scenarios requiring extensive data movement and management[8][9][10].</p>
+</div>
+<div class="paragraph">
+<p>Other points, DPUs and GPUs (Graphics Processing Units) can work together to enhance data center performance. Their collaboration leverages the strengths of each processing unit, optimizing the overall efficiency and capability of data centers.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_dpu_and_gpu_a_complementary_roles"><a class="anchor" href="#_dpu_and_gpu_a_complementary_roles"></a>5. DPU and GPU a complementary Roles</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Task Offloading: DPUs are designed to offload data-centric tasks from CPUs and GPUs, such as networking, security, and storage management. By handling these responsibilities, DPUs free up CPUs and GPUs to focus on their primary functions—general processing and parallel computations, respectively. This division of labor allows for more efficient resource utilization within the data center</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Enhanced Data Management</strong>: DPUs excel in managing data flows and ensuring that data is directed to the appropriate processing units. This capability is crucial in environments where multiple workloads are running concurrently. By optimizing data transfer and processing, DPUs can reduce latency and improve throughput, which is beneficial for applications like AI and machine learning that require rapid data access</p>
+</li>
+<li>
+<p><strong>Scalability and Efficiency</strong>: The integration of DPUs with GPUs enables data centers to scale more effectively. As workloads grow, DPUs help maintain performance levels by efficiently managing data traffic and processing, ensuring that GPUs can operate at their full potential without being bottlenecked by data handling tasks</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_performance_benefits"><a class="anchor" href="#_performance_benefits"></a>6. Performance Benefits</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Improved Throughput: By offloading tasks from CPUs and GPUs, DPUs enhance the overall throughput of the data center. This is particularly important for data-intensive applications, where the ability to process large volumes of data quickly is essential</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Energy Efficiency</strong>: DPUs contribute to lower power consumption by optimizing the workload distribution among CPUs, GPUs, and themselves. This efficiency is increasingly important as data centers strive to reduce operational costs and environmental impact</p>
+</li>
+<li>
+<p><strong>Programmable Flexibility</strong>: DPUs offer programmability, allowing them to adapt to various workloads and tasks. This flexibility enables data centers to respond dynamically to changing demands, further enhancing performance and efficiency</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_conclusion"><a class="anchor" href="#_conclusion"></a>7. Conclusion</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In summary, Data Processing Units (DPUs) represent a significant advancement in computing architecture, specifically designed to meet the demands of modern data-centric applications. By efficiently managing data processing and movement, DPUs alleviate the workload on CPUs and contribute to the overall performance and efficiency of data centers, making them a vital component in contemporary computing environments. In modern data centers, they serve distinct purposes. DPUs are specialized for data-centric workloads, offering efficiency in data processing and management, whereas GPUs excel in parallel computations. The integration of both types of processors, along with CPUs, allows data centers to optimize performance across a range of applications, ensuring that each processor type operates within its strengths. So this type of technology is promising, to keep under radar in order to see its evolution.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_references"><a class="anchor" href="#_references"></a>8. References</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>[1] <a href="https://cc-techgroup.com/dpu/" class="bare">cc-techgroup.com/dpu/</a></p>
+</li>
+<li>
+<p>[2] <a href="https://community.fs.com/article/dpu-one-of-the-three-pillars-of-computing-going-forward.html" class="bare">community.fs.com/article/dpu-one-of-the-three-pillars-of-computing-going-forward.html</a></p>
+</li>
+<li>
+<p>[3] <a href="https://www.kalrayinc.com/blog/dpus-decoded-redefining-efficiency-in-data-processing/" class="bare">www.kalrayinc.com/blog/dpus-decoded-redefining-efficiency-in-data-processing/</a></p>
+</li>
+<li>
+<p>[4] <a href="https://www.computerweekly.com/feature/DPU-101-What-are-DPUs-what-do-they-do-and-who-supplies-them" class="bare">www.computerweekly.com/feature/DPU-101-What-are-DPUs-what-do-they-do-and-who-supplies-them</a></p>
+</li>
+<li>
+<p>[5] <a href="https://blogs.nvidia.com/blog/whats-a-dpu-data-processing-unit/" class="bare">blogs.nvidia.com/blog/whats-a-dpu-data-processing-unit/</a></p>
+</li>
+<li>
+<p>[6] <a href="https://en.wikipedia.org/wiki/Data_processing_unit" class="bare">en.wikipedia.org/wiki/Data_processing_unit</a></p>
+</li>
+<li>
+<p>[7] <a href="https://www.gigabyte.com/Glossary/dpu" class="bare">www.gigabyte.com/Glossary/dpu</a></p>
+</li>
+<li>
+<p>[9] <a href="https://www.allaboutcircuits.com/news/cpus-gpus-work-harder-data-centers-dpus-work-smarter/" class="bare">www.allaboutcircuits.com/news/cpus-gpus-work-harder-data-centers-dpus-work-smarter/</a></p>
+</li>
+<li>
+<p>[11] <a href="https://www.kalrayinc.com/blog/dpus-gpus-and-cpus-in-the-data-center/" class="bare">www.kalrayinc.com/blog/dpus-gpus-and-cpus-in-the-data-center/</a></p>
+</li>
+<li>
+<p>[12] <a href="https://cc-techgroup.com/dpu/" class="bare">cc-techgroup.com/dpu/</a></p>
+</li>
+<li>
+<p>[13] <a href="https://community.fs.com/article/dpu-one-of-the-three-pillars-of-computing-going-forward.html" class="bare">community.fs.com/article/dpu-one-of-the-three-pillars-of-computing-going-forward.html</a></p>
+</li>
+<li>
+<p>[14] <a href="https://www.computerweekly.com/feature/DPU-101-What-are-DPUs-what-do-they-do-and-who-supplies-them" class="bare">www.computerweekly.com/feature/DPU-101-What-are-DPUs-what-do-they-do-and-who-supplies-them</a></p>
+</li>
+<li>
+<p>[15] <a href="https://www.gigabyte.com/Glossary/dpu" class="bare">www.gigabyte.com/Glossary/dpu</a></p>
+</li>
+<li>
+<p>[16] <a href="https://www.kalrayinc.com/blog/dpus-decoded-redefining-efficiency-in-data-processing/" class="bare">www.kalrayinc.com/blog/dpus-decoded-redefining-efficiency-in-data-processing/</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</article>
+  </div>
+</main>
+</div>
+<footer class="footer" style="border-top: 2px solid #e9e9e9; background-color: #fafafa; padding-bottom: 2em; padding-top: 2em;">
+    <div class="container" style="display: flex; flex-direction: column; align-items: center; gap: 0.5em;">
+        <div>
+            <a href="https://www.cemosis.fr">
+                <img src="../_/img/cemosis-logo.svg" alt="Cemosis logo" height="50">
+            </a>
+        </div>
+        <span style="font-size: 0.8rem; color: #9e9e9e">© 2024 <a href="https://www.cemosis.fr" style="text-decoration: underline;">Cemosis</a>, Université de Strasbourg</span>
+    </div>
+</footer>
+<script id="site-script" src="../_/js/site.js" data-ui-root-path="../_"></script>
+
+
+<script async src="../_/js/vendor/fontawesome-icon-defs.js"></script>
+<script async src="../_/js/vendor/fontawesome.js"></script>
+<script async src="../_/js/vendor/highlight.js"></script>
+
+
+<script type="text/javascript">
+function toggleFullScreen() {
+   var doc = window.document;
+   var docEl = doc.documentElement;
+
+   var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
+   var cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
+
+   if(!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
+       requestFullScreen.call(docEl);
+   }
+   else {
+       cancelFullScreen.call(doc);
+   }
+}
+</script>
+  </body>
+</html>
