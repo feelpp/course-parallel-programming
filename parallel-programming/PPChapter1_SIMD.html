@@ -244,35 +244,70 @@ MathJax.Hub.Config({
 <h1 class="page">SIMD (Single Instruction Multiple Data)</h1>
 <div id="preamble">
 <div class="sectionbody">
-<div class="paragraph">
-<p>exploited at the same time.</p>
+<div class="paragraph text-justify">
+<p>The single multiple data instruction (SIMD) is a parallel treatment architecture that allows a processor to execute the same instruction on several data simultaneously.
+SIMD is a processing method where only one instruction is applied to several data elements at the same time. This makes it possible to carry out operations on data vectors,
+which is particularly useful in applications such as image processing, digital signal processing, and other tasks requiring repetitive calculations on data sets.</p>
 </div>
 </div>
 </div>
 <div class="sect1 text-justify">
 <h2 id="_what_is_simd_used_for"><a class="anchor" href="#_what_is_simd_used_for"></a>1. What is SIMD used for?</h2>
 <div class="sectionbody">
-<div class="paragraph text-justify">
-<p>SIMD can be used in a wide range of applications, such as 3D graphics, signal processing, data mining, and many other processing-intensive tasks. In the realm of 3D graphics, SIMD can be used to process large amounts of data in parallel, making graphics rendering faster and smoother. In signal processing, SIMD can be used to process multiple signals at the same time, thereby increasing the efficiency of signal processing. In data mining, SIMD can be used to process large volumes of data in parallel, which makes data mining faster and more efficient.</p>
-</div>
-<div class="paragraph">
-<p>SIMD is also commonly used in encryption and data compression
-algorithms. These algorithms often require the processing of large
-amounts of data, and SIMD can be used to speed up the process. SIMD can also be used to process large amounts of data in parallel in machine learning algorithms such as artificial neural networks.</p>
+<div class="ulist text-justify">
+<ul>
+<li>
+<p><strong>Exploitation of data parallelism:</strong> SIMD uses parallelism at the level of data, which means that several data elements can be processed in parallel with the same instruction.</p>
+</li>
+<li>
+<p><strong>Specialized instructions:</strong> Modern processors include SIMD instructions games, such as MMX, SSE (Streaming SIMD Extensions), AVX (Advanced Vector Extensions), which allow vector operations.</p>
+</li>
+<li>
+<p><strong>Applications:</strong> SIMD is particularly effective for tasks such as multiplication of matrices, image filtering, and audio processing, where the same operations must be applied to many data elements.</p>
+</li>
+</ul>
 </div>
 </div>
 </div>
 <div class="sect1 text-justify">
-<h2 id="_benefits_of_using_simd"><a class="anchor" href="#_benefits_of_using_simd"></a>2. Benefits of using SIMD</h2>
+<h2 id="_benefits_and_disadvantages_of_using_simd"><a class="anchor" href="#_benefits_and_disadvantages_of_using_simd"></a>2. Benefits and disadvantages of using SIMD</h2>
 <div class="sectionbody">
-<div class="paragraph">
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Improved performance:</strong> By processing several data at a time, SIMD can considerably reduce the execution time of programs that carry out repetitive operations on data sets.</p>
+</li>
+<li>
+<p><strong>Simplicity of implementation:</strong> For some applications, it is relatively simple to adapt algorithms so that they use SIMD, which can lead to significant performance gains without requiring a complete redesign of the code.</p>
+</li>
+<li>
+<p><strong>Vectorization difficulty:</strong> All algorithms cannot be easily vectorized. Algorithms with dependencies of complex data or heavy control structures may not benefit from SIMD.</p>
+</li>
+<li>
+<p><strong>Programming complexity:</strong> using SIMD instructions can introduce additional complexities in the code, in particular with regard to data alignment and exceptional management.</p>
+</li>
+<li>
+<p><strong>Variability of architectures:</strong> SIMD instructions can vary from one architecture to another, which often requires specific implementations for different platforms.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1 text-justify">
+<h2 id="_conclusion"><a class="anchor" href="#_conclusion"></a>3. Conclusion</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
 <p>SIMD has several advantages over other forms of parallelization. First, SIMD is more efficient than traditional software parallelization techniques, such as threading. This is because SIMD takes advantage of the capabilities of modern processors and is optimized for parallelism. This means that SIMD can process multiple pieces of data in parallel at the same time, which greatly improves program performance.</p>
-</div>
-<div class="paragraph">
+</li>
+<li>
 <p>In addition, SIMD allows more efficient use of memory. Since the same instruction is applied to multiple pieces of data in parallel, the amount of memory required to store data is reduced. This can help improve performance by reducing the amount of memory required to store data items.</p>
-</div>
-<div class="paragraph">
+</li>
+<li>
 <p>Finally, SIMD is more flexible than other forms of parallelization. This is because SIMD allows the same instruction to be applied to multiple data items in parallel, allowing the programmer to customize the code according to application requirements.</p>
+</li>
+</ul>
 </div>
 <div class="paragraph">
 <p>&#8230;&#8203;</p>

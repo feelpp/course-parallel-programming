@@ -250,10 +250,13 @@ MathJax.Hub.Config({
 <div class="content">
 <div class="title">INTRODUCTION</div>
 <div class="paragraph">
-<p>In many applications today, software needs to make decisions quickly. And the best way to do that is through parallel programming in C/C++ and multithreading (multithreaded programming). Parallel programming is a broad concept. It can describe many types of processes running on the same machine or on different machines. Parallel machines provide a wonderful opportunity for applications with large computational requirements. Effective use of these machines, though, requires a keen understanding of how they work.</p>
+<p>In many applications today, software must make decisions quickly. And the best way to do so is parallel programming in C / C ++ and Multithreading (multithread programming). Parallel programming is a programming method which allows you to execute several calculations or processes simultaneously. It is used to improve the performance of applications by using multi-core architectures and distributed systems. Parallel programming consists in breaking down a problem into sub-problublicms which can be solved simultaneously by several calculation units. This reduces the overall execution time of a program by effectively using available hardware resources. Parallel machines offer a wonderful opportunity for applications of large calculation requirements. Effective use of these machines, however, requires an in -depth understanding of their operation.</p>
 </div>
 <div class="paragraph">
-<p><strong>What Is Parallel Computing?</strong></p>
+<p>Let&#8217;s see more about what computing and programming parallel&#8230;&#8203;</p>
+</div>
+<div class="paragraph">
+<p><strong>What is Parallel Computing?</strong></p>
 </div>
 <div class="paragraph">
 <p><strong>Serial Computing</strong></p>
@@ -418,38 +421,19 @@ MathJax.Hub.Config({
 <div class="ulist">
 <ul>
 <li>
-<p>CPU, GPU, and GPGPU architectures are all types of computer processing
-architectures, but they differ in their design and operation.</p>
+<p>CPU, GPU, and GPGPU architectures are all types of computer processing architectures, but they differ in their design and operation.</p>
 </li>
 <li>
-<p>CPU: A central processor (CPU) is a processing unit that is designed to
-perform various computing tasks including data processing, mathematical
-and logical calculations, communication between different components of
-a computer system, etc. Modern CPUs usually have multiple cores to
-process multiple tasks simultaneously.</p>
+<p>CPU: A central processor (CPU) is a processing unit that is designed to perform various computing tasks including data processing, mathematical and logical calculations, communication between different components of a computer system, etc. Modern CPUs usually have multiple cores to process multiple tasks simultaneously.</p>
 </li>
 <li>
-<p>GPU: A graphics processing unit (GPU) is an architecture designed to
-accelerate the processing of images and graphics. GPUs have thousands of
-cores that allow them to process millions of pixels simultaneously,
-making them an ideal choice for video games, 3D modeling, and other
-graphics-intensive applications.</p>
+<p>GPU: A graphics processing unit (GPU) is an architecture designed to accelerate the processing of images and graphics. GPUs have thousands of cores that allow them to process millions of pixels simultaneously, making them an ideal choice for video games, 3D modeling, and other graphics-intensive applications.</p>
 </li>
 <li>
-<p>GPGPU: A General Processing Architecture (GPGPU) is a type of GPU that
-is designed to be used for purposes other than graphics processing.
-GPGPUs are used to perform computations of an intensive nature using the
-hundreds or thousands of cores available on the graphics card. They are
-particularly effective for parallel computing, machine learning, and
-other computationally intensive areas.</p>
+<p>GPGPU: A General Processing Architecture (GPGPU) is a type of GPU that is designed to be used for purposes other than graphics processing. GPGPUs are used to perform computations of an intensive nature using the hundreds or thousands of cores available on the graphics card. They are particularly effective for parallel computing, machine learning, and other computationally intensive areas.</p>
 </li>
 <li>
-<p>In conclusion, the main difference between the three architectures CPU,
-GPU and GPGPU lies in their design and operation. While CPUs are
-designed for general computer processing, GPUs are designed for
-specialized graphics processing, and GPGPUs are a modified version of
-GPUs intended to be used for specialized computer processing other than
-graphics processing.</p>
+<p>In conclusion, the main difference between the three architectures CPU, GPU and GPGPU lies in their design and operation. While CPUs are designed for general computer processing, GPUs are designed for specialized graphics processing, and GPGPUs are a modified version of GPUs intended to be used for specialized computer processing other than graphics processing.</p>
 </li>
 </ul>
 </div>
@@ -482,6 +466,65 @@ graphics processing.</p>
 </li>
 <li>
 <p>Compared to serial computing, parallel computing is much better suited for modeling, simulating and understanding complex, real world phenomena.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Key points concerning parallel programming</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Types of parallelism</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Data parallelism: The same operations are carried out on different data sets, often used in the processing of large amounts of data.</p>
+</li>
+<li>
+<p>Task parallelism: different independent tasks are carried out in parallel. This is often used in applications where several processes can be executed simultaneously.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Programming models: There are several models of parallel programming, each with its own characteristics and use cases:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Shared memory: Threads share the same memory, which facilitates communication between them. Libraries like OpenMP are often used in this context.</p>
+</li>
+<li>
+<p>Distributed memory: each calculation unit has its own memory, and communication is made by passing messages, as with MPI (Passing Interface message).</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Benefits</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Improved performance: Using several cores or machines, programs can run much faster.</p>
+</li>
+<li>
+<p>Scalability: Applications can be designed to adapt to increasingly powerful systems by adding resources.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Disadvantages</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Complexity: Writing parallel programs can be more complex than writing sequential programs due to the need to manage synchronization and communication between threads or processes.</p>
+</li>
+<li>
+<p>Difficulties of debugging: errors in parallel programs, such as race conditions, can be difficult to detect and correct.</p>
+</li>
+</ul>
+</div>
 </li>
 </ul>
 </div>
