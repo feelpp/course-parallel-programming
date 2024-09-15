@@ -105,9 +105,6 @@ Improved Throughput: By offloading tasks from CPUs and GPUs, DPUs enhance the ov
 In summary, Data Processing Units (DPUs) represent a significant advancement in computing architecture, specifically designed to meet the demands of modern data-centric applications. By efficiently managing data processing and movement, DPUs alleviate the workload on CPUs and contribute to the overall performance and efficiency of data centers, making them a vital component in contemporary computing environments. In modern data centers, they serve distinct purposes. DPUs are specialized for data-centric workloads, offering efficiency in data processing and management, whereas GPUs excel in parallel computations. The integration of both types of processors, along with CPUs, allows data centers to optimize performance across a range of applications, ensuring that each processor type operates within its strengths. So this type of technology is promising, to keep under radar in order to see its evolution.
 
 
-
-
-
 == References
 ** [1] https://cc-techgroup.com/dpu/
 ** [2] https://community.fs.com/article/dpu-one-of-the-three-pillars-of-computing-going-forward.html
@@ -117,11 +114,9 @@ In summary, Data Processing Units (DPUs) represent a significant advancement in 
 ** [6] https://en.wikipedia.org/wiki/Data_processing_unit
 ** [7] https://www.gigabyte.com/Glossary/dpu
 ** [9] https://www.allaboutcircuits.com/news/cpus-gpus-work-harder-data-centers-dpus-work-smarter/
-** [11] https://www.kalrayinc.com/blog/dpus-gpus-and-cpus-in-the-data-center/
-** [12] https://cc-techgroup.com/dpu/
-** [13] https://community.fs.com/article/dpu-one-of-the-three-pillars-of-computing-going-forward.html
-** [14] https://www.computerweekly.com/feature/DPU-101-What-are-DPUs-what-do-they-do-and-who-supplies-them
-** [15] https://www.gigabyte.com/Glossary/dpu
-** [16] https://www.kalrayinc.com/blog/dpus-decoded-redefining-efficiency-in-data-processing/
+** [10] https://www.kalrayinc.com/blog/dpus-gpus-and-cpus-in-the-data-center/
+** [11] https://cc-techgroup.com/dpu/
+
+
 
 

@@ -49,8 +49,7 @@ Work items are automatically grouped into hardware threads called
 
 * Control flow is managed by masking the SIMD channel
 
-NVIDIA coined "Single Instruction Multiple Threads" (SIMT) to refer to
-multiple (software) threads sharing a stream of instructions
+NVIDIA coined "Single Instruction Multiple Threads" (SIMT) to refer to multiple (software) threads sharing a stream of instructions
 
 * Work items run in sequence on SIMD hardware
 
@@ -70,27 +69,12 @@ from the Santa-Clara firm, codenamed “Fermi” has 512 cores.
 
 image:image5.png[xref=#fragment5,width=530,height=241]
 
-Traditional microprocessors (CPUs) are essentially "low latency
-oriented". The goal is to minimize the execution time of a single
-sequence of a program by reducing latency as much as possible. This
-design takes the traditional assumption that parallelism in the
-operations that the processor must perform is very rare.
-
-Throughput-oriented processors assume that their workload requires
-significant parallelism. The idea is not to execute the operations as quickly as possible sequentially, but to execute billions of operations simultaneously in a given time, the execution time of one of these operations is ultimately almost irrelevant. In a video game, for example, performance is measured in FPS (Frames Per Seconds). To do this, an image, with all the pixels, must be displayed every 30 milliseconds (approximately). It doesn't matter how long a single pixel is displayed.
-
+Traditional microprocessors (CPUs) are essentially "low latency oriented". The goal is to minimize the execution time of a single sequence of a program by reducing latency as much as possible. This design takes the traditional assumption that parallelism in the operations that the processor must perform is very rare.
+Throughput-oriented processors assume that their workload requires significant parallelism. The idea is not to execute the operations as quickly as possible sequentially, but to execute billions of operations simultaneously in a given time, the execution time of one of these operations is ultimately almost irrelevant. In a video game, for example, performance is measured in FPS (Frames Per Seconds). To do this, an image, with all the pixels, must be displayed every 30 milliseconds (approximately). It doesn't matter how long a single pixel is displayed.
 This type of processor has small independent calculation units which execute the instructions in the order in which they appear in the program, there is ultimately little dynamic control over the execution. Thea term *SIMD* is used for these processors (**S**ingle **I**nstruction **M**ultiple **Da**ta).
-
-Each PU (Processing Unit) does not necessarily correspond to a processor, they are calculation units. In this mode, the same instruction is applied simultaneously to several data.
-
-Less control logic means more space on the chip dedicated to the
-calculation. However, this also comes at a cost. A SIMD execution gets a performance peak when parallel tasks follow the same branch of execution, which deteriorates when the tasks branch off. Indeed, the calculation units assigned to a branch will have to wait for the execution of the calculation units of the previous branch. This results in hardware underutilization and increased execution time. The efficiency of the SIMD architecture depends on the uniformity of the
-workload.
-
-However, due to the large number of computational units, it may not be very important to have some threads blocked if others can continue their execution. Long-latency operations performed on one thread are "hidden" by others ready to execute another set of instructions.
-
-For a quad or octo-core CPU, the creation of threads and their
-scheduling has a cost. For a GPU, the relative latency "covers" these 2 steps, making them negligible. However, memory transfers have greater implications for a GPU than a CPU because of the need to move data between CPU memory and GPU memory.
+Each PU (Processing Unit) does not necessarily correspond to a processor, they are calculation units. In this mode, the same instruction is applied simultaneously to several data. Less control logic means more space on the chip dedicated to the calculation. However, this also comes at a cost. A SIMD execution gets a performance peak when parallel tasks follow the same branch of execution, which deteriorates when the tasks branch off. Indeed, the calculation units assigned to a branch will have to wait for the execution of the calculation units of the previous branch. This results in hardware underutilization and increased execution time. The efficiency of the SIMD architecture depends on the uniformity of the
+workload. However, due to the large number of computational units, it may not be very important to have some threads blocked if others can continue their execution. Long-latency operations performed on one thread are "hidden" by others ready to execute another set of instructions.
+For a quad or octo-core CPU, the creation of threads and their scheduling has a cost. For a GPU, the relative latency "covers" these 2 steps, making them negligible. However, memory transfers have greater implications for a GPU than a CPU because of the need to move data between CPU memory and GPU memory.
 
 (See:
 https://blog.octo.com/la-technologie-gpgpu-1ere-partie-le-cote-obscur-de-la-geforce/

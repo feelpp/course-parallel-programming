@@ -2,25 +2,16 @@
 
 [.text-justify]
 == AMD ROC platform
-ROCm™ is a collection of drivers , development tools, and APIs that
-enable GPU programming from low-level kernel to end-user applications
-*.* ROCm is powered by AMD's Heterogeneous Computing Interface for
-Portability , an OSS C++ GPU programming environment and its
-corresponding runtime environment *.* HIP enables ROCm developers to build portable applications across different platforms by deploying code on a range of platforms , from dedicated gaming GPUs to exascale HPC clusters *.*
-ROCm supports programming models such as OpenMP and OpenCL , and
-includes all necessary compilers , debuggers and OSS libraries *.* ROCm is fully integrated with ML frameworks such as PyTorch and TensorFlow
-*.* ROCm can be deployed in several ways , including through the use of containers such as Docker,Spack, and your own build from source *.*
+ROCm™ is a collection of drivers , development tools, and APIs that enable GPU programming from low-level kernel to end-user applications. ROCm is powered by AMD's Heterogeneous Computing Interface for Portability , an OSS C++ GPU programming environment and its corresponding runtime environment. HIP enables ROCm developers to build portable applications across different platforms by deploying code on a range of platforms , from dedicated gaming GPUs to exascale HPC clusters. ROCm supports programming models such as OpenMP and OpenCL , and
+includes all necessary compilers , debuggers and OSS libraries. ROCm is fully integrated with ML frameworks such as PyTorch and TensorFlow .ROCm can be deployed in several ways , including through the use of containers such as Docker,Spack, and your own build from source.
 
-ROCm is designed to help develop,test,and deploy GPU-accelerated HPC,AI,scientific computing, CAD, and other applications in a free,
-open-source,integrated, and secure software ecosystem *.*
+ROCm is designed to help develop,test,and deploy GPU-accelerated HPC,AI,scientific computing, CAD, and other applications in a free, open-source,integrated, and secure software ecosystem.
 
 *CUDA Platform*
 [.text-justify]
 CUDA® is a parallel computing platform and programming model developed by NVIDIA for general computing on graphics processing units (GPUs). With CUDA, developers can dramatically speed up computing applications by harnessing the power of GPUs.
 [.text-justify]
-The CUDA architecture is based on a three-level hierarchy of cores,
-threads, and blocks. Cores are the basic unit of computation while
-threads are the individual pieces of work that the cores work on. Blocks are collections of threads that are grouped together and can be run together. This architecture enables efficient use of GPU resources and makes it possible to run multiple applications at once.
+The CUDA architecture is based on a three-level hierarchy of cores, threads, and blocks. Cores are the basic unit of computation while threads are the individual pieces of work that the cores work on. Blocks are collections of threads that are grouped together and can be run together. This architecture enables efficient use of GPU resources and makes it possible to run multiple applications at once.
 [.text-justify]
 The NVIDIA CUDA-X platform, which is built on CUDA®, brings together a collection of libraries, tools, and technologies that deliver significantly higher performance than competing solutions in multiple application areas ranging from artificial intelligence to high performance computing.
 
@@ -43,11 +34,9 @@ The ecosystem is new and growing rapidly
 
 |===
 
-*1.5.3 What is the difference between CUDA and ROCm for GPGPU
-applications?*
+*1.5.3 What is the difference between CUDA and ROCm for GPGPU applications?*
 
-NVIDIA's CUDA and AMD's ROCm provide frameworks to take advantage of the
-respective GPU platforms.
+NVIDIA's CUDA and AMD's ROCm provide frameworks to take advantage of the respective GPU platforms.
 [.text-justify]
 Graphics processing units (GPUs) are traditionally designed to handle graphics computing tasks, such as image and video processing and rendering, 2D and 3D graphics, vectorization, etc. General purpose computing on GPUs became more practical and popular after 2001, with the advent of programmable shaders and floating point support on graphics processors.
 [.text-justify]
@@ -56,17 +45,14 @@ Notably, it involved problems with matrices and vectors, including two-, three-,
 [.text-justify]
 == GPGPU Evolution
 
-Early efforts to use GPUs as general-purpose processors required
-reframing computational problems in terms of graphics primitives, which were supported by two major APIs for graphics processors: OpenGL and DirectX. These were soon followed by NVIDIA's CUDA, which allowed programmers to abandon underlying graphics concepts for more common high-performance computing concepts, such as OpenCL and other high-end frameworks. This meant that modern GPGPU pipelines could take advantage of the speed of a GPU without requiring a complete and explicit conversion of the data to
+Early efforts to use GPUs as general-purpose processors required reframing computational problems in terms of graphics primitives, which were supported by two major APIs for graphics processors: OpenGL and DirectX. These were soon followed by NVIDIA's CUDA, which allowed programmers to abandon underlying graphics concepts for more common high-performance computing concepts, such as OpenCL and other high-end frameworks. This meant that modern GPGPU pipelines could take advantage of the speed of a GPU without requiring a complete and explicit conversion of the data to
 a graphical form.
 [.text-justify]
 NVIDIA describes CUDA as a parallel computing platform and application programming interface (API) that allows software to use specific GPUs for general-purpose processing. CUDA is a software layer that provides direct access to the GPU's virtual instruction set and parallel computing elements for running compute cores.
 
-Not to be outdone, AMD launched its own general-purpose computing
-platform in 2016, dubbed the Radeon Open Compute Ecosystem (ROCm). ROCm is primarily intended for discrete professional GPUs, such as AMD's Radeon Pro line. However, official support is more extensive and extends to consumer products, including gaming GPUs.
+Not to be outdone, AMD launched its own general-purpose computing platform in 2016, dubbed the Radeon Open Compute Ecosystem (ROCm). ROCm is primarily intended for discrete professional GPUs, such as AMD's Radeon Pro line. However, official support is more extensive and extends to consumer products, including gaming GPUs.
 
-Unlike CUDA, the ROCm software stack can take advantage of multiple
-areas, such as general-purpose GPGPU, high-performance computing (HPC), and heterogeneous computing. It also offers several programming models, such as HIP (GPU kernel-based programming), OpenMP/Message Passing Interface (MPI), and OpenCL. These also support microarchitectures, including RDNA and CDNA, for a myriad of applications ranging from AI and edge computing to IoT/IIoT.
+Unlike CUDA, the ROCm software stack can take advantage of multiple areas, such as general-purpose GPGPU, high-performance computing (HPC), and heterogeneous computing. It also offers several programming models, such as HIP (GPU kernel-based programming), OpenMP/Message Passing Interface (MPI), and OpenCL. These also support microarchitectures, including RDNA and CDNA, for a myriad of applications ranging from AI and edge computing to IoT/IIoT.
 
 *NVIDIA's CUDA*
 [.text-justify]
@@ -76,8 +62,7 @@ Parallel computing is described as the process of breaking down larger problems 
 [.text-justify]
 To this end, the CUDA architecture is designed to work with programming languages such as C, C++ and Fortran, allowing parallel programmers to more easily utilize GPU resources. This contrasts with previous APIs such as Direct3D and OpenGL, which required advanced graphics programming skills. CUDA-powered GPUs also support programming frameworks such as OpenMP, OpenACC, OpenCL, and HIP by compiling this code on CUDA.
 [.text-justify]
-As with most APIs, software development kits (SDKs), and software
-stacks, NVIDIA provides libraries, compiler directives, and extensions for the popular programming languages mentioned earlier, making programming easier and more effective. These include cuSPARCE, NVRTC runtime compilation, GameWorks Physx, MIG multi-instance GPU support, cuBLAS and many more.
+As with most APIs, software development kits (SDKs), and software stacks, NVIDIA provides libraries, compiler directives, and extensions for the popular programming languages mentioned earlier, making programming easier and more effective. These include cuSPARCE, NVRTC runtime compilation, GameWorks Physx, MIG multi-instance GPU support, cuBLAS and many more.
 [.text-justify]
 A good portion of these software stacks are designed to handle AI-based applications, including machine learning and deep learning, computer vision, conversational AI, and recommender systems.
 [.text-justify]
@@ -86,8 +71,7 @@ relevant search results and services.
 [.text-justify]
 GPU-accelerated deep learning frameworks provide a level of flexibility to design and train custom neural networks and provide interfaces for commonly used programming languages. All major deep learning frameworks, such as TensorFlow, PyTorch, and others, are already GPU-accelerated, so data scientists and researchers can upgrade without GPU programming.
 [.text-justify]
-Current use of the CUDA architecture that goes beyond AI includes
-bioinformatics, distributed computing, simulations, molecular dynamics, medical analytics (CTI, MRI and other scanning imaging applications ), encryption, etc.
+Current use of the CUDA architecture that goes beyond AI includes bioinformatics, distributed computing, simulations, molecular dynamics, medical analytics (CTI, MRI and other scanning imaging applications ), encryption, etc.
 
 *AMD's ROCm Software Stack*
 [.text-justify]
@@ -97,26 +81,20 @@ Since the ROCm ecosystem is composed of open technologies, including frameworks 
 [.text-justify]
 AMD's ROCm is designed to scale, meaning it supports multi-GPU computing in and out of server-node communication via Remote Direct Memory Access (RDMA), which offers the ability to directly access host memory without CPU intervention. Thus, the more RAM the system has, the greater the processing loads that can be handled by ROCm.
 [.text-justify]
-ROCm also simplifies the stack when the driver directly integrates
-support for RDMA peer synchronization, making application development easier. Additionally, it includes ROCr System Runtime, which is language independent and leverages the HAS (Heterogeneous System Architecture) Runtime API, providing a foundation for running programming languages such as HIP and OpenMP.
+ROCm also simplifies the stack when the driver directly integrates support for RDMA peer synchronization, making application development easier. Additionally, it includes ROCr System Runtime, which is language independent and leverages the HAS (Heterogeneous System Architecture) Runtime API, providing a foundation for running programming languages such as HIP and OpenMP.
 [.text-justify]
-As with CUDA, ROCm is an ideal solution for AI applications, as some deep learning frameworks already support a ROCm backend (e.g.
-TensorFlow, PyTorch, MXNet, ONNX, CuPy, etc.). According to AMD, any CPU/GPU vendor can take advantage of ROCm, as it is not a proprietary technology. This means that code written in CUDA or another platform can be ported to vendor-neutral HIP format, and from there users can compile code for the ROCm platform.
+As with CUDA, ROCm is an ideal solution for AI applications, as some deep learning frameworks already support a ROCm backend (e.g. TensorFlow, PyTorch, MXNet, ONNX, CuPy, etc.). According to AMD, any CPU/GPU vendor can take advantage of ROCm, as it is not a proprietary technology. This means that code written in CUDA or another platform can be ported to vendor-neutral HIP format, and from there users can compile code for the ROCm platform.
 [.text-justify]
-The company offers a series of libraries, add-ons and extensions to
-deepen the functionality of ROCm, including a solution (HCC) for the C++ programming language that allows users to integrate CPU and GPU in a single file.
+The company offers a series of libraries, add-ons and extensions to deepen the functionality of ROCm, including a solution (HCC) for the C++ programming language that allows users to integrate CPU and GPU in a single file.
 [.text-justify]
 The feature set for ROCm is extensive and incorporates multi-GPU support for coarse-grained virtual memory, the ability to handle concurrency and preemption, HSA and atomic signals, DMA and queues in user mode. It also offers standardized loader and code object formats, dynamic and offline compilation support, P2P multi-GPU operation with RDMA support, event tracking and collection API, as well as APIs and system management tools. On top of that, there is a growing third-party ecosystem that bundles custom ROCm distributions for a given application across a host of Linux flavors.
 [.text-justify]
-To further enhance the capability of exascale systems, AMD also
-announced the availability of its open source platform, AMD ROCm, which enables researchers to harness the power of AMD Instinct accelerators and drive scientific discovery. Built on the foundation of portability, the ROCm platform is capable of supporting environments from multiple vendors and accelerator architectures.
+To further enhance the capability of exascale systems, AMD also announced the availability of its open source platform, AMD ROCm, which enables researchers to harness the power of AMD Instinct accelerators and drive scientific discovery. Built on the foundation of portability, the ROCm platform is capable of supporting environments from multiple vendors and accelerator architectures.
 [.text-justify]
 And with ROCm5.0, AMD extends its open platform powering the best HPC and AI applications with AMD Instinct MI200 series accelerators,
-increasing ROCm accessibility for developers and delivering
-industry-leading performance on workloads keys. And with AMD Infinity Hub, researchers, data scientists, and end users can easily find, download, and install containerized HPC applications and ML frameworks optimized and supported on AMD Instinct and ROCm.
+increasing ROCm accessibility for developers and delivering industry-leading performance on workloads keys. And with AMD Infinity Hub, researchers, data scientists, and end users can easily find, download, and install containerized HPC applications and ML frameworks optimized and supported on AMD Instinct and ROCm.
 [.text-justify]
-The hub currently offers a range of containers supporting Radeon
-Instinct™ MI50, AMD Instinct™ MI100, or AMD Instinct MI200 accelerators, including several applications such as Chroma, CP2k, LAMMPS, NAMD, OpenMM, etc., as well as frameworks Popular TensorFlow and PyTorch MLs. New containers are continually being added to the hub.
+The hub currently offers a range of containers supporting Radeon Instinct™ MI50, AMD Instinct™ MI100, or AMD Instinct MI200 accelerators, including several applications such as Chroma, CP2k, LAMMPS, NAMD, OpenMM, etc., as well as frameworks Popular TensorFlow and PyTorch MLs. New containers are continually being added to the hub.
 
 
 

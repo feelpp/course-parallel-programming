@@ -25,9 +25,7 @@ The register structure varies from processor to processor. This is why each type
 
 * General registers* are used to store temporary data and intermediate
 
-* Address registers* are used to construct particular data addresses.
-These are, for example, the base and index registers which allow, among
-other things, to organize the data in memory like indexed tables.
+* Address registers* are used to construct particular data addresses. These are, for example, the base and index registers which allow, among other things, to organize the data in memory like indexed tables.
 
 * The *instruction register* contains the code of the instruction which is processed by the decoder/sequencer.
 
