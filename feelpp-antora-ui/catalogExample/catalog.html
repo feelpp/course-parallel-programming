@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
+<head>
+      <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Bold :: Parallel Programming</title>
-    <link rel="canonical" href="https://feelpp.github.io/parallel-programming/feelpp-antora-ui/asciidoc/bold.html">
+    <title>Catalog :: Parallel Programming</title>
+    <link rel="canonical" href="https://feelpp.github.io/parallel-programming/feelpp-antora-ui/catalogExample/catalog.html">
+    <meta name="description" content="Example of the catalog page layout.">
     <meta name="generator" content="Antora 3.1.3">
     <link rel="stylesheet" href="../../_/css/site.css">
 <link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">
@@ -93,8 +94,8 @@ MathJax.Hub.Config({
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0/katex.min.js" integrity="sha384-jmxIlussZWB7qCuB+PgKG1uLjjxbVVIayPJwi6cG6Zb4YKq0JIw+OMnkkEC7kYCq" crossorigin="anonymous"></script>-->
 <script>var uiRootPath = '../../_'</script>
 
-  </head>
-  <body class="article">
+</head>
+<body class="article docs-case-study">
 <header class="header">
     <nav class="navbar navbar-expand-sm bg-dark navbar-dark navbar-template-project" style="border-top: 4px solid #9E9E9E">
         <div class="navbar-brand">
@@ -125,8 +126,9 @@ MathJax.Hub.Config({
         </div>
     </nav>
 </header>
+
 <div class="body">
-<a href="#" class="menu-expand-toggle"></a>
+  <a href="#" class="menu-expand-toggle"></a>
 <div class="nav-container" data-component="feelpp-antora-ui" data-version="">
   <aside class="nav">
     <div class="panels">
@@ -182,161 +184,59 @@ MathJax.Hub.Config({
     </div>
   </aside>
 </div>
-<main class="article">
-<div class="toolbar" role="navigation">
-  <button class="nav-toggle"></button>
-    <a href="../../parallel-programming/index.html" class="home-link"></a>
-  <nav class="breadcrumbs" aria-label="breadcrumbs">
+  <main class="article">
+    <div class="toolbar" role="navigation">
+      <button class="nav-toggle"></button>
+        <a href="../../parallel-programming/index.html" class="home-link"></a>
+      <nav class="breadcrumbs" aria-label="breadcrumbs">
   <ul>
     <li><a href="../index.html">Antora Feel++ UI</a></li>
-    <li><a href="bold.html">Bold</a></li>
+    <li><a href="catalog.html">Catalog</a></li>
   </ul>
 </nav>
+    </div>
 
-  
-    <div class="edit-this-page"><a href="https://github.com/feelpp/antora-ui/edit/main/docs/modules/ROOT/pages/asciidoc/bold.adoc">Edit this Page</a></div>
-  
-  <div class="page-downloads">
-  <span class="label">Download as</span>
-  <ul class="download-options">
-    <li>
-      <a onclick="print(this)" href="#" data-toggle="tooltip" data-placement="left" title="Print to PDF"
-         class="pdf-download">
-        <img class="pdf-file-icon icon" src="../../_/img/pdf.svg"/> .pdf
-      </a>
-    </li>
-  </ul>
+    <div class="content">
+      <article class="doc">
+          <h1 class="page">Catalog</h1>
+          <h2>Toolboxes</h2>
+          <div class="toolboxes">
+            <div class="toolbox"><a class="page-card" href="itemA.html">
+    <div class="page-card-illustration">
+      <img alt="" src="../_images/A.png"/>
+    </div>
+    <div class="page-card-body">
+      <h4>Item A</h4>
+      <p class="page-card-description">Item containing 2 subitems.</p>
+    </div>
+</a>
 </div>
+            <div class="toolbox"><a class="page-card" href="itemB.html">
+    <div class="page-card-illustration">
+      <img alt="" src="../_images/B.png"/>
+    </div>
+    <div class="page-card-body">
+      <h4>Item B</h4>
+      <p class="page-card-description">Item containing 1 shared subitem.</p>
+    </div>
+</a>
+</div>
+            <div class="toolbox"><a class="page-card" href="itemC.html">
+    <div class="page-card-illustration">
+      <img alt="" src="../_images/C.png"/>
+    </div>
+    <div class="page-card-body">
+      <h4>Item C</h4>
+      <p class="page-card-description">Leaf item.</p>
+    </div>
+</a>
+</div>
+          </div>
+      </article>
+    </div>
+  </main>
 </div>
 
-  <div class="content">
-<aside class="toc sidebar" data-title="Contents" data-levels="2">
-  <div class="toc-menu"></div>
-</aside>
-<article class="doc">
-<h1 class="page">Bold</h1>
-<div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
-<p>On this page, you&#8217;ll learn:</p>
-</div>
-<div class="ulist checklist">
-<ul class="checklist">
-<li>
-<p><i class="fa fa-check-square-o"></i> How to make text bold in AsciiDoc.</p>
-</li>
-<li>
-<p><i class="fa fa-check-square-o"></i> Where to modify your site&#8217;s bold text styling.</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>Text that is marked up as bold will stand out against the regular, surrounding text due to the application of a thicker or darker font.
-Bold is useful when the text needs to catch the attention of a site visitor quickly scanning a page.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_bold_syntax"><a class="anchor" href="#_bold_syntax"></a>1. Bold syntax</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>A word or phrase is marked as bold when it&#8217;s enclosed in a single set of asterisks (e.g., <code>*word*</code>) (constrained formatting).
-Bounded characters are marked as bold when they&#8217;re enclosed in a set of double asterisks (e.g., <code>char**act**ers</code>) (unconstrained formatting).</p>
-</div>
-<div class="paragraph">
-<p>Bounded characters are characters that are:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>directly preceded by a non-whitespace character, or</p>
-</li>
-<li>
-<p>directly followed by a non-whitespace character.</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>You don&#8217;t need to use double asterisks when an entire word or phrase marked as bold is directly followed by a common punctuation mark, such as <code>;</code>, <code>"</code>, and <code>!</code>.</p>
-</div>
-<div id="ex-bold" class="listingblock">
-<div class="title">Bold inline formatting</div>
-<div class="content">
-<pre>A bold *word*, and a bold *phrase of text*.
-
-Bold c**hara**cter**s** within a word.</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The result of <a href="#ex-bold">Bold inline formatting</a> is displayed below.</p>
-</div>
-<div class="exampleblock">
-<div class="content">
-<div class="paragraph">
-<p>A bold <strong>word</strong>, and a bold <strong>phrase of text</strong>.</p>
-</div>
-<div class="paragraph">
-<p>Bold c<strong>hara</strong>cter<strong>s</strong> within a word.</p>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_mixing_bold_with_other_formatting"><a class="anchor" href="#_mixing_bold_with_other_formatting"></a>2. Mixing bold with other formatting</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>You can add multiple emphasis styles to bold text as long as the syntax is placed in the correct order.</p>
-</div>
-<div id="ex-order" class="listingblock">
-<div class="title">Order of inline formatting syntax</div>
-<div class="content">
-<pre>`*_monospace bold italic phrase_*` &amp; ``**__char__**``acter``**__s__**``</pre>
-</div>
-</div>
-<div class="paragraph">
-<p><a href="monospace.html" class="xref page">Monospace syntax</a> (<code>`</code>) must be the outermost formatting set (i.e., outside the bold formatting set).
-<a href="italic.html" class="xref page">Italic syntax</a> (<code>_</code>) is always the innermost formatting set.</p>
-</div>
-<div class="paragraph">
-<p>The result of <a href="#ex-order">Order of inline formatting syntax</a> is displayed below.</p>
-</div>
-<div class="exampleblock">
-<div class="content">
-<div class="paragraph">
-<p><code><strong><em>monospace bold italic phrase</em></strong></code> &amp; <code><strong><em>char</em></strong></code>acter<code><strong><em>s</em></strong></code></p>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_site_styles"><a class="anchor" href="#_site_styles"></a>3. Site styles</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>How bold text appears on your site depends on the fonts loaded by your UI and any CSS styles applied to the <code>&lt;strong&gt;</code> HTML tag.
-You can learn more about customizing <a href="../inline-text-styles.html#bold" class="xref page">how bold text appears in your site</a> in the UI documentation.</p>
-</div>
-<div class="ulist">
-<div class="title"><strong>AsciiDoc and Asciidoctor resources</strong></div>
-<ul>
-<li>
-<p><a href="https://docs.asciidoctor.org/asciidoc/latest/text/bold/" target="_blank" rel="noopener">Bold text formatting</a></p>
-</li>
-<li>
-<p><a href="https://docs.asciidoctor.org/asciidoc/latest/text/#formatting-marks-and-pairs" target="_blank" rel="noopener">Formatting marks and pairs</a></p>
-</li>
-<li>
-<p><a href="https://docs.asciidoctor.org/asciidoc/latest/text/troubleshoot-unconstrained-formatting/" target="_blank" rel="noopener">Constrained versus unconstrained</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-</article>
-  </div>
-</main>
-</div>
 <footer class="footer" style="border-top: 2px solid #e9e9e9; background-color: #fafafa; padding-bottom: 2em; padding-top: 2em;">
     <div class="container" style="display: flex; flex-direction: column; align-items: center; gap: 0.5em;">
         <div>
@@ -371,5 +271,5 @@ function toggleFullScreen() {
    }
 }
 </script>
-  </body>
+</body>
 </html>

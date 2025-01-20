@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Bold :: Parallel Programming</title>
-    <link rel="canonical" href="https://feelpp.github.io/parallel-programming/feelpp-antora-ui/asciidoc/bold.html">
+    <title>Subitem A-1 :: Parallel Programming</title>
+    <link rel="canonical" href="https://feelpp.github.io/parallel-programming/feelpp-antora-ui/catalogExample/subitemA1.html">
     <meta name="generator" content="Antora 3.1.3">
     <link rel="stylesheet" href="../../_/css/site.css">
 <link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">
@@ -189,12 +189,12 @@ MathJax.Hub.Config({
   <nav class="breadcrumbs" aria-label="breadcrumbs">
   <ul>
     <li><a href="../index.html">Antora Feel++ UI</a></li>
-    <li><a href="bold.html">Bold</a></li>
+    <li><a href="subitemA1.html">Subitem A-1</a></li>
   </ul>
 </nav>
 
   
-    <div class="edit-this-page"><a href="https://github.com/feelpp/antora-ui/edit/main/docs/modules/ROOT/pages/asciidoc/bold.adoc">Edit this Page</a></div>
+    <div class="edit-this-page"><a href="https://github.com/feelpp/antora-ui/edit/main/docs/modules/ROOT/pages/catalogExample/subitemA1.adoc">Edit this Page</a></div>
   
   <div class="page-downloads">
   <span class="label">Download as</span>
@@ -214,122 +214,56 @@ MathJax.Hub.Config({
   <div class="toc-menu"></div>
 </aside>
 <article class="doc">
-<h1 class="page">Bold</h1>
-<div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
-<p>On this page, you&#8217;ll learn:</p>
-</div>
-<div class="ulist checklist">
-<ul class="checklist">
-<li>
-<p><i class="fa fa-check-square-o"></i> How to make text bold in AsciiDoc.</p>
-</li>
-<li>
-<p><i class="fa fa-check-square-o"></i> Where to modify your site&#8217;s bold text styling.</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>Text that is marked up as bold will stand out against the regular, surrounding text due to the application of a thicker or darker font.
-Bold is useful when the text needs to catch the attention of a site visitor quickly scanning a page.</p>
-</div>
-</div>
-</div>
+<h1 class="page">Subitem A-1</h1>
 <div class="sect1">
-<h2 id="_bold_syntax"><a class="anchor" href="#_bold_syntax"></a>1. Bold syntax</h2>
+<h2 id="_leaf_item"><a class="anchor" href="#_leaf_item"></a>1. Leaf Item</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>A word or phrase is marked as bold when it&#8217;s enclosed in a single set of asterisks (e.g., <code>*word*</code>) (constrained formatting).
-Bounded characters are marked as bold when they&#8217;re enclosed in a set of double asterisks (e.g., <code>char**act**ers</code>) (unconstrained formatting).</p>
+<p>This is a leaf item of the catalog.
+It is a children from Item A, which is a children from the catalog base.</p>
 </div>
 <div class="paragraph">
-<p>Bounded characters are characters that are:</p>
+<p>To replicate this page structure:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>directly preceded by a non-whitespace character, or</p>
-</li>
-<li>
-<p>directly followed by a non-whitespace character.</p>
+<p>Base page</p>
 </li>
 </ul>
 </div>
-<div class="paragraph">
-<p>You don&#8217;t need to use double asterisks when an entire word or phrase marked as bold is directly followed by a common punctuation mark, such as <code>;</code>, <code>"</code>, and <code>!</code>.</p>
-</div>
-<div id="ex-bold" class="listingblock">
-<div class="title">Bold inline formatting</div>
+<div class="listingblock">
 <div class="content">
-<pre>A bold *word*, and a bold *phrase of text*.
-
-Bold c**hara**cter**s** within a word.</pre>
+<pre>:page-layout: toolboxes
+:page-tags: catalog, catalog-base</pre>
 </div>
-</div>
-<div class="paragraph">
-<p>The result of <a href="#ex-bold">Bold inline formatting</a> is displayed below.</p>
-</div>
-<div class="exampleblock">
-<div class="content">
-<div class="paragraph">
-<p>A bold <strong>word</strong>, and a bold <strong>phrase of text</strong>.</p>
-</div>
-<div class="paragraph">
-<p>Bold c<strong>hara</strong>cter<strong>s</strong> within a word.</p>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_mixing_bold_with_other_formatting"><a class="anchor" href="#_mixing_bold_with_other_formatting"></a>2. Mixing bold with other formatting</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>You can add multiple emphasis styles to bold text as long as the syntax is placed in the correct order.</p>
-</div>
-<div id="ex-order" class="listingblock">
-<div class="title">Order of inline formatting syntax</div>
-<div class="content">
-<pre>`*_monospace bold italic phrase_*` &amp; ``**__char__**``acter``**__s__**``</pre>
-</div>
-</div>
-<div class="paragraph">
-<p><a href="monospace.html" class="xref page">Monospace syntax</a> (<code>`</code>) must be the outermost formatting set (i.e., outside the bold formatting set).
-<a href="italic.html" class="xref page">Italic syntax</a> (<code>_</code>) is always the innermost formatting set.</p>
-</div>
-<div class="paragraph">
-<p>The result of <a href="#ex-order">Order of inline formatting syntax</a> is displayed below.</p>
-</div>
-<div class="exampleblock">
-<div class="content">
-<div class="paragraph">
-<p><code><strong><em>monospace bold italic phrase</em></strong></code> &amp; <code><strong><em>char</em></strong></code>acter<code><strong><em>s</em></strong></code></p>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_site_styles"><a class="anchor" href="#_site_styles"></a>3. Site styles</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>How bold text appears on your site depends on the fonts loaded by your UI and any CSS styles applied to the <code>&lt;strong&gt;</code> HTML tag.
-You can learn more about customizing <a href="../inline-text-styles.html#bold" class="xref page">how bold text appears in your site</a> in the UI documentation.</p>
 </div>
 <div class="ulist">
-<div class="title"><strong>AsciiDoc and Asciidoctor resources</strong></div>
 <ul>
 <li>
-<p><a href="https://docs.asciidoctor.org/asciidoc/latest/text/bold/" target="_blank" rel="noopener">Bold text formatting</a></p>
-</li>
-<li>
-<p><a href="https://docs.asciidoctor.org/asciidoc/latest/text/#formatting-marks-and-pairs" target="_blank" rel="noopener">Formatting marks and pairs</a></p>
-</li>
-<li>
-<p><a href="https://docs.asciidoctor.org/asciidoc/latest/text/troubleshoot-unconstrained-formatting/" target="_blank" rel="noopener">Constrained versus unconstrained</a></p>
+<p>Item A</p>
 </li>
 </ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>:page-layout: toolboxes
+:page-tags: catalog, itemA
+:parent-catalogs: catalog-base</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Subitem A-1</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>:page-tags: catalog, subitemA-1
+:parent-catalogs: itemA</pre>
+</div>
 </div>
 </div>
 </div>
