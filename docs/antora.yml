@@ -34,4 +34,5 @@ ext:
         base: modules/exos/attachments/
 nav:
 - modules/ROOT/nav.adoc
+- modules/kokkos/nav.adoc
 
