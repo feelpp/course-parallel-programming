@@ -1,12 +1,14 @@
 
 
-* xref:index.adoc[Introduction]
-** xref:introduction/why-kokkos.adoc[Why Kokkos?]
-** xref:introduction/installation.adoc[Installation & Setup]
+* xref:index.adoc[Kokkos]
+** Introduction
+*** xref:introduction/why-kokkos.adoc[Why Kokkos?]
+*** xref:introduction/installation.adoc[Installation & Setup]
 
-* xref:basic-concepts/index.adoc[Basic Concepts]
-** xref:basic-concepts/execution-spaces.adoc[Execution Spaces]
-** xref:basic-concepts/memory-spaces.adoc[Memory Spaces]
-** xref:basic-concepts/views.adoc[Views]
+
+** xref:basic-concepts/index.adoc[Basic Concepts]
+*** xref:basic-concepts/execution-spaces.adoc[Execution Spaces]
+*** xref:basic-concepts/memory-spaces.adoc[Memory Spaces]
+*** xref:basic-concepts/views.adoc[Views]
 
 
