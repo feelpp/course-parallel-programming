@@ -3,15 +3,15 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>GPU (Graphics Processing Unit is a graphics (co-)processor) :: Parallel Programming</title>
-    <link rel="canonical" href="https://feelpp.github.io/parallel-programming/parallel-programming/PPChapter1_GPU.html">
-    <meta name="generator" content="Antora 3.1.3">
-    <link rel="stylesheet" href="../_/css/site.css">
-<link rel="icon" href="../_/img/favicon.ico" type="image/x-icon">
+    <title>CPU (Central Proccessing Unit) :: Parallel Programming</title>
+    <link rel="canonical" href="https://feelpp.github.io/parallel-programming/parallel-programming/architectures/PPChapter1_CPU.html">
+    <meta name="generator" content="Antora 3.1.10">
+    <link rel="stylesheet" href="../../_/css/site.css">
+<link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">
 <script>!function(l,p){if(l.protocol!==p&&l.host=="docs.antora.org"){l.protocol=p}else if(/\.gitlab\.io$/.test(l.host)){l.replace(p+"//docs.antora.org"+l.pathname.substr(l.pathname.indexOf("/",1))+l.search+l.hash)}}(location,"https:")</script>
 
-<script src="../_/js/vendor/tabs-block-extension.js"></script>
-<script src="../_/js/vendor/tabs-block-behavior.js"></script>
+<script src="../../_/js/vendor/tabs-block-extension.js"></script>
+<script src="../../_/js/vendor/tabs-block-behavior.js"></script>
 
 
 
@@ -91,7 +91,7 @@ MathJax.Hub.Config({
 
 <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0/katex.min.css" integrity="sha384-TEMocfGvRuD1rIAacqrknm5BQZ7W7uWitoih+jMNFXQIbNl16bO8OZmylH/Vi/Ei" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0/katex.min.js" integrity="sha384-jmxIlussZWB7qCuB+PgKG1uLjjxbVVIayPJwi6cG6Zb4YKq0JIw+OMnkkEC7kYCq" crossorigin="anonymous"></script>-->
-<script>var uiRootPath = '../_'</script>
+<script>var uiRootPath = '../../_'</script>
 
   </head>
   <body class="article">
@@ -118,7 +118,7 @@ MathJax.Hub.Config({
                 </div>
                 <div class="navbar-item">
                     <a class="navbar-brand"  href="https://www.cemosis.fr">
-                        <img class="cemosis-logo"  src="../_/img/cemosis-logo.svg" alt="Cemosis logo"/>
+                        <img class="cemosis-logo"  src="../../_/img/cemosis-logo.svg" alt="Cemosis logo"/>
                     </a>
                 </div>
             </div>
@@ -132,60 +132,72 @@ MathJax.Hub.Config({
     <div class="panels">
 <div class="nav-panel-menu is-active" data-panel="menu">
   <nav class="nav-menu">
-    <h3 class="title"><a href="index.html">Main</a></h3>
+    <h3 class="title"><a href="../index.html">Main</a></h3>
 <ul class="nav-list">
   <li class="nav-item" data-depth="0">
 <ul class="nav-list">
   <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="index.html">Introduction</a>
+    <a class="nav-link" href="../index.html">Introduction</a>
   </li>
   <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Architectures</span>
+<ul class="nav-list">
+  <li class="nav-item is-current-page" data-depth="2">
     <a class="nav-link" href="PPChapter1_CPU.html">CPU Architecture</a>
   </li>
-  <li class="nav-item is-current-page" data-depth="1">
+  <li class="nav-item" data-depth="2">
     <a class="nav-link" href="PPChapter1_GPU.html">GPU Architecture</a>
   </li>
-  <li class="nav-item" data-depth="1">
+  <li class="nav-item" data-depth="2">
     <a class="nav-link" href="PPChapter1_GPGPU.html">GPGPU Architecture</a>
   </li>
-  <li class="nav-item" data-depth="1">
+  <li class="nav-item" data-depth="2">
     <a class="nav-link" href="PPChapter1_TPU.html">TPU Architecture</a>
   </li>
-  <li class="nav-item" data-depth="1">
+  <li class="nav-item" data-depth="2">
     <a class="nav-link" href="PPChapter1_NPU.html">NPU Architecture</a>
   </li>
-  <li class="nav-item" data-depth="1">
+  <li class="nav-item" data-depth="2">
     <a class="nav-link" href="PPChapter1_LPU.html">LPU Architecture</a>
   </li>
-  <li class="nav-item" data-depth="1">
+  <li class="nav-item" data-depth="2">
     <a class="nav-link" href="PPChapter1_DPU.html">DPU Architecture</a>
   </li>
-  <li class="nav-item" data-depth="1">
+  <li class="nav-item" data-depth="2">
     <a class="nav-link" href="PPChapter1_SIMD.html">SIMD Architecture</a>
   </li>
-  <li class="nav-item" data-depth="1">
+  <li class="nav-item" data-depth="2">
     <a class="nav-link" href="PPChapter1_AMD_CUDA.html">AMD CUDA Architecture</a>
   </li>
-  <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="PPChapter2_MPI.html">MPI (Message Passing Interface)</a>
+</ul>
   </li>
   <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="PPChapter2_MPI_Boost.html">MPI Boost</a>
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">MPI/OpenMP/Hybrid</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../PPChapter2_MPI.html">MPI (Message Passing Interface)</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../PPChapter2_MPI_Boost.html">MPI Boost</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../PPChapter2_OpenMP.html">OpenMP (Open Multi-Processing)</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../PPChapter2_OpenMP2.html">OpenMP more information</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../PPChapter2_Hybrid.html">Hybrid MPI with OpenMP</a>
+  </li>
+</ul>
   </li>
   <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="PPChapter2_OpenMP.html">OpenMP (Open Multi-Processing)</a>
+    <a class="nav-link" href="../PPChapter3.html">StarPU</a>
   </li>
   <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="PPChapter2_OpenMP2.html">OpenMP more information</a>
-  </li>
-  <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="PPChapter2_Hybrid.html">Hybrid MPI with OpenMP</a>
-  </li>
-  <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="PPChapter3.html">StarPU</a>
-  </li>
-  <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="PPChapter4.html">Specx</a>
+    <a class="nav-link" href="../PPChapter4.html">Specx</a>
   </li>
 </ul>
   </li>
@@ -199,10 +211,10 @@ MathJax.Hub.Config({
   </div>
   <ul class="components">
       <li class="component">
-        <a class="title" href="../feelpp-antora-ui/index.html">Antora Feel++ UI</a>
+        <a class="title" href="../../feelpp-antora-ui/index.html">Antora Feel++ UI</a>
       </li>
       <li class="component is-current">
-        <a class="title" href="index.html">Main</a>
+        <a class="title" href="../index.html">Main</a>
       </li>
   </ul>
 </div>
@@ -212,16 +224,17 @@ MathJax.Hub.Config({
 <main class="article">
 <div class="toolbar" role="navigation">
   <button class="nav-toggle"></button>
-    <a href="index.html" class="home-link"></a>
+    <a href="../index.html" class="home-link"></a>
   <nav class="breadcrumbs" aria-label="breadcrumbs">
   <ul>
-    <li><a href="index.html">Main</a></li>
-    <li><a href="PPChapter1_GPU.html">GPU Architecture</a></li>
+    <li><a href="../index.html">Main</a></li>
+    <li>Architectures</li>
+    <li><a href="PPChapter1_CPU.html">CPU Architecture</a></li>
   </ul>
 </nav>
 
   
-    <div class="edit-this-page"><a href="https://github.com/feelpp/course-parallel-programming/edit/master/docs/modules/ROOT/pages/PPChapter1_GPU.adoc">Edit this Page</a></div>
+    <div class="edit-this-page"><a href="https://github.com/feelpp/course-parallel-programming/edit/master/docs/modules/ROOT/pages/architectures/PPChapter1_CPU.adoc">Edit this Page</a></div>
   
   <div class="page-downloads">
   <span class="label">Download as</span>
@@ -229,7 +242,7 @@ MathJax.Hub.Config({
     <li>
       <a onclick="print(this)" href="#" data-toggle="tooltip" data-placement="left" title="Print to PDF"
          class="pdf-download">
-        <img class="pdf-file-icon icon" src="../_/img/pdf.svg"/> .pdf
+        <img class="pdf-file-icon icon" src="../../_/img/pdf.svg"/> .pdf
       </a>
     </li>
   </ul>
@@ -241,12 +254,12 @@ MathJax.Hub.Config({
   <div class="toc-menu"></div>
 </aside>
 <article class="doc">
-<h1 class="page">GPU (Graphics Processing Unit is a graphics (co-)processor)</h1>
+<h1 class="page">CPU (Central Proccessing Unit)</h1>
 <div id="preamble">
 <div class="sectionbody">
 <div class="imageblock">
 <div class="content">
-<a class="image" href="#fragment02"><img src="_images/GPU.jpg" alt="GPU" width="322" height="220"></a>
+<a class="image" href="#fragment01"><img src="../_images/CPU.jpg" alt="CPU" width="322" height="220"></a>
 </div>
 </div>
 </div>
@@ -255,116 +268,113 @@ MathJax.Hub.Config({
 <h2 id="_definition"><a class="anchor" href="#_definition"></a>1. Definition</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Graphics Processing Unit is a graphics (co-)processor capable of very efficiently performing calculations on images (2D, 3D, videos, etc.). The raw computing power offered is higher due to the large number of processors present on these cards. This is why it is not uncommon to obtain large acceleration factors between CPU and GPU for the same application.</p>
+<p>The CPU basically consists of three parts:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The control unit which searches for instructions in memory, decodes them and coordinates the rest of the processor to execute them. A basic control unit basically consists of an instruction register and a "decoder/sequencer" unit</p>
+</li>
+<li>
+<p>The Arithmetic and Logic Unit executes the arithmetic and logic instructions requested by the control unit. Instructions can relate to one or more operands. The execution speed is optimal when the operands are located in the registers rather than in the memory external to the processor.</p>
+</li>
+<li>
+<p>Registers are memory cells internal to the CPU. They are few in number but very quick to access. They are used to store variables, the intermediate results of operations (arithmetic or logical) or processor control information.</p>
+</li>
+</ul>
+</div>
+<div class="imageblock">
+<div class="content">
+<a class="image" href="#fragment1"><img src="../_images/image1.png" alt="image1" width="322" height="220"></a>
+</div>
 </div>
 <div class="paragraph">
-<p>Explicit code targeting GPUs: CUDA, HIP, SYCL, Kokkos, RAJA,&#8230;&#8203;</p>
+<p>The register structure varies from processor to processor. This is why each type of CPU has its own instruction set. Their basic functions are nevertheless similar and all processors have roughly the same categories of registers:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The <strong>accumulator</strong> is primarily intended to hold the data that needs to be processed by the ALU.</p>
+</li>
+<li>
+<p>General registers* are used to store temporary data and intermediate</p>
+</li>
+<li>
+<p>Address registers* are used to construct particular data addresses. These are, for example, the base and index registers which allow, among other things, to organize the data in memory like indexed tables.</p>
+</li>
+<li>
+<p>The <strong>instruction register</strong> contains the code of the instruction which is processed by the decoder/sequencer.</p>
+</li>
+<li>
+<p>The <strong>ordinal counter</strong> contains the address of the next instruction to be executed. In principle, this register never stops counting. It generates the addresses of the instructions to be executed one after the other. Some instructions sometimes require changing the contents of the ordinal counter to make a sequence break, ie a jump elsewhere in the program.</p>
+</li>
+<li>
+<p>The <strong>status register,</strong> sometimes called <strong>the condition register,</strong>
+contains indicators called <em>flags</em> whose values (0 or 1) vary according to the results of the arithmetic and logical operations. These states are used by conditional jump instructions.</p>
+</li>
+</ul>
 </div>
 <div class="paragraph">
-<p><span class="image"><a class="image" href="#fragment2"><img src="_images/image2.png" alt="image2" width="488" height="342"></a></span></p>
-</div>
-<div class="paragraph">
-<p><em>Fig: illustrates the main hardware architecture differences between CPUs and GPUs. The transistor counts associated with various functions are represented abstractly by the relative sizes of the various shaded areas. In the figure, the green corresponds to the calculation; gold is instruction processing; purple is the L1 cache; blue is top level cache and orange is memory (DRAM, which really should be thousands of times larger than caches).</em></p>
-</div>
-<div class="paragraph text-justify">
-<p>GPUs were originally designed to render graphics. They work great for shading, texturing, and rendering the thousands of independent polygons that make up a 3D object. CPUs, on the other hand, are meant to control the logical flow of any general-purpose program, where a lot of digit manipulation may (or may not) be involved. Due to these very different roles, GPUs are characterized by having many more processing units and higher overall memory bandwidth, while CPUs offer more sophisticated instruction processing and faster clock speed.</p>
+<p>The <strong>stack pointer</strong> or <em>stack pointer</em> manages certain data in memory by organizing them in the form of stacks.</p>
 </div>
 </div>
 </div>
 <div class="sect1 text-justify">
-<h2 id="_cpu_vs_gpu_comparison"><a class="anchor" href="#_cpu_vs_gpu_comparison"></a>2. CPU vs GPU comparison</h2>
+<h2 id="_cpu_working_principle"><a class="anchor" href="#_cpu_working_principle"></a>2. CPU working principle</h2>
 <div class="sectionbody">
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 23%;">
-<col style="width: 44%;">
-<col style="width: 33%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top"></th>
-<th class="tableblock halign-left valign-top"><strong>CPU: Latency-oriented design</strong></th>
-<th class="tableblock halign-left valign-top"><strong>GPU: Throughput Oriented Design</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Clock</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">High clock frequency</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Moderate clock frequency</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Caches</strong></p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>Large sizes</p>
+<div class="paragraph">
+<p>The content of the program counter is deposited on the addressing bus in order to search there for a machine code instruction. The control bus produces a read signal and the memory, which is selected by the address, sends the instruction code back to the processor via the data bus. Once the instruction lands in the instruction register, the processor&#8217;s control unit decodes it and produces the appropriate sequence of internal and external signals that coordinate its execution. An instruction comprises a series of elementary tasks. They are clocked by clock cycles.</p>
 </div>
 <div class="paragraph">
-<p>Converts high latency accesses in memory to low latency accesses in
-cache</p>
-</div></div></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>Small caches</p>
+<p>All the tasks that constitute an instruction are executed one after the other. The execution of an instruction therefore lasts several cycles. As it is not always possible to increase the frequency, the only way to increase the number of instructions processed in a given time is to seek to execute several of them simultaneously. This is achieved by splitting processor resources, data and/or processes. This is called the parallelization.</p>
+</div>
+</div>
+</div>
+<div class="sect1 text-justify">
+<h2 id="_the_different_architectures_of_the_processor"><a class="anchor" href="#_the_different_architectures_of_the_processor"></a>3. The different architectures of the processor</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>There is a classification of the <strong>different CPU architectures.</strong> Five in number, they are used by programmers depending on the desired results:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p></p>
+<div class="paragraph">
+<p>CISC: very complex addressing;</p>
+</div>
+</li>
+<li>
+<p></p>
+<div class="paragraph">
+<p>RISC: simpler addressing and instructions performed on a single cycle;</p>
+</div>
+</li>
+<li>
+<p></p>
+<div class="paragraph">
+<p>VLIW: long, but simpler instructions;</p>
+</div>
+</li>
+<li>
+<p></p>
+<div class="paragraph">
+<p>vectorial: contrary to the processing in number, the instructions are
+vectorial;</p>
+</div>
+</li>
+<li>
+<p></p>
+<div class="paragraph">
+<p>dataflow: data is active unlike other architectures.</p>
+</div>
+</li>
+</ul>
 </div>
 <div class="paragraph">
-<p>To maximize memory throughput</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Control</strong></p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>Sophisticated control system</p>
+<p>To further improve the <strong>performance of this processor,</strong> developers can
+add so-called SIMD Supplemental Instruction Sets.</p>
 </div>
-<div class="paragraph">
-<p>Branch prediction to reduce latency due to branching<br>
-Data loading to reduce latency due to data access</p>
-</div></div></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>Single controlled</p>
-</div>
-<div class="paragraph">
-<p>No branch prediction</p>
-</div>
-<div class="paragraph">
-<p>No data loading</p>
-</div></div></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Powerful Arithmetic Logic Unit (ALU)</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Reduced operation latency</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Numerous, high latency but heavily pipelined for high throughput</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Other aspects</strong></p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>Lots of space devoted to caching and control logic. Multi-level caches
-used to avoid latency</p>
-</div>
-<div class="paragraph">
-<p>Limited number of registers due to fewer active threads</p>
-</div>
-<div class="paragraph">
-<p>Control logic to reorganize execution, provide ILP, and minimize
-pipeline hangs</p>
-</div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Requires a very large number of threads for latency to be tolerable</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Beneficial aspects for applications</strong></p></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>CPUs for sequential games where latency is critical.</p>
-</div>
-<div class="paragraph">
-<p>CPUs can be 10+X faster than GPUs for sequential code.</p>
-</div></div></td>
-<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>GPUs for parallel parts where throughput is critical.</p>
-</div>
-<div class="paragraph">
-<p>GPUs can be 10+X faster than GPUs for parallel code.</p>
-</div></div></td>
-</tr>
-</tbody>
-</table>
 </div>
 </div>
 </article>
@@ -375,18 +385,18 @@ pipeline hangs</p>
     <div class="container" style="display: flex; flex-direction: column; align-items: center; gap: 0.5em;">
         <div>
             <a href="https://www.cemosis.fr">
-                <img src="../_/img/cemosis-logo.svg" alt="Cemosis logo" height="50">
+                <img src="../../_/img/cemosis-logo.svg" alt="Cemosis logo" height="50">
             </a>
         </div>
         <span style="font-size: 0.8rem; color: #9e9e9e">© 2025 <a href="https://www.cemosis.fr" style="text-decoration: underline;">Cemosis</a>, Université de Strasbourg</span>
     </div>
 </footer>
-<script id="site-script" src="../_/js/site.js" data-ui-root-path="../_"></script>
+<script id="site-script" src="../../_/js/site.js" data-ui-root-path="../../_"></script>
 
 
-<script async src="../_/js/vendor/fontawesome-icon-defs.js"></script>
-<script async src="../_/js/vendor/fontawesome.js"></script>
-<script async src="../_/js/vendor/highlight.js"></script>
+<script async src="../../_/js/vendor/fontawesome-icon-defs.js"></script>
+<script async src="../../_/js/vendor/fontawesome.js"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
 
 
 <script type="text/javascript">
