@@ -1,0 +1,83 @@
+= HIP Coding Practice
+
+image::HIP_AMD_Logo.png[Img401,50,50,role="left"]
+
+* Compiling a program for HIP
+*** For example, to compile MyProg.cu you would use a command like
+*** nvcc -o MyProg MyProg.cu
+
+
+
+.Array Addition Examples in CPU/GPU
+[.examp]
+****
+* Array Addition Examples in CPU/GPU
+
+.Code Array Addition CPU
+[source,cpp]
+----
+include::ROOT:example$src/HIP/Array_Addition/01_array_addition_cpu.cpp[indent=0]
+----
+
+.Code Array Addition GPU
+[source,cpp]
+----
+include::ROOT:example$src/HIP/Array_Addition/02_array_addition_gpu.cpp[indent=0]
+----
+****
+
+.Code Array Addition Device GPU
+[source,cpp]
+----
+include::ROOT:example$src/HIP/Array_Addition/03_array_addition_deviceFunc.cpp[indent=0]
+----
+****
+
+
+.*Profiling Performance*
+****
+ADD SOME RESULTS
+****
+
+
+
+
+.Matrix Summation Examples in GPU
+[.examp]
+****
+* Matrix SummationExamples in GPU
+
+.Code GPU Grid Info
+[source,cpp]
+----
+include::ROOT:example$src/HIP/Matrix_Summation/01_GPU_grid_block_thread_info.cpp[indent=0]
+----
+
+.Code Matrix Thread Index Info
+[source,cpp]
+----
+include::ROOT:example$src/HIP/Matrix_Summation/02_matrix_thread_index_info.cpp[indent=0]
+----
+
+.Code Matrix Summation
+[source,cpp]
+----
+include::ROOT:example$src/HIP/Matrix_Summation/03_matrix_summation_GPU_2D2D_2D1D_1D1D.cpp[indent=0]
+----
+
+
+
+****
+.*Profiling Performance*
+****
+ADD SOME RESULTS
+****
+
+
+
+
+
+
+
+...
+

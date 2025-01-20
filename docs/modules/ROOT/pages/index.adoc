@@ -1,29 +1,278 @@
-= {project_name}
-:navtitle: home
-:page-layout: home-project
-:!numbered:
+image::Begin001.jpg[xref=#fragment_000_000,scaledwidth=50%]
 
 ifeval::["{project_name}" == "Parallel Programming"]
 [.lead]
-{project_name} is a GitHub repository template providing a starting point for {feelpp} projects.
-endif::[]
-ifeval::["{project_name}" != "Parallel Programming"]
-{project_name} is a {feelpp} project. It was created using the repository template https://github.com/feelpp/parallel-programming[`feelpp/parallel-programming`].
 endif::[]
 
-NOTE: this documentation serves as a template for your project. You can edit it to fit your needs. You can also remove it if you don't need it.
-
-.Coding with {feelpp} in {cpp} or {python}
+.INTRODUCTION
 [.examp]
 ****
-xref:overview.adoc[{feelpp} {cpp} and {python}] codes are available to help you get started with using and coding with {feelpp}.
+
+In many applications today, software must make decisions quickly. And the best way to do so is parallel programming in C / C ++ and Multithreading (multithread programming). Parallel programming is a programming method which allows you to execute several calculations or processes simultaneously. It is used to improve the performance of applications by using multi-core architectures and distributed systems. Parallel programming consists in breaking down a problem into sub-problublicms which can be solved simultaneously by several calculation units. This reduces the overall execution time of a program by effectively using available hardware resources. Parallel machines offer a wonderful opportunity for applications of large calculation requirements. Effective use of these machines, however, requires an in -depth understanding of their operation.
+
+Let's see more about what computing and programming parallel...
+
+
+*What is Parallel Computing?*
+
+*Serial Computing*
+
+
+Traditionally, software has been written for serial computation:
+
+* A problem is broken into a discrete series of instructions
+* Instructions are executed sequentially one after another
+* Executed on a single processor
+* Only one instruction may execute at any moment in time
+
+image::serialProblem.gif[xref=#fragment_000_001,width=400,height=400]
+
+*Parallel Computing*
+
+In the simplest sense, parallel computing is the simultaneous use of multiple compute resources to solve a computational problem:
+
+* A problem is broken into discrete parts that can be solved concurrently
+** Each part is further broken down to a series of instructions
+** Instructions from each part execute simultaneously on different processors
+** An overall control/coordination mechanism is employed
+
+
+image::parallelProblem.gif[xref=#fragment_000_002,width=400,height=400]
+
+For example
+
+image::parallelProblem2.gif[xref=#fragment_000_003,width=400,height=400]
+
+* The computational problem should be able to:
+** Be broken apart into discrete pieces of work that can be solved simultaneously;
+** Execute multiple program instructions at any moment in time;
+** Be solved in less time with multiple compute resources than with a single compute resource.
+* The compute resources are typically:
+** A single computer with multiple processors/cores
+** An arbitrary number of such computers connected by a network
+
+
+*Parallel Computers*
+
+*Virtually all stand-alone computers today are parallel from a hardware perspective:
+** Multiple functional units (L1 cache, L2 cache, branch, prefetch, decode, floating-point, graphics processing (GPU), integer, etc.)
+** Multiple execution units/cores
+** Multiple hardware threads
+
+image::bgqComputeChip.jpeg[xref=#fragment_000_004,width=400,height=400]
+
+
+* Networks connect multiple stand-alone computers (nodes) to make larger parallel computer clusters.
+
+image::nodesNetwork.gif[xref=#fragment_000_005,width=400,height=400]
+
+
+* For example, the schematic below shows a typical LLNL parallel computer cluster:
+** Each compute node is a multi-processor parallel computer in itself
+** Multiple compute nodes are networked together with an Infiniband network
+** Special purpose nodes, also multi-processor, are used for other purposes
+
+image::parallelComputer1.gif[xref=#fragment_000_006,width=400,height=400]
+
+* The majority of the world's large parallel computers (supercomputers) are clusters of hardware produced by a handful of (mostly) well known vendors.
+
+
+*CPU, GPU, GPGPU Architecture*
+
+* CPU, GPU, and GPGPU architectures are all types of computer processing architectures, but they differ in their design and operation.
+
+
+* CPU: A central processor (CPU) is a processing unit that is designed to perform various computing tasks including data processing, mathematical and logical calculations, communication between different components of a computer system, etc. Modern CPUs usually have multiple cores to process multiple tasks simultaneously.
+
+* GPU: A graphics processing unit (GPU) is an architecture designed to accelerate the processing of images and graphics. GPUs have thousands of cores that allow them to process millions of pixels simultaneously, making them an ideal choice for video games, 3D modeling, and other graphics-intensive applications.
+
+* GPGPU: A General Processing Architecture (GPGPU) is a type of GPU that is designed to be used for purposes other than graphics processing. GPGPUs are used to perform computations of an intensive nature using the hundreds or thousands of cores available on the graphics card. They are particularly effective for parallel computing, machine learning, and other computationally intensive areas.
+
+* In conclusion, the main difference between the three architectures CPU, GPU and GPGPU lies in their design and operation. While CPUs are designed for general computer processing, GPUs are designed for specialized graphics processing, and GPGPUs are a modified version of GPUs intended to be used for specialized computer processing other than graphics processing.
+
+
+*TPU, NPU, LPU Architecture*
+
+* TPU: A Tensor Processing Unit (TPU) is a specialized hardware processor developed by Google to accelerate machine learning. Unlike traditional CPUs or GPUs, TPUs are specifically designed to handle tensor operations, which account for most of the computations in deep learning models. This makes them incredibly efficient at those tasks and provides an enormous speedup compared to CPUs and GPUs. In this article, we’ll explore what a TPU is, how it works, and why they are so beneficial for machine learning applications.
+
+* NPU: A Neural Processing Unit (NPU), is a specialized hardware accelerator designed for executing artificial neural network tasks efficiently and with high throughput. NPUs deliver high performance while minimizing power consumption, making them suitable for mobile devices, edge computing, and other energy-sensitive applications. NPUs use the traditional von Neumann architecture, which separates the memory and the processing units. TPUs use the systolic array architecture, which integrates the memory and the processing units into a single chip. NPUs have a higher peak performance than TPUs, but they also have a higher latency and power consumption. TPUs have a lower peak performance than NPUs, but they also have a lower latency and power consumption.
+
+* LPU: Language Processing Units (LPUs) are a relatively new addition, designed specifically for handling the complexities of natural language processing tasks. While CPUs, GPUs, and TPUs play significant roles in the broader field of AI, LPUs offer optimized performance for generative models that deal with text, such as GPT (Generative Pre-trained Transformer). They're good at these tasks and might be more efficient than Graphics Processing Units (GPUs). GPUs are still great for things like graphics and AI.The true power of generative AI comes from the interplay and integration of these processing units. CPUs handle the overarching control and coordination, GPUs accelerate the bulk of computational workloads, TPUs offer specialized efficiency for deep learning, and LPUs bring a new level of performance to natural language processing. Together, they form the backbone of generative AI systems, enabling the rapid development and deployment of models that can create highly realistic and complex outputs.
+
+
+*Why Use Parallel Computing?*
+
+The Real World Is Massively Complex
+
+* In the natural world, many complex, interrelated events are happening at the same time, yet within a temporal sequence.
+* Compared to serial computing, parallel computing is much better suited for modeling, simulating and understanding complex, real world phenomena.
+
+
+*Key points concerning parallel programming*
+
+    * Types of parallelism
+
+** Data parallelism: The same operations are carried out on different data sets, often used in the processing of large amounts of data.
+
+** Task parallelism: different independent tasks are carried out in parallel. This is often used in applications where several processes can be executed simultaneously.
+
+    * Programming models: There are several models of parallel programming, each with its own characteristics and use cases:
+
+    
+ ** Shared memory: Threads share the same memory, which facilitates communication between them. Libraries like OpenMP are often used in this context.
+
+ ** Distributed memory: each calculation unit has its own memory, and communication is made by passing messages, as with MPI (Passing Interface message).
+
+ 
+    * Benefits
+
+ ** Improved performance: Using several cores or machines, programs can run much faster.
+ ** Scalability: Applications can be designed to adapt to increasingly powerful systems by adding resources.
+
+    * Disadvantages
+
+ ** Complexity: Writing parallel programs can be more complex than writing sequential programs due to the need to manage synchronization and communication between threads or processes.
+
+ ** Difficulties of debugging: errors in parallel programs, such as race conditions, can be difficult to detect and correct.
+
+
+*Main Reasons for Using Parallel Programming*
+
+** Save time and or money
+
+*** In theory, throwing more resources at a task will shorten its time to completion, with potential cost savings.
+*** Parallel computers can be built from cheap, commodity components
+
+
+** Solver large/ More complex problems
+
+*** Many problems are so large and/or complex that it is impractical or impossible to solve them using a serial program, especially given limited computer memory.
+
+
+** Provide concurency
+
+*** A single compute resource can only do one thing at a time. Multiple compute resources can do many things simultaneously.
+*** Example: Collaborative Networks provide a global venue where people from around the world can meet and conduct work "virtually."
+
+** Take advantage of non-local resources
+
+*** Using compute resources on a wide area network, or even the Internet when local compute resources are scarce or insufficient.
+
+** Make better use of underlying parallel hardware
+
+*** Modern computers, even laptops, are parallel in architecture with multiple processors/cores.
+*** Parallel software is specifically intended for parallel hardware with multiple cores, threads, etc.
+*** In most cases, serial programs run on modern computers "waste" potential computing power.
+
+
+*Who Is Using Parallel Computing?*
+
+* *Science and Engineering*
+
+** Historically, parallel computing has been considered to be "the high end of computing," and has been used to model difficult problems in many areas of science and engineering:
+
+*** Atmosphere, Earth, Environment
+*** Physics - applied, nuclear, particle, condensed matter, high pressure, fusion, photonics
+*** Bioscience, Biotechnology, Genetics
+*** Chemistry, Molecular Sciences
+*** Geology, Seismology
+*** Mechanical Engineering - from prosthetics to spacecraft
+*** Electrical Engineering, Circuit Design, Microelectronics
+*** Computer Science, Mathematics
+*** Defense, Weapons
+
+image::simulations01.jpeg[xref=#fragment_000_007,scaledwidth=20%]
+
+
+* *Industrial and Commercial*
+
+** Today, commercial applications provide an equal or greater driving force in the development of faster computers. These applications require the processing of large amounts of data in sophisticated ways. For example:
+
+***  "Big Data," databases, data mining
+*** Artificial Intelligence (AI)
+*** Oil exploration
+*** Web search engines, web based business services
+*** Medical imaging and diagnosis
+*** Pharmaceutical design
+*** Financial and economic modeling
+*** Management of national and multi-national corporations
+*** Advanced graphics and virtual reality, particularly in the entertainment industry
+*** Networked video and multi-media technologies
+*** Collaborative work environments
+
+image::simulations03.jpeg[xref=#fragment_000_008,scaledwidth=20%]
+
+
+
 ****
 
-.Documenting your work with Asciidoc and Antora
+
+.*DOCUMENTATIONS POWERPOINTS*
+****
+image::PowerPointLogo.png[Img1,50,50,role="left"]
+xref:ROOT:attachment$Session1_ParallelProgramming_Introduction.pdf[OVERVIEW],
+xref:ROOT:attachment$Session2_ParallelProgramming_MPI.pdf[MPI],
+xref:ROOT:attachment$Session3_ParallelProgramming_OpenMP.pdf[OpenMP],
+xref:ROOT:attachment$Session4_ParallelProgramming_Cuda.pdf[CUDA],
+xref:ROOT:attachment$Session5_ParallelProgramming_HIP.pdf[HIP],
+xref:ROOT:attachment$Session6_ParallelProgramming_Specx.pdf[SPECX],...
+
+
+xref:ROOT:attachment$OpenMP-API-Specification-5-2.pdf[OpenMP 5.0],
+xref:ROOT:attachment$OpenMP-Technical-Report -12-Version 6-0.pdf[OpenMP 6.0],...
+
+****
+
+
+
+
+
+.*RELEVANT VOCABULARY*
+****
+
+image::CPU1.jpeg[Img2,400,400]
+
+* *Computer Hardware (CPUs, GPUs, and Memory)*
+
+** *CPU-chip* – CPU stands for Central Processing Unit. This is the computer's main processing unit; you can think of it as the 'brain' of the computer. This is the piece of hardware that performs calculations, moves data around, has access to the memory, etc. In systems such as Princeton's High Performance Computing clusters, CPU-chips are made of multiple CPU-cores. 
+
+** *CPU-core* – A microprocessing unit on a CPU-chip. Each CPU-core can execute an independent set of instructions from the computer.
+
+** *GPU* –GPU stands for the Graphics Processing Unit. Originally intended to process graphics, in the context of parallel programming this unit can do a large number of simple arithmetic computations. 
+
+** *MEMORY* – In this guide memory refers to Random-Access Memory, or RAM. The RAM unit stores the data that the CPU is actively working on.
+
+image::ParallelProgramming1.jpeg[Img3,400,400]
+
+* *Additional Parallelism Terminology*
+
+** An understanding of threads and processes is also useful when discussing parallel programming concepts.
+
+** If you consider the code you need to run as one big job, to run that code in parallel you'll want to divide that one big job into several, smaller tasks that can be run at the same time. This is the general idea behind parallel programming.
+
+** When tasks are run as threads, the tasks all share direct access to a common region of memory. The mulitple threads are considered to belong to one process.
+
+** When tasks run as distinct processes, each process gets its own individual region of memory–even if run on the same computer.
+
+** To put it even more simply, processes have their own memory, while threads belong to a process and share memory with all of the other threads belonging to that process.
+****
+
+
+.Coding Practice {c,c++,cu}
 [.examp]
 ****
-The documentation is written using the https://docs.asciidoctor.org[Asciidoc plain text format] and https://docs.antora.org[Antora] to produce the documentation website. Checkout xref:antora.adoc[this page], it is here to help you get started with creating documentation.
+* xref:MPI_Coding.adoc[MPI Coding]
+* xref:OpenMP_Coding.adoc[OpenMP Coding]
+* xref:CUDA_Coding.adoc[CUDA Coding]
+* xref:HIP_Coding.adoc[HIP Coding]
+* xref:Hybrid_Coding.adoc[Hybrid Coding]
+* xref:SPECX_Coding.adoc[SPECX Coding]
 ****
 
+.Case Studies
+[.examp]
+****
+* xref:HEAT_Coding.adoc[Case Study Heat Coding]
 
+****
 

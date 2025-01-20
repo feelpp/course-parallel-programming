@@ -1,0 +1,91 @@
+= Heat Equation Parallel Programming Comparison
+
+
+
+.Heat equation in 2D
+[.examp]
+****
+
+* Theory
+
+Heat (or diffusion) equation is a partial differential equation that describes the variation of temperature in a given region over time
+
+
+\begin{align*}
+\frac{\partial u}{\partial t} = \alpha \nabla^2 u
+\end{align*}
+
+
+image::eq1.png[Img901]
+
+where *u*(*x*, *y*, *t*) is the temperature field that varies in space and
+time, and α is the thermal diffusivity constant.
+
+We limit ourselvels to two dimensions (a plane) where Laplacian can be
+discretized in a grid with finite differences as
+
+
+\begin{align*}
+\nabla^2 u  &= \frac{u(i-1,j)-2u(i,j)+u(i+1,j)}{(\Delta x)^2} \\
+ &+ \frac{u(i,j-1)-2u(i,j)+u(i,j+1)}{(\Delta y)^2}
+\end{align*}
+
+where ∆x and ∆y are the grid spacing of the temperature grid *u*.
+
+Given an initial condition (*u*(t=0) = u0) one can follow the time dependence
+of the temperature field with explicit time evolution method:
+
+\begin{align*}
+u^{m+1}(i,j) = u^m(i,j) + \Delta t \alpha \nabla^2 u^m(i,j)
+\end{align*}
+
+
+Note: The algorithm is stable only when
+
+\begin{align*}
+\Delta t < \frac{1}{2 \alpha} \frac{(\Delta x \Delta y)^2}{(\Delta x)^2 (\Delta y)^2}
+\end{align*}
+
+****
+
+
+
+.Code
+[.examp]
+****
+The solver carries out the time development of the 2D heat equation over the number of time steps provided by the user. The default geometry is a flat
+rectangle (with grid size provided by the user), but other shapes may be used via input files. The program will produce an image (PNG) of the temperature field after every 100 iterations.
+
+.Heat equation solver with MPI
+[source,cpp]
+----
+include::ROOT:example$src/Heat_Equation_ParallelPrograming_Comparison/MPI/main.cpp[indent=0]
+----
+
+.Heat equation solver with hybrid MPI+OpenMP
+[source,cpp]
+----
+include::ROOT:example$src/Heat_Equation_ParallelPrograming_Comparison/MPI_OpenMP/main.cpp[indent=0]
+----
+
+
+.Heat equation solver with Cuda
+[source,cu]
+----
+include::ROOT:example$src/Heat_Equation_ParallelPrograming_Comparison/Cuda/core_cuda.cu[indent=0]
+----
+****
+
+.*Performance*
+****
+ADD SOME RESULTS
+****
+
+
+
+
+
+
+
+...
+

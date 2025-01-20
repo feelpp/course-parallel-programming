@@ -1,0 +1,34 @@
+= Star PU
+
+[.text-justify]
+StarPU is a C task scheduling library for hybrid architectures. It provides users with a means to define tasks that can run on both CPU and GPU, as well as the dependencies between these tasks, and takes care of scheduling them across all available processing units. The goal of StarPU is therefore to design systems in which applications are distributed across the entire machine, running parallel tasks on all available resources. It keeps track of the copies of each of the data in the different memories on board the accelerators and provides mechanisms such as data preloading. The calculation time has been significantly reduced, as well as the high efficiency in the use of different calculation resources, the different typical workloads, especially in the case of multi-core machines equipped with several acceleration machines. In doing so, StarPU abstracts the programmer from the underlying technical details: StarPU adapts to the available processing units and takes care of transferring data between them when necessary. StarPU effectively addresses scheduling problems, but the C language interface it offers is poor and makes programming errors easier.
+
+The app provides algorithms and constraints
+
+* CPU/GPU implementations of tasks
+* A task graph, using either StarPU's rich C/C++/Fortran/Python API or
+OpenMP pragmas.
+
+StarPU internally deals with the following aspects:
+
+* Task dependencies
+* Optimized heterogeneous scheduling
+* Optimized data transfers and replication between main memory and
+discrete memories
+* Optimized cluster communications
+
+image::image19.png[xref=#fragment19,width=179,height=179]
+
+
+Links:
+
+https://hpc2n.github.io/Task-based-parallelism/branch/master/starpu1/#hello-world
+
+https://github.com/alucas/StarPU/tree/master
+
+https://hpc2n.github.io/Task-based-parallelism/branch/master/starpu1/#benefits-and-downsides
+
+https://indico.math.cnrs.fr/event/6415/attachments/2736/3475/2021.02.24_-_exa2pro-eocoe_workshop_-_StarPU_-_S._Thibault.pdf
+
+https://gitub.u-bordeaux.fr/starpu/starpu/-/tree/master/examples
+

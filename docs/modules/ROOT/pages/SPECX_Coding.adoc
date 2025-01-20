@@ -1,0 +1,35 @@
+= SPECX Coding Practice
+
+
+.Examples
+[.examp]
+****
+.Code Test Promise
+[source,cpp]
+----
+include::ROOT:example$src/Specx/SPECX_TestPromise.bcpp[indent=0]
+----
+
+.Code Test Race
+[source,cpp]
+----
+include::ROOT:example$src/Specx/SPECX_TestRace.bcpp[indent=0]
+----
+
+.Code Test Vector Buffer
+[source,cpp]
+----
+include::ROOT:example$src/Specx/SPECX_TestVectorBuffer.bcpp[indent=0]
+----
+
+****
+
+.Code Draft Tests
+[source,cpp]
+----
+include::ROOT:example$src/Specx/SPECX_Test.bcpp[indent=0]
+----
+
+
+...
+

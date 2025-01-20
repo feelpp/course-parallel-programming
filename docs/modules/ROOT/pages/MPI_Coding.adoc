@@ -1,0 +1,93 @@
+= MPI Coding Practice
+
+* Compiling a program for MPI is almost just like compiling a regular C or C++ program
+*** The C compiler is mpicc and the C++ compiler is mpic++.
+*** For example, to compile MyProg.c you would use a command like
+*** mpicc - O2 -o MyProg MyProg.c
+
+
+
+
+.Test compile {cpp}
+[%dynamic,cpp,filename="Hello.hpp",compile=true,run=true] 
+----
+#include <iostream>
+
+int main()
+{
+        std::cout << "Hello, world!" << std::endl;
+        return 0;
+}
+----
+
+
+
+
+
+== List of programms
+
+//* xref:MPI_Allgather.c[MPI_Allgather]
+
+//:cpp: C++
+
+.Allgather
+[.examp]
+****
+.Code Allgather
+[source,c]
+----
+include::ROOT:example$src/MPI/MPI_Allgather.c[indent=0]
+----
+****
+
+.Allreduce
+[.examp]
+****
+.Code Allreduce
+[source,c]
+----
+include::ROOT:example$src/MPI/MPI_Allreduce.c[indent=0]
+----
+****
+
+
+
+
+.Code Demo -
+----
+MPI_Allgather
+MPI_Allreduce
+MPI_Alltoall
+MPI_Barrier
+MPI_Bcast
+MPI_BSend
+MPI_Buffer_attach
+MPI_Buffer_detach
+MPI_Comm_spawn
+MPI_Comm_split
+MPI_Exscan
+MPI_File_close
+MPI_File_open
+MPI_File
+MPI_Gather
+MPI_Graph_get
+MPI_Graph_neigbors_count
+MPI_Graph_neigbors
+MPI_Graphdims_get
+MPI_lallgather
+MPI_lallreduce
+MPI_lalltoall
+MPI_lbarrier
+MPI-lbcast
+MPI_lbsend
+MPI_lreduce
+MPI_lreduce_scatter
+MPI_lreduce_scatter_block
+MPI_lresend
+MPI_lscatterv
+MPI_lssend
+
+
+----
+...
+

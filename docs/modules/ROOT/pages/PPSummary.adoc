@@ -1,0 +1,58 @@
+
+[background-color="white"]
+
+*Parallel Programming*
+
+
+*MPI, OpenMP,…GPU, GPGPU*
+
+
+*1. CPU, GPU, GPGPU Architecture*
+
+1.1 CPU
+
+1.2 GPU (Graphics Processing Unit is a graphics (co-)processor)
+
+1.3 GPGPU (General-Purpose Graphics Processing Unit)
+
+1.4 Architecture of a GPU versus CPU
+
+1.5 AMD ROCm Platform, CUDA
+
+
+1.5.1 AMD ROC platform
+
+1.5.2 CUDA Platform
+
+1.5.3 What is the difference between CUDA and ROCm for GPGPU applications?
+
+1.6 GPGPU Evolution
+
+1.7 TPU (Tensor Processing Unit) form Google
+
+
+*2. Programming interface for parallel computing*
+
+2.1 MPI (Message Passing Interface)
+
+2.2 OpenMP (Open Multi-Processing)
+
+2.3 Hybrid MPI & OpenMP
+
+
+*3.Star PU*
+
+
+*4.Specx*
+
+4.1 Specx Workflow
+
+
+4.1.1 Runtime Interface
+
+4.1.2 Data dependency interface
+
+4.1.3 Task visualization interface
+
+
+

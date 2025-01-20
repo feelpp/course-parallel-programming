@@ -1,9 +1,34 @@
 * xref:index.adoc[Introduction]
-* {project_name} Environment
-** xref:cmake.adoc[cmake environment]
-** xref:antora.adoc[antora environment]
-** xref:vscode.adoc[vscode integration]
-** xref:githubactions.adoc[Github Actions]
-** xref:rename.adoc[Renaming the project]
-** xref:jupyter.adoc[Jupyter Notebook]
+
+* xref:PPChapter1_CPU.adoc[CPU Architecture]
+
+* xref:PPChapter1_GPU.adoc[GPU Architecture]
+
+* xref:PPChapter1_GPGPU.adoc[GPGPU Architecture]
+
+* xref:PPChapter1_TPU.adoc[TPU Architecture]
+
+* xref:PPChapter1_NPU.adoc[NPU Architecture]
+
+* xref:PPChapter1_LPU.adoc[LPU Architecture]
+
+* xref:PPChapter1_DPU.adoc[DPU Architecture]
+
+* xref:PPChapter1_SIMD.adoc[SIMD Architecture]
+
+* xref:PPChapter1_AMD_CUDA.adoc[AMD CUDA Architecture]
+
+* xref:PPChapter2_MPI.adoc[MPI (Message Passing Interface)]
+
+* xref:PPChapter2_MPI_Boost.adoc[MPI Boost]s
+
+* xref:PPChapter2_OpenMP.adoc[OpenMP (Open Multi-Processing)]
+
+* xref:PPChapter2_OpenMP2.adoc[OpenMP more information]
+
+* xref:PPChapter2_Hybrid.adoc[Hybrid MPI with OpenMP]
+
+* xref:PPChapter3.adoc[StarPU]
+
+* xref:PPChapter4.adoc[Specx]
 

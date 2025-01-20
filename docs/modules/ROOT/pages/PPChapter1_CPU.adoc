@@ -1,0 +1,83 @@
+
+
+= CPU (Central Proccessing Unit)
+
+image::CPU.jpg[xref=#fragment01,width=322,height=220]
+
+[.text-justify]
+== Definition
+
+The CPU basically consists of three parts:
+
+* The control unit which searches for instructions in memory, decodes them and coordinates the rest of the processor to execute them. A basic control unit basically consists of an instruction register and a "decoder/sequencer" unit
+
+* The Arithmetic and Logic Unit executes the arithmetic and logic instructions requested by the control unit. Instructions can relate to one or more operands. The execution speed is optimal when the operands are located in the registers rather than in the memory external to the processor.
+
+* Registers are memory cells internal to the CPU. They are few in number but very quick to access. They are used to store variables, the intermediate results of operations (arithmetic or logical) or processor control information.
+
+image::image1.png[xref=#fragment1,width=322,height=220]
+//image::../assets/images/image1.png[xref=#img1,width=322,height=220]
+
+The register structure varies from processor to processor. This is why each type of CPU has its own instruction set. Their basic functions are nevertheless similar and all processors have roughly the same categories of registers:
+
+
+* The *accumulator* is primarily intended to hold the data that needs to be processed by the ALU.
+
+* General registers* are used to store temporary data and intermediate
+
+* Address registers* are used to construct particular data addresses. These are, for example, the base and index registers which allow, among other things, to organize the data in memory like indexed tables.
+
+* The *instruction register* contains the code of the instruction which is processed by the decoder/sequencer.
+
+* The *ordinal counter* contains the address of the next instruction to be executed. In principle, this register never stops counting. It generates the addresses of the instructions to be executed one after the other. Some instructions sometimes require changing the contents of the ordinal counter to make a sequence break, ie a jump elsewhere in the program.
+
+* The *status register,* sometimes called *the condition register,*
+contains indicators called _flags_ whose values (0 or 1) vary according to the results of the arithmetic and logical operations. These states are used by conditional jump instructions.
+
+The *stack pointer* or _stack pointer_ manages certain data in memory by organizing them in the form of stacks.
+
+[.text-justify]
+== CPU working principle
+
+The content of the program counter is deposited on the addressing bus in order to search there for a machine code instruction. The control bus produces a read signal and the memory, which is selected by the address, sends the instruction code back to the processor via the data bus. Once the instruction lands in the instruction register, the processor's control unit decodes it and produces the appropriate sequence of internal and external signals that coordinate its execution. An instruction comprises a series of elementary tasks. They are clocked by clock cycles.
+
+All the tasks that constitute an instruction are executed one after the other. The execution of an instruction therefore lasts several cycles. As it is not always possible to increase the frequency, the only way to increase the number of instructions processed in a given time is to seek to execute several of them simultaneously. This is achieved by splitting processor resources, data and/or processes. This is called the parallelization.
+
+
+
+[.text-justify]
+== The different architectures of the processor
+
+There is a classification of the *different CPU architectures.* Five in number, they are used by programmers depending on the desired results:
+
+* {blank}
++
+
+CISC: very complex addressing;
+
+* {blank}
++
+
+RISC: simpler addressing and instructions performed on a single cycle;
+
+* {blank}
++
+
+VLIW: long, but simpler instructions;
+
+* {blank}
++
+
+vectorial: contrary to the processing in number, the instructions are
+vectorial;
+
+* {blank}
++
+
+dataflow: data is active unlike other architectures.
+
+
+To further improve the *performance of this processor,* developers can
+add so-called SIMD Supplemental Instruction Sets.
+
+

@@ -1,0 +1,501 @@
+= MPI (Message Passing Interface)
+
+
+== General notions
+[.text-justify]
+The transmitter and the receiver are identified by their rank in the communicator. The entity passed between two processes is called a message. A message is characterized by its envelope. 
+
+This consists of:
+
+* The rank of the sending process.
+* The rank of the receiving process. 
+* The label ( _tag_ ) of the message. 
+* The communicator who defines the process group and the communication
+context.
+[.text-justify]
+The data exchanged is typed (integers, reals, etc. or personal derived types) In each case, there are several transfer modes , using different
+protocols.
+    
+    int MPI_Send( *const void* *message, *int* length, MPI_Datatyp type_message, *int* rank_dest, *int* label, MPI_Comm comm)
+    
+    int MPI_Recv ( *void* *message, *int* length, MPI_Datatype type_message *int* rank_source, *int* label, MPI_Comm comm, MPI_Status *status)
+
+And simultaneous send and receive operation:
+    
+    int MPI_Sendrecv_replace ( void * message, int length, MPI_Datatype type_message, int rank_dest, int label_message_sent, int* rank_source, int label_message_recu, MPI_Comm comm, MPI_Status *status).
+
+Note this operation is blocking.
+
+
+== Collective communications
+
+=== General notions
+[.text-justify]
+Collective communications allow a series of point-to-point communications to be made in a single operation. A collective communication always concerns all the processes of the indicated communicator. For each of the processes, the call ends when the latter's participation in the collective operation is completed, in the sense of point-to-point communications (thus when the memory zone concerned can be modified). The management of labels in these communications is transparent and at the expense of the system. They are therefore never explicitly defined during the call to these subroutines. One of the advantages of this is that collective communications never interfere with point-to-point communications.
+
+=== Types of collective communications
+[.text-justify]
+There are three types of subroutines: 
+* The one that ensures global synchronizations: MPI_Barrier().
+
+* those that only transfer data:
+
+** global data broadcasting: MPI_Bcast(); 
+** selective diffusion of data: MPI_Scatter(); 
+** distributed data collection: MPI_Gather(); 
+** collection by all distributed data processes: MPI_Allgather(); 
+** selective collection and dissemination, by all processes, of distributed data: MPI_Alltoall().
+
+* those who, in addition to managing communications, perform
+operations on the transferred data:
+
+** reduction operations (sum, product, maximum, minimum, etc.), whether of
+a predefined type or of a personal type: MPI_Reduce();
+
+** reduction operations with distribution of the result (equivalent to an
+MPI_Reduce() followed by an MPI_Bcast()): MPI_Allreduce().
+
+
+== Global synchronization
+
+    int MPI_Barrier ( MPI_Comm comm)
+
+*General distribution*
+
+    int MPI_Bcast( void *message, int length, MPI_Datatype, type_message, *int* rank_source, MPI_Comm comm)
+
+*Selective dissemination*
+
+    int MPI_Scatter ( const void *message_to_be restarted, int length_message_sent, MPI_Datatype type_message_sent, void *message_received, int length_message_recu, MPI_Datatype type_message_recu, int rank_source, MPI_Comm comm)
+
+*Collection*
+
+    int MPI_Gather ( const void *message_sent, int length_message_sent, MPI_Datatype type_message_sent, void *message_received, int length_message_received, MPI_Datatype type_message_received, *int* rank_dest, MPI_Comm comm)
+
+*General collection*
+
+    int MPI_Allgather ( const void *message_sent, int length_message_sent, MPI_Datatype type_message_sent, void *message_received, int length_message_received, MPI_Datatype type_message_received, MPI_Comm comm)
+
+*"Variable" collection*
+
+    int MPI_Gatherv ( const void *message_sent, int length_message_sent, MPI_Datatype type_message_sent, void *message_received, const int *nb_elts_recus, const int *deplts, MPI_Datatype type_message_recu, *int* rang_dest, MPI_Comm comm)
+
+*Selective collections and distributions*
+
+    int MPI_Alltoall ( const void *message_sent, int length_message_sent, MPI_Datatype type_message_sent, void *message_received, int length_message_received, MPI_Datatype type_message_received, MPI_Comm comm)
+
+*Distributed reductions*
+
+    int MPI_Reduce ( const void *message_sent, void *message_received, int length, MPI_Datatype type_message, MPI_Op operation, int rank_dest,* MPI_Comm comm)
+
+*Distributed reductions with distribution of the result*
+
+    int MPI_Allreduce ( const void *message_sent, void *message_received, *int length, MPI_Datatype, type_message, MPI_Op operation, MPI_Comm comm)
+
+
+
+== Communication models
+
+=== Point-to-point sending modes
+
+* Blocking and Non-blocking mode
+    
+* Standard sending MPI_Send() MPI_Isend()
+    
+* Synchronous send MPI_Ssend() MPI_Issend()
+    
+* _Buffered_ send MPI_Bsend() MPI_Ibsend()
+    
+* Receive MPI_Recv() MPI_Irecv()
+[.text-justify]
+A call is blocking if the memory space used for communication can be reused immediately after the call exits. The data sent can be modified after the blocking call. The received data can be read after the blocking call.
+
+
+=== Synchronous sends
+[.text-justify]
+A synchronous send involves synchronization between the processes involved. A shipment can only begin when its receipt is posted. There
+can only be communication if both processes are willing to communicate.
+
+*int* MPI_Ssend( *const void* * values, *int* size, MPI_Datatype
+message_type, *int* dest, *int* label, MPI_Comm comm)
+
+
+* Benefits
+
+ ** Consume few resources (no _buffer_ ) Fast if the receiver is ready (no copying into a _buffer_ ) Recognition of reception thanks to synchronization
+
+* Disadvantages
+
+ ** Waiting time if the receiver is not there/not ready Risks of deadlock
+
+
+=== Buffered sends 
+[.text-justify]
+A buffered send involves the copying of data into an intermediate memory space. There is then no coupling between the two communication processes. The output of this type of sending therefore does not mean that the reception has taken place.
+[.text-justify]
+Buffers must be managed manually (with calls to MPI_Buffer_attach( _)_
+and MPI_Buffer_detach()). They must be allocated taking into account the
+memory overhead of the messages (by adding the MPI_BSEND_OVERHEAD
+constant for each message instance).
+
+    int MPI_Buffer_attach ( void *buf, int size_buf) 
+    int MPI_Buffer_detach ( void *buf, int size_buf) 
+    int MPI_Bsend( const void *values, int size, MPI_Datatype type_message, int dest, int label, MPI_Comm comm)
+
+
+* Advantages of buffered mode
+
+ ** No need to wait for the receiver (recopy in a _buffer_ ) No risk of
+blocking ( _deadlocks_ )
+
+* Disadvantages of buffered mode
+
+ ** Consume more resources (memory occupation by _buffers_ with risk of
+saturation)
+
+ ** Send buffers must be managed manually (often difficult to choose an
+appropriate size _)_
+
+ ** A bit slower than synchronous sends if the receiver is ready
+
+ ** No knowledge of the reception (send-receive decoupling)
+
+ ** Risk of wasting memory space if the _buffers_ are too oversized
+
+ ** The application crashes if the _buffers_ are too small
+
+ ** There are also often hidden _buffers_ managed by the MPI implementation
+on the sender and/or receiver side (and consuming memory resources)
+
+
+== Non-blocking calls
+[.text-justify]
+*Non-blocking* call returns control very quickly, but does not allow the
+immediate reuse of the memory space used in the call. It is necessary to
+ensure that the communication is indeed terminated (with MPI_Wait() for
+example) before using it again.
+
+    int MPI_Isend( const void *values, int size, MPI_Datatype
+    message_type, int dest, int label, MPI_Comm comm, MPI_Request *req)
+    
+    int MPI_Issend ( const void* values, int size, MPI_Datatype
+    message_type, int dest, int label, MPI_Comm comm, MPI_Request *req)
+    
+    int MPI_Ibsend( const void* values, int size, MPI_Datatype
+    message_type, int dest, int label, MPI_Comm comm, MPI_Request *req)
+    
+    int MPI_Irecv( void *values, int size, MPI_Datatype type_message,
+    int* source, int label, MPI_Comm comm, MPI_Request *req)
+
+
+* Benefits of non-blocking calls
+[.text-justify]
+** Ability to hide all or part of the communication costs (if the architecture allows it). No risk of _deadlock_.
+
+* Disadvantages of non-blocking calls
+[.text-justify]
+** Higher additional costs (several calls for a single send or receive, request management).
+[.text-justify]
+** Higher complexity and more complicated maintenance.
+[.text-justify]
+** Risk of loss of performance on the calculation cores (for example differentiated management between the zone close to the border of a domain and the interior zone resulting in less good use of memory caches).
+[.text-justify]
+** Limited to point-to-point communications.
+
+
+
+
+== Memory to memory communications
+[.text-justify]
+Memory-to-memory communications (or RMA for _Remote Memory Access_ or _one-sided communications_ ) consist of accessing the memory of a remote process in write or read mode without the latter having to manage this access explicitly. The target process therefore does not intervene during the transfer.
+
+=== RMA - General Approach
+[.text-justify]
+Creation of a memory window with MPI_Win_create() to authorize RMA transfers in this area.
+
+Remote read or write access by calling MPI_Put(), MPI_Get(), MPI_Accumulate(), MPI_Get_accumulate() and MPI_Compare_and_swap()
+
+Freeing the memory window with M PI_Win_free().
+
+=== RMA - Synchronization Methods
+[.text-justify]
+To ensure correct operation, it is mandatory to carry out certain synchronizations. 3 methods are available:
+
+Active target communication with global synchronization (MPI_Win_fence() );
+
+Communication with active target with pair synchronization
+(MPI_Win_start() and MPI_Win_complete() for the origin process;
+MPI_Win-post() and MPI_Win_wait() for the target process);
+
+Passive target communication without target intervention (MPI_Win_lock()
+and MPI_Win_unlock()).
+
+* Benefits of RMAs
+[.text-justify]
+** Allows you to implement certain algorithms more efficiently.
+[.text-justify]
+** More efficient than point-to-point communications on some machines (use of specialized hardware such as DMA engine, coprocessor, specialized memory, etc.).
+** Ability for the implementation to group multiple operations.
+
+* Disadvantages of RMAs
+[.text-justify]
+** Synchronization management is tricky.
+** Complexity and high risk of error.
+** For passive target synchronizations, obligation to allocate memory with
+MPI_Alloc_mem() which does not respect the Fortran standard (use of Cray
+pointers not supported by some compilers).
+** Less efficient than point-to-point communications on some machines.
+
+== Interfaces
+[.text-justify]
+MPI_Wait() waits for the end of a communication. MPI_Test() is the
+non-blocking version.
+
+    int MPI_Wait ( MPI_Request *req, MPI_Status *status) 
+    int MPI_Test( MPI_Request *req, int *flag, MPI_Status *status)
+[.text-justify]
+MPI_Waitall() waits for all communications to end. MPI_Testall() is the
+non-blocking version.
+
+    int MPI_Waitall ( int size, MPI_Request reqs[], MPI_Status statuses[]) 
+    int* MPI_Testall ( int size, MPI_Request reqs[], int *flag, MPI_Status statuses[])
+[.text-justify]
+MPI_Waitany waits for the end of one communication among several.
+
+    int MPI_Waitany ( int size, MPI_Request reqs[], int *index,MPI_Status *status)
+
+MPI_Testany is the non-blocking version. 
+
+    int* MPI_Testany( int size, MPI_Request reqs[], int *index, int *flag, MPI_Status *status)
+
+MPI_Waitsome is waiting for the end of one or more communications.
+
+    int MPI_Waitsome( int size, MPI_Request reqs[], int *endcount,int *indexes, MPI_Status *status)
+
+MPI_Testsome is the non-blocking version.
+
+    int MPI_Testsome( int size, MPI_Request reqs[], int *endcount,int *indexes, MPI_Status *status)
+
+
+== MPI keywords
+
+[width="100%",cols="50%,50%",]
+|===
+a|
+*1 environment*
+
+• MPI Init: Initialization of the MPI environment
+
+• MPI Comm rank: Rank of the process
+
+• MPI Comm size: Number of processes
+
+• MPI Finalize: Deactivation of the MPI environment 
+
+• MPI Abort:Stopping of an MPI program
+
+• MPI Wtime: Time taking
+
+*2 Point-to-point communications*
+
+• MPI Send: Send message
+
+• MPI Isend: Non-blocking message sending
+
+• MPI Recv: Message received
+
+• MPI Irecv: Non-blocking message reception
+
+• MPI Sendrecv and MPI Sendrecv replace: Sending and receiving messages
+
+• MPI Wait: Waiting for the end of a non-blocking communication
+
+• MPI Wait all: Wait for the end of all non-blocking communications
+
+*3 Collective communications*
+
+• MPI Bcast: General broadcast
+
+• MPI Scatter: Selective spread
+
+• MPI Gather and MPI Allgather: Collecting
+
+• MPI Alltoall: Collection and distribution
+
+• MPI Reduce and MPI Allreduce: Reduction 
+
+• MPI Barrier: Global synchronization
+
+*4 Derived Types*
+
+• MPI Contiguous type: Contiguous types
+
+• MPI Type vector and MPI Type create hvector: Types with a con-standing
+
+• MPI Type indexed: Variable pitch types
+
+• MPI Type create subarray: Sub-array types
+
+• MPI Type create struct: H and erogenous types
+
+• MPI Type commit: Type commit
+
+• MPI Type get extent: Recover the extent
+
+• MPI Type create resized: Change of scope
+
+• MPI Type size: Size of a type
+
+• MPI Type free: Release of a type
+
+a|
+*5 Communicator*
+
+• MPI Comm split: Partitioning of a communicator
+
+• MPI Dims create: Distribution of processes
+
+• MPI Cart create: Creation of a Cart ́esian topology
+
+• MPI Cart rank: Rank of a process in the Cart ́esian topology
+
+• MPI Cart coordinates: Coordinates of a process in the Cart ́esian
+topology
+
+• MPI Cart shift: Rank of the neighbors in the Cart ́esian topology
+
+• MPI Comm free: Release of a communicator
+
+*6 MPI-IO*
+
+• MPI File open: Opening a file
+
+• MPI File set view: Changing the view • MPI File close: Closing a file
+
+*6.1 Explicit addresses*
+
+• MPI File read at: Reading
+
+• MPI File read at all: Collective reading
+
+• MPI File write at: Writing
+
+*6.2 Individual pointers*
+
+• MPI File read: Reading
+
+• MPI File read all: collective reading
+
+• MPI File write: Writing
+
+• MPI File write all: collective writing
+
+• MPI File seek: Pointer positioning
+
+*6.3 Shared pointers*
+
+• MPI File read shared: Read
+
+• MPI File read ordered: Collective reading
+
+• MPI File seek shared: Pointer positioning
+
+*7.0 Symbolic constants*
+
+• MPI COMM WORLD, MPI SUCCESS
+
+• MPI STATUS IGNORE, MPI PROC NULL
+
+• MPI INTEGER, MPI REAL, MPI DOUBLE PRECISION
+
+• MPI ORDER FORTRAN, MPI ORDER C
+
+• MPI MODE CREATE,MPI MODE RONLY,MPI MODE WRONLY
+
+|===
+
+
+== Derived data types
+[.text-justify]
+In the communications, the data exchanged are typed: MPI_INTEGER,
+MPI_REAL, MPI_COMPLEX, etc .
+
+More complex data structures can be created using subroutines such as
+MPI_Type_contiguous(), MPI_Type_vector(), MPI_Type_Indexed() , or
+MPI_Type_create_struct()
+[.text-justify]
+The derived types notably allow the exchange of non-contiguous or
+non-homogeneous data in memory and to limit the number of calls to the
+communications subroutines.
+
+== MPI + threading
+[.text-justify]
+The MPI standard has been updated to accommodate the use of threads within processes. Using these capabilities is optional, and presents numerous advantages and disadvantages
+
+* Advantages of MPI + threading
+[.text-justify]
+** Possiblity for better scaling of communication costs
+** Either simpler and/or faster code that does not need to distribute as much data, because all threads in the process can share it already
+** Higher performance from using memory caches better
+** Reduced need to dedicate a rank solely to communication coordination in code using a manager-worker paradigm
+
+* Disadvantages of MPI + threading
+[.text-justify]
+** Implicitly shared data can be harder to reason about correctly (eg. race conditions)
+
+** Code now has to be correct MPI code and correct threaded code
+
+** Possibility of lower performance from cache contention, when one thread writes to memory that is very close to where another thread needs to read
+
+** More code complexity
+[.text-justify]
+** Might be merely shifting bottlenecks from one place to another (eg. opening and closing OpenMP thread regions)
+
+** Needs higher quality MPI implementations
+
+** It can be awkward to use libraries that also use threading internally
+
+** Usage gets more complicated, as both ranks and threads have to be shepherded onto cores for maximum performance
+
+== MPI support for threading
+[.text-justify]
+Since version 2.0, MPI can be initialized in up to four different ways. The former approach using MPI_Init still works, but applications that wish to use threading should use MPI_Init_thread.
+
+    int MPI_Init_thread(int *argc, char ***argv, int required, int *provided)
+[.text-justify]
+The following threading levels are generally supported:
+[.text-justify]
+* MPI_THREAD_SINGLE - rank is not allowed to use threads, which is basically equivalent to calling MPI_Init.
+
+
+image:MPI_THREAD_SINGLE.svg[xref=#fragment1113,width=600,height=300]
+
+ With MPI_THREAD_SINGLE, the rank may use MPI freely and will not use threads.
+[.text-justify]
+*MPI_THREAD_FUNNELED - rank can be multi-threaded but only the main thread may call MPI functions. Ideal for fork-join parallelism such as used in #pragma omp parallel, where all MPI calls are outside the OpenMP regions.
+
+
+image:MPI_THREAD_FUNNELED.svg[xref=#fragment1114,width=600,height=300]
+
+[.text-justify]
+ With MPI_THREAD_FUNNELED, the rank can use MPI from only the main thread.
+[.text-justify]
+* MPI_THREAD_SERIALIZED - rank can be multi-threaded but only one thread at a time may call MPI functions. The rank must ensure that MPI is used in a thread-safe way. One approach is to ensure that MPI usage is mutually excluded by all the threads, eg. with a mutex.
+
+
+image:MPI_THREAD_SERIALIZED.svg[xref=#fragment1115,width=600,height=300]
+[.text-justify]
+ With MPI_THREAD_SERIALIZED, the rank can use MPI from any thread so long as it ensures the threads synchronize such that no thread calls MPI while another thread is doing so.
+[.text-justify]
+* MPI_THREAD_MULTIPLE - rank can be multi-threaded and any thread may call MPI functions. The MPI library ensures that this access is safe across threads. Note that this makes all MPI operations less efficient, even if only one thread makes MPI calls, so should be used only where necessary.
+
+image:MPI_THREAD_MULTIPLE.svg[xref=#fragment1116,width=600,height=300]
+
+
+[.text-justify]
+With MPI_THREAD_MULTIPLE, the rank can use MPI from any thread. The MPI library ensures the necessary synchronization
+[.text-justify]
+Note that different MPI ranks may make different requirements for MPI threading. This can be efficient for applications using manager-worker paradigms where the workers have simpler communication patterns.
+[.text-justify]
+For applications where it is possible to implement using MPI_THREAD_SERIALIZED approach, it will generally outperform the same application naively implemented and using MPI_THREAD_MULTIPLE, because the latter will need to use more synchronization.
+

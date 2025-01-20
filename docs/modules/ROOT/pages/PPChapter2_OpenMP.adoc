@@ -1,0 +1,1234 @@
+= OpenMP (Open Multi-Processing)
+
+
+== Definition 
+[.text-justify]
+OpenMP ( Open Multi-Processing ) is a programming interface for parallel
+computing on shared memory architecture.
+
+It allows you to manage:
+
+* the creation of light processes,
+* the sharing of work between these lightweight processes,
+* synchronizations (explicit or implicit) between all light processes,
+* the status of the variables (private or shared).
+
+== General concepts
+[.text-justify]
+An OpenMP program is executed by a single process.
+[.text-justify]
+* This process activates lightweight processes (threads) at the entrance
+to a parallel region. +
+* Each thread performs a task consisting of a set of instructions. +
+* During the execution of a task, a variable can be read and/or modified
+in memory.
+
+[.text-justify]
+** It can be defined in the stack (local memory space) of a lightweight process; we then speak of a private variable
+
+** It can be defined in a shared memory space
+
+[.text-justify]
+* An OpenMP program is an alternation of sequential regions and parallel
+regions. +
+* A sequential region is always executed by the master task, the one
+whose rank is 0. +
+* A parallel region can be executed by several tasks at the same time. +
+* The tasks can share the work contained in the parallel region.
+
+* Work sharing essentially consists of:
+
+[.text-justify]
+** execute a loop by distributing the iterations between the tasks; +
+** execute several sections of code but only one per task; +
+** execute several occurrences of the same procedure by different tasks (orphaning)
+
+[.text-justify]
+* It is sometimes necessary to introduce a synchronization between the
+concurrent tasks to avoid, for example, that these modify in any order
+the value of the same shared variable (case of reduction operations).
+[.text-justify]
+* Generally, tasks are assigned to processors by the operating system.
+Different cases can occur:
+
+[.text-justify]
+** at best, at each instant, there is one task per processor with as many
+tasks as there are dedicated processors for the duration of the work; +
+** at worst, all tasks are processed sequentially by one and only one
+processor; +
+** in reality, for reasons essentially of operation on a machine whose
+processors are not dedicated, the situation is generally intermediate.
+
+
+* To overcome these problems, it is possible to build the OpenMP runtime
+on a library of mixed threads and thus control the scheduling of tasks.
+
+== Construction of a parallel region
+[.text-justify]
+* In a parallel region, by default, the status of variables is shared.
+* Within a single parallel region, all concurrent tasks execute the same code.
+* There is an implicit synchronization barrier at the end of the parallel region.
+* “Branching” (eg GOTO, CYCLE, etc.) into or out of a parallel region or any other OpenMP construct is prohibited.
+* It is possible, thanks to the DEFAULT clause, to change the default status of variables in a parallel region.
+* If a variable has a private status (PRIVATE), it is in the stack of each task. Its value is then undefined at the entry of a parallel region (in the example opposite, the variable a equals 0 at the entry of the parallel region)
+* However, thanks to the FIRSTPRIVATE clause, it is possible to force the initialization of this private variable to the last value it had before entering the parallel region.
+
+== Extent of a parallel region
+[.text-justify]
+* The scope of an OpenMP construct represents the scope of its influence
+in the program. +
+The influence (or scope) of a parallel region extends both to the code
+contained lexically in this region (static scope), and to the code of
+the called subroutines. The union of the two represents “dynamic
+extent”.
+* In a subroutine called in a parallel region, the local and automatic
+variables are implicitly private to each of the tasks (they are defined
+in the stack of each task).
+* In a procedure, all the variables passed by argument (dummy
+parameters) by reference, inherit the status defined in the lexical
+scope (static) of the region.
+
+== Case of static variables
+[.text-justify]
+* A variable is static if its location in memory is defined at
+declaration by the compiler
+* Using the THREADPRIVATE directive allows you to privatize a static
+instance and make it persistent from one parallel region to another. (
+omp_get_thread_num(); )
+* If, in addition, the COPYIN clause is specified then the value of
+static instances is passed to all tasks.
+
+== Case of dynamic allocation
+[.text-justify]
+* The dynamic memory allocation/deallocation operation can be performed
+inside a parallel region.
+* If the operation relates to a private variable, it will be local to
+each task.
+* If the operation concerns a shared variable, then it is more prudent
+that only one task (e.g. the master task) takes care of this operation
+
+== Complements
+[.text-justify]
+The construction of a parallel region admits two other clauses:
+
+– REDUCTION: for reduction operations with implicit synchronization
+between tasks; +
+– NUM_THREADS: it allows to specify the desired number of tasks at the
+entrance of a parallel region in the same way as the OMP_SET_NUM_THREADS
+subroutine would do.
+[.text-justify]
+From one parallel region to another, the number of concurrent tasks can be varied if desired. To do this, simply use the OMP_SET_DYNAMIC
+subroutine or set the OMP_DYNAMIC environment variable to true. It is
+possible to nest (nesting) parallel regions, but this only has an effect if this mode has been activated by calling the OMP_SET_NESTED subroutine or by setting the OMP_NESTED environment variable.
+
+    *Examples*
+    
+    #include <omp.h>
+    int main() 
+    { 
+    int row;
+        #pragma omp parallel private(rank) num_threads(3) 
+        { 
+        rank=omp_get_thread_num(); 
+        printf("My rank in region 1: %d \n",rank);
+            #pragma omp parallel private(rank) num_threads(2) 
+            { 
+            rank=omp_get_thread_num(); 
+            printf(" My rank in region 2: %d \n",rank); 
+            }
+        }
+    return 0; 
+    }
+    
+    My rank in region 1: 0 
+    My rank in region 2: 1 
+    My rank in region 2: 0 
+    My rank in region 1: 2 
+    My rank in region 2: 1 
+    My rank in region 2: 0 
+    My rank in region 1: 1 
+    My rank in region 2: 0 
+    My rank in region 2: 1
+
+*Work sharing*
+[.text-justify]
+* In principle, building a parallel region and using a few OpenMP
+functions alone is enough to parallelize a piece of code.
+* But, in this case, it is up to the programmer to distribute the work
+as well as the data and to ensure the synchronization of the tasks.
+* Fortunately, OpenMP offers three directives (DO, SECTIONS and
+WORKSHARE) which easily allow fairly fine control over the distribution
+of work and data as well as synchronization within a parallel region.
+* In addition, there are other OpenMP constructs that allow the
+exclusion of all but one task to execute a piece of code located in a
+parallel region.
+
+*Parallel loop*
+[.text-justify]
+* It is a parallelism by distribution of the iterations of a loop.
+* The parallelized loop is the one immediately following the DO
+directive.
+* "Infinite" and do while loops are not parallelizable with OpenMP.
+* The mode of distribution of iterations can be specified in the
+SCHEDULE clause.
+* Choosing the distribution mode provides more control over balancing
+the workload between tasks.
+* Loop indices are private integer variables.
+* By default, a global synchronization is performed at the end of the
+END DO construction unless the +
+NOWAIT clause has been specified.
+
+*SCHEDULE clause*
+[.text-justify]
+* STATIC dispatching consists of dividing the iterations into packets of
+a given size (except perhaps for the last one). A set of packets is then
+assigned cyclically to each of the tasks, following the order of the
+tasks up to the total number of packets. We could have deferred the
+choice of the mode of distribution of the iterations using the
+OMP_SCHEDULE environment variable. The choice of the distribution mode
+of the iterations of a loop can be a major asset for balancing the
+workload on a machine whose processors are not dedicated. Caution, for
+vector or scalar performance reasons, avoid parallelizing loops
+referring to the first dimension of a multi-dimensional array.
+* DYNAMIC: iterations are divided into packets of given size. As soon as
+a task exhausts its iterations, another packet is assigned to it.
+* GUIDED: the iterations are divided into packets whose size decreases
+exponentially. All the packets have a size greater than or equal to a
+given value except for the last whose size may be less. As soon as a
+task completes its iterations, another iteration package is assigned to
+it.
+
+*Case of an ordered execution*
+[.text-justify]
+* It is sometimes useful (debugging cases) to execute a loop in an
+orderly fashion.
+* The order of the iterations will then be identical to that
+corresponding to a sequential execution.
+* A reduction is an associative operation applied to a shared variable.
+* The operation can be:
+* arithmetic: +, --, *; +
+logic: .AND., .OR., .EQV., .NEQV. ; +
+an intrinsic function: MAX, MIN, IAND, IOR, IEOR.
+* Each task calculates a partial result independently of the others.
+They then sync to update the final result.
+
+*Parallel sections*
+[.text-justify]
+* A section is a portion of code executed by one and only one task.
+* Multiple portions of code can be defined by the user using the SECTION
+directive within a SECTIONS construct.
+* The goal is to be able to distribute the execution of several
+independent portions of code on the different tasks.
+* The NOWAIT clause is allowed at the end of the END SECTIONS construct
+to remove the implicit synchronization barrier.
+* All SECTION directives must appear within the lexical scope of the
+SECTIONS construct.
+* The clauses allowed in the SECTIONS directive are those we already
+know:
+* PRIVATE; FIRSTPRIVATE; LASTPRIVATE; REDUCTION.
+* The PARALLEL SECTIONS directive is a merger of the PARALLEL and
+SECTIONS directives with the union of their respective clauses.
+
+*Exclusive execution*
+[.text-justify]
+Sometimes you want to exclude all tasks except one to execute certain
+portions of code included in a parallel region.
+
+To do this, OpenMP offers two directives SINGLE and MASTER.
+
+Although the aim is the same, the behavior induced by these two
+constructions remains quite different.
+
+Parallel sections
+[.text-justify]
+* A section is a portion of code executed by one and only one task.
+* Multiple portions of code can be defined by the user using the  directive within a construct.
+* The goal is to be able to distribute the execution of several
+independent portions of code on the different tasks.
+* The NOWAIT clause is allowed at the end of the construct to remove the implicit synchronization barrier.
+
+
+*SINGLE construction*
+[.text-justify]
+* The SINGLE construction allows a portion of code to be executed by one and only one task without being able to specify which one.
+* In general, it is the task which arrives first on the SINGLE
+construction but it is not specified in the standard.
+* All the tasks not executing the SINGLE region wait, at the end of the END SINGLE construction, for the termination of the one responsible for it, unless they have specified the NOWAIT clause.
+
+*MASTER building*
+[.text-justify]
+* The MASTER construction allows a portion of code to be executed by the master task alone.
+* This construction does not admit any clauses.
+* There is no synchronization barrier either at the beginning (MASTER)
+or at the end of construction (END MASTER).
+
+*Synchronizations*
+[.text-justify]
+Synchronization becomes necessary in the following situations:
+
+[.text-justify]
+* to ensure that all concurrent tasks have reached the same
+level of instruction in the program (global barrier);
+[.text-justify]
+* to order the execution of all the concurrent tasks when these
+must execute the same portion of code affecting one or more shared
+variables whose consistency (in reading or in writing) in memory must be guaranteed (mutual exclusion).
+[.text-justify]
+* to synchronize at least two concurrent tasks among the set
+(lock mechanism).
+
+[.text-justify]
+As we have already indicated, the absence of a NOWAIT clause means thata global synchronization barrier is implicitly applied at the end of the
+\openmp construction. But it is possible to explicitly impose a global
+synchronization barrier thanks to the BARRIER directive.
+[.text-justify]
+The mutual exclusion mechanism (one task at a time) is found, for
+example, in reduction operations (REDUCTION clause) or in the ordered
+execution of a loop (DO ORDERED directive). For the same purpose, this
+mechanism is also implemented in the ATOMIC and CRITICAL directives.
+[.text-justify]
+Finer synchronizations can be achieved either by setting up lock
+mechanisms (this requires calling subroutines from the OpenMP library), or by using the FLUSH directive.
+
+*Barrier*
+[.text-justify]
+* The BARRIER directive synchronizes all concurrent tasks in a parallel
+region.
+* Each of the tasks waits until all the others have arrived at this
+synchronization point to continue the execution of the program together.
+* Atomic Update
+* The ATOMIC directive ensures that a shared variable is read and
+modified in memory by only one task at a time.
+* Its effect is local to the statement immediately following the
+directive.
+
+*Critical regions*
+[.text-justify]
+* A critical region can be seen as a generalization of the ATOMIC
+directive although the underlying mechanisms are distinct.
+* The tasks execute this region in a non-deterministic order but one at a time.
+* A critical region is defined using the CRITICAL directive and applies to a portion of code terminated by END CRITICAL.
+* Its scope is dynamic.
+* For performance reasons, it is not recommended to emulate an atomic
+instruction by a critical region.
+
+*FLUSH directive*
+[.text-justify]
+* It is useful in a parallel region to refresh the value of a shared
+variable in global memory.
+* It is all the more useful when the memory of a machine is hierarchical.
+* It can be used to implement a synchronization point mechanism between tasks.
+
+*Rules of good performance*
+[.text-justify]
+* Minimize the number of parallel regions in the code.
+* Adapt the number of tasks requested to the size of the problem to be
+treated in order to minimize the additional costs of task management by the system.
+* As much as possible, parallelize the outermost loop.
+* Use the SCHEDULE(RUNTIME) clause to be able to dynamically change the scheduling and the size of the iteration packets in a loop.
+* The SINGLE directive and the NOWAIT clause can make it possible to
+reduce the rendering time at the cost, most often, of an explicit
+synchronization.
+* The ATOMIC directive and the REDUCTION clause are more restrictive but
+more powerful than the CRITICAL directive.
+* Use the IF clause to implement conditional parallelization (eg on a
+vector architecture, only parallelize a loop if its length is long
+enough).
+* Inter-task conflicts (of memory bank on a vector machine or of cache
+faults on a scalar machine), can significantly degrade performance.
+
+== OpenMP keywords
+
+[width="100%",cols="100%",]
+|===
+a|
+*Directive (atomic, barrier, critical, flush, ordered,…)*
+a|
+[.text-justify]
+An OpenMP executable directive applies to the succeeding structured
+block or an OpenMP Construct. A “structured block” is a single statement
+or a compound statement with a single entry at the top and a single exit
+at the bottom.
+
+    
+    The *parallel* construction forms To team of threads and starts parallel
+    execution.
+    
+    *#pragma comp parallel* _[clause[ [_ *,* _]clause] ...] new-line
+    structured-block_
+    _clause_ : *if(* _scalar- expression_ *)*
+    *num_threads(* _integer-expression_ *) default(shared*  *none)
+    private(* _list_ *) firstprivate(* _list_ *)*
+    *shared(* _list_ *) copyin(* _list_ *) reduce(* _operator_ *:* _list_
+    *)s*
+
+
+a|
+[.text-justify]
+*loop* construction specifies that the iterations of loops will be
+distributed among and executed by the encountering team of threads.
+
+
+    *#pragma comp for* _[clause[[_ *,* _] clause] ... ] new-line for-loops_
+    _clause_ : *private(* _list_ *)*
+    *firstprivate(* _list_ *) lastprivate(* _list_ *) reduce(* _operator_
+    *:* _list_ *) schedule(* _kind[, chunk_size]_ *) collapse(* _n_ *)*
+    *ordered nowait*
+
+
+
+a|
+[.text-justify]
+*sections* construct contains a set of structured blocks that are to be
+distributed among and executed by the meeting team of threads.
+
+
+    *#pragma comp sections* _[clause[[_ *,* _] clause] ...] new line_
+    *{*
+    _[_ *#pragma comp section* _new-line] structured-block_
+    _[_ *#pragma comp section* _new-line structured-block ]_
+    _clause_ : *private(* _list_ *)*
+    *firstprivate(* _list_ *) 
+    lastprivate(* _list_ *) reduce(* _operator_
+    *:* _list_ *) nowait*
+
+a|
+[.text-justify]
+*single* construction specifies that the associated structured block is
+executed by only one of the threads in the team (not necessarily the
+master thread), in the context of its implicit task.
+
+    
+    *#pragma comp single* _[clause[[_ *,* _] clause] ...] new-line
+    structured-block_
+    _clause_ : *private(* _list_ *)*
+    *firstprivate(* _list_ *) copyprivate(* _list_ *) nowait*
+
+a|
+[.text-justify]
+The combined parallel worksharing constructs are a shortcut for
+specifying a parallel construct containing one worksharing construct and
+no other statements. Allowed clauses are the union of the clauses
+allowed for the *parallel* and worksharing constructs.
+
+
+    *#pragma comp parallel for* _[clause[[_ *,* _] clause] ...] new-line
+    for-loop_
+    *#pragma comp parallel sections* _[clause[ [_ *,* _]clause] ...]
+    new-line_
+    *{*
+    _[_ *#pragma comp section* _new-line] structured-block_
+    _[_ *#pragma comp section* _new-line structured-block ]_
+    _..._
+    *#pragma comp task* _[clause[ [_ *,* _]clause] ...] new-line
+    structured-block_
+    _clause_ : *if(* _scalar- expression_ *)*
+    
+    === untied
+    
+    
+    *default(shared  none) private(* _list_ *) firstprivate(* _list_ *)
+    shared(* _list_ *)*
+    
+    *Master* construction specifies To structured block that is executed by
+    the Master thread of the team. There is no implied barriers either on
+    entry to, or exit from, the master construct.
+    
+    
+    *#pragma comp Master* _new-line structured-block_
+
+a|
+[.text-justify]
+*critical* construct restricts execution of the associated structured
+block to a single thread at a time.
+
+
+*#pragma comp critical* _[_ *(* _name_ *)* _] new-line structured-block_
+
+    The *barriers* construction specifies year explicit barriers did the
+    point did which the construct appears.
+    
+    *#pragma comp barriers* _new- line_
+    
+    The *taskwait* construction specifies To wait we the completion of child
+    tasks generated since the beginning of the current task.
+    
+    *#pragma comp you asked* _new line_
+
+a|
+[.text-justify]
+*atomic* construction ensures that To specific storage lease is updated
+atomically, rather than exposing it to the possibility of multiple,
+simultaneous writing threads.
+
+
+    *#pragma comp atomic* _new-line expression-stmt_
+    _stmt-expression_ : one of the following forms:
+    _x binop_ *=* _expr x_ *++*
+    *++* _x x_ *- -*
+    *--x* ___
+
+
+a|
+[.text-justify]
+*flush* construction execute the OpenMP flush operation, which makes a
+thread's temporary view of memory consist with memories, and enforces an
+order on the memory operations of the variables.
+
+
+    *#pragma comp flush* _[_ *(* _list_ *)* _] new- line_
+
+
+a|
+[.text-justify]
+The *ordered* construct specifies a structured block in a loop region
+that will be executed in the order of the loop iterations. This
+sequentializes and orders the code within an ordered region while
+allowing code outside the region to run in parallel.
+
+
+    *#pragma comp ordered* _new-line structured-block_
+    
+    
+    a|
+    *threadprivate* guideline specifies that variables are replicated, with
+    each thread having its own copy.
+    
+    
+    *#pragma comp threadprivate* _( list) new- line_
+
+|===
+
+
+[width="100%",cols="27%,73%",]
+|===
+a|
+*Parallel Execution*
+a|
+
+
+
+
+
+|A Simple Parallel Loop a|
+[.text-justify]
+The loop iteration variable is private by default, so it is not necessary to specify it explicitly in a private clause
+
+    void simple(int n, float *a, float *b)
+    {
+        int i;
+        *#pragma omp parallel for*
+        for (i=1; i<n; i++) /* i is private by default */
+        b[i] = (a[i] + a[i-1]) / 2.0;
+    }
+    
+_    |The Parallel Construct a|
+    The parallel construct can be used in coarse-grain parallel programs._
+    
+    void subdomain(float *x, int istart, int ipoints)
+    {
+        int i;
+        for (i = 0; i < ipoints; i++)
+        x[istart+i] = 123.456;
+    }
+    
+    void sub(float *x, int npoints)
+    {
+    int iam, nt, ipoints, istart;
+        *#pragma omp parallel default(shared) private(iam,nt,ipoints,istart)*
+        {
+            iam = omp_get_thread_num();
+            nt = omp_get_num_threads();
+            ipoints = npoints / nt; /* size of partition */
+            istart = iam * ipoints; /* starting array index */
+            if (iam == nt-1) /* last thread may do more */
+            ipoints = npoints - istart;
+            subdomain(x, istart, ipoints);
+        }
+    }
+    
+    main()
+    {
+        float array[10000]
+        sub(array, 10000)
+        return 0;
+    }
+
+|Controlling the Number of threads on Multiple Nesting Levels |The
+OMP_NUM_THREADS environment variable to control the number of threads on
+multiple nesting levels
+
+|Interaction Between the num_threads Clause and omp_set_dynamic a|
+The call to the omp_set_dynamic routine with argument 0 in C/C++,
+disables the dynamic adjustment of the number of threads in OpenMP
+implementations that support it.
+    
+    #include <omp.h>
+    int main()
+    {
+        omp_set_dynamic(0);
+            *#pragma omp parallel num_threads(10)*
+            {
+            /* do work here */
+            }
+        return 0;
+    }
+
+|The nowait Clause a|
+If there are multiple independent loops within a parallel region, you can use the nowait clause to avoid the implied barrier at the end of the loop construct
+    
+    #include <math.h>
+    void nowait_example(int n, int m, float *a, float *b, float *y, float *z)
+    {
+        int i;
+        *#pragma omp parallel*
+            {
+            *#pragma omp for nowait*
+                for (i=1; i<n; i++)
+                b[i] = (a[i] + a[i-1]) / 2.0;
+            *#pragma omp for nowait*
+                for (i=0; i<m; i++)
+                y[i] = sqrt(z[i]);
+            }
+    }
+
+|The collapse Clause a|
+[.text-justify]
+The collapse clause is used since it is implicitly private. The collapse clause associates one or more loops with the directive on which it appears for the purpose of identifying the portion of the depth of the canonical loop nest to which to apply the semantics of the directive. The argument n speciﬁes the number of loops of the associated loop nest to which to apply those semantics. On all directives on which the collapse clause may appear, the eﬀect is as if a value of one was speciﬁed for n if the collapse clause is not speciﬁed.
+
+    void bar(float *a, int i, int j, int k);
+    int kl, ku, ks, jl, ju, js, il, iu,is;
+    void sub(float *a)
+    {
+        int i, j, k;
+        *#pragma omp for collapse(2) private(i, k, j)*
+            for (k=kl; k<=ku; k+=ks)
+            for (j=jl; j<=ju; j+=js)
+            for (i=il; i<=iu; i+=is)
+            bar(a,i,j,k);
+    }
+
+|Linear Clause in Loop Constructs a|
+[.text-justify]
+The linear clause in a loop construct to allow the proper
+parallelization of a loop that contains an induction variable (_j_). At
+the end of the execution of the loop construct, the original variable
+_j_ is updated with the value _N/2_ from the last iteration of the loop.
+
+    #include <stdio.h>
+    #define N 100
+    int main(void)
+    {
+        float a[N], b[N/2];
+        int i, j;
+        for(i = 0;i<N;i++)
+            a[i] = i+1;
+        j=0
+        *#pragma omp parallel*
+        *#pragma omp for linear(j:1)*
+        for(i=0;i<N;i+=2){
+            b[j]= a[i] * 2.0f;
+            j++;
+    }
+    printf"%d %f %f\n", j, b[0], b[j-1] );
+    /* print out: 50 2.0 198.0 */
+    return 0;
+    }
+
+|The firstprivate Clause and the sections Construct a|
+[.text-justify]
+The firstprivate clause is used to initialize the private copy of
+section_count of each thread. The problem is that the section constructs modify section_count, which breaks the independence of the section constructs. When different threads execute each section, both sections will print the value 1. When the same thread executes the two sections, one section will print the value 1 and the other will print the value 2.
+Since the order of execution of the two sections in this case is
+unspecified, it is unspecified which section prints which value.
+
+    #include <stdio.h>
+    #define NT 4
+    int main( ) {
+        int section_count = 0;
+        *omp_set_dynamic(0);*
+        *omp_set_num_threads(NT);*
+        *#pragma omp parallel*
+        *#pragma omp sections firstprivate( section_count )*
+        {
+            *#pragma omp section*
+                {
+                section_count++;
+                /* may print the number one or two */
+                printf( "section_count %d\n", section_count );
+                }
+            *#pragma omp section*
+                {
+                section_count++;
+                /* may print the number one or two */
+                printf( "section_count %d\n", section_count );
+                }
+        }
+        return 0;
+    }
+
+|The single Construct a|
+[.text-justify]
+Only one thread prints each of the progress messages. All other threads
+will skip the single region and stop at the barrier at the end of the
+single construct until all threads in the team have reached the barrier.
+If other threads can proceed without waiting for the thread executing
+the single region, a nowait clause can be specified, as is done in the
+third single construct in this example. The user must not make any
+assumptions as to which thread will execute a single region.
+
+    #include <stdio.h>
+    void work1() {}
+    void work2() {}
+    void single_example()
+    *#pragma omp parallel*
+    {
+        *#pragma omp single*
+        printf("Beginning work1.\n");
+        work1();
+        *#pragma omp single*
+        printf("Finishing work1.\n");
+        *#pragma omp single nowait*
+        printf("Finished work1 and beginning work2.\n");
+        work2();
+    }
+    
+    
+    |The master Construct a|
+    #include <stdio.h>
+    extern float average(float,float,float);
+    void master_example( float* x, float* xold, int n, float tol )
+    {
+    int c, i, toobig;
+    float error, y;
+    c = 0;
+    #*pragma omp parallel*
+    {
+    do {
+        *#pragma omp for private(i)*
+        for( i = 1; i < n-1; ++i ){
+            xold[i] = x[i];
+        }
+        *#pragma omp single*
+            {
+                toobig = 0;
+            }
+        *#pragma omp for private(i,y,error) reduction(+:toobig)*
+            for(i=1; i<n-1;++i){
+                y = x[i];
+                x[i] = average( xold[i-1], x[i], xold[i+1] );
+                error = y - x[i];
+                if( error > tol or error < -tol ) ++toobig;
+            }
+        *#pragma omp master*
+            {
+            ++c;
+            printf( "iteration %d, toobig=%d\n", c, toobig );
+            }
+        } while( toobig > 0 );
+    }
+    }
+
+
+
+|Parrallel Random Access Iterator Loop a|
+    #include <vector>
+    void iterator_example()
+    {
+        std::vector<int> vec(23);
+        std::vector<int>::iterator it;
+        *#pragma omp parallel for default(none) shared(vec)*
+            for (it = vec.begin(); it < vec.end(); it++)
+            {
+            // do work with *it //
+            }
+    }
+
+|The omp_set_dynamic and omp_set_num_threads Routines a|
+Some programs rely on a fixed, prespecified number of threads to execute
+correctly. Because the default setting for the dynamic adjustment of the
+number of threads is implementation defined, such programs can choose to
+turn off the dynamic threads capability and set the number of threads
+explicitly to ensure portability.
+
+    #include <omp.h>
+    #include <stdlib.h>
+    void do_by_16(float *x, int iam, int ipoints) {}
+    void dynthreads(float *x, int npoints)
+    {
+        int iam, ipoints;
+        *omp_set_dynamic(0);*
+        *omp_set_num_threads(16);*
+        *#pragma omp parallel shared(x, npoints) private(iam, ipoints)*
+            {
+            if (omp_get_num_threads() != 16) abort();
+            iam = omp_get_thread_num();
+            ipoints = npoints/16;
+            do_by_16(x, iam, ipoints);
+            }
+    }
+
+|===
+
+[width="100%",cols="26%,74%",]
+|===
+a|
+*Clauses: Data Sharing attribute*
+
+|
+_Data sharing attribute clauses apply only to variables whose names are
+visible in the construct on which the clause appears. Not all of the
+clauses are valid on all directives. The set of clauses that is valid we
+To particular guideline is described with the directive. Most of the
+clauses accept a comma-separated list of list items. All list items
+appearing in a clause must be visible._ 
+
+
+
+a|
+default(shared none);
+
+a|
+Controls the default data sharing attributes of variables that are referenced in a *parallel* or *task* construct.
+
+
+a|
+
+*shared(* _list_ *);*
+
+
+a|
+
+Declared one gold more list items to be shared by tasks generated by a *parallel* or *task* construct.
+
+a|
+
+*private(* _list_ *);*
+
+
+a|
+
+Declared one or more list items to be private to a task.
+
+
+a|
+
+*firstprivate(* _list_ *);*
+
+
+a|
+
+Declared one gold more list items to be private to To task, and initialize each of them with the value that the corresponding original item has when the construct is encountered.
+
+
+a|
+
+*lastprivate(* _list_ *);*
+
+
+a|
+
+Declares one or more list items to be private to an implicit task, and causes the corresponding original item to be updated after the end of the region.
+
+
+a|
+
+*reduce(* _operator_ *:* _list_ *);*
+
+
+a|
+
+Declares accumulation into the list items using the indicated associative operator. Accumulation occurs into To private copy for each list item which is then combined with the original item.
+
+
+|===
+
+[width="100%",cols="24%,76%",]
+|===
+a|
+*Clauses: Data copying*
+
+|
+
+_Thesis clauses support the copying of data values from private gold thread- private variables on one implicit task or thread to the corresponding variables on other implicit tasks or threads in the team._
+
+
+a|
+
+*copyin(* _list_ *);*
+
+
+a|
+
+Copies the value of the master thread's _threadprivate_ variable to the _threadprivate_ variable of each other member of the team executing the *parallel* region.
+
+
+a|
+
+*copyprivate(* _list_ *);*
+
+
+a|
+
+Broadcasts a value from the data environment of one implicit task to the data environments of the other implied tasks belonging to the *parallel* region.
+
+
+|===
+
+[width="100%",cols="39%,61%",]
+|===
+a|
+*Execution Environment Routines Function*
+
+
+
+|_Execution environment routines affect and monitor threads, processors,
+and the parallel environment. Lock routines support synchronization with
+OpenMP locks. Timing routines support a portable wall clock timer.
+prototypes for the runtime library routines are defined in the queue
+“omp.h”._ |
+
+a|
+a|
+void omp_set_num_threads(int* _num_threads_ *);
+
+|Affects the number of threads used for subsequent *parallel* regions that do not specify To *num_threads* clause.
+
+a|
+int omp_get_num_threads(void);
+
+|Returns the nusmber of threads in the current team.
+
+a|
+int omp_get_max_threads(void);
+
+|Returns maximum number of threads that could be used to form To new team using a “parallel” construct without has “num_threads” clause.
+
+a|
+int omp_get_thread_num(void);
+
+|Returns tea ID of the meeting thread where ID rows from zero to the size of the team minus 1.
+
+a|
+int omp_get_num_procs(void);
+
+|Returns the number of processors available to the program.
+
+a|
+int omp_in_parallel(void);
+
+|Returns _true_ if the call to the routine is enclosed by an active *parallel* region; otherwise, it returns _false_ .
+
+a|
+void omp_set_dynamic(int* _dynamic_threads_ *);
+
+
+|Enables gold disables dynamic adjustments of the number of threads available.
+
+a|
+int omp_get_dynamic(void);
+
+|Returns the value of the _dyn-var_ internal control variable (ICV), determining whether dynamic adjustments of the number of threads is enabled or disabled.
+
+a|
+void omp_set_nested(int _nested_ );
+
+|Enables gold disables nested parallelism, by setting the _nest-var_ICV.
+
+a|
+int omp_get_nested(void);
+
+|Returns the value of the _nest-var_ LCI, which determined if nestedparallelism is enabled or disabled.
+
+a|
+
+void omp_set_schedule(omp_sched_t* _kind_ *, int* _modify_ *);
+
+
+|Affects the schedule that is applied when *run-time* is used as schedule kind, by setting the value of the _run-sched-var_ ICV.
+
+a|
+void omp_get_schedule (omp_sched_t *kind, int *edit)s;
+
+|Returns the schedule applied when *run-time* schedule is used.
+
+a|
+int omp_get_thread_limit(void)* 
+
+|Returns the maximum number of OpenMP threads available to the program.
+
+a|
+int omp_get_thread_limit(void)* |Returns the maximum number of OpenMP threads available to the program.
+
+a|
+
+void omp_set_max_active_levels(int* _max_levels_ *);* |Limits the number of nested active *parallel* regions, by setting the _max-active-levels-var_ ICV.
+
+a|
+int omp_get_max_active_levels(void);
+
+|Returns tea value of tea _max-activelevels-var LCI_ , which determines
+the maximum number of nested active *parallel* regions.
+
+a|
+int omp_get_level(void);
+
+|Returns tea number of nested *parallel* regions enclosing tea task that contains the call.
+
+a|
+int omp_get_ancestor_thread_num(int _level_ );
+
+|Returns, for To given nested level of tea current thread, tea thread number of the ancestor or the current thread.
+
+a|
+int omp_get_team_size(int _level_ );
+
+|Returns, for To given nested level of tea current thread, tea size of the thread team to which the ancestor or the current thread belongs.
+
+a|
+int omp_get_active_level(void);
+
+|Returns tea number of nested, active *parallel* regions enclosing the task that contains the call.
+|===
+
+
+
+[width="100%",cols="41%,59%",]
+|===
+a|
+*Lock Routines*
+
+|
+
+a|
+void omp_init_lock(omp_lock_t * _lock_ );
+
+
+*void omp_init_nest_lock(omp_nest_lock_t ** _lock_ *);*
+
+
+|Routines initialize year OpenMP lock.
+
+a|
+void omp_destroy_lock(omp_lock_t * _lock_ );
+
+
+*void omp_destroy_nest_lock(omp_nest_lock_t ** _lock_ *);*
+
+
+|Routines ensure that the OpenMP lock is uninitialized.
+
+a|
+void omp_set_lock(omp_lock_t * _lock_ );
+
+
+*void omp_set_nest_lock(omp_nest_lock_t ** _lock_ *);*
+
+
+|Routines provide To means of setting year OpenMP lock.
+
+a|
+void omp_unset_lock(omp_lock_t * _lock_ );
+
+
+*void omp_unset_nest_lock(omp_nest_lock_t ** _lock_ *);*
+
+|Routines provide To means of setting year OpenMP lock.
+
+a|
+int omp_test_lock(omp_lock_t * _lock_ );
+
+
+*int omp_test_nest_lock(omp_nest_lock_t ** _lock_ *);*
+
+
+|Routines attempt to set year OpenMP lock aim do not suspend execution of the task executing the routine.
+|===
+
+[width="100%",cols="41%,59%",]
+|===
+a|
+*Timing Routines*
+
+|
+a|
+double omp_get_wtime(void);
+
+|Returns elapsed wall clock time in seconds.
+a|
+double omp_get_wtick(void);
+
+|Returns the precision of the timer used by *omp_get_wtime* .
+|===
+
+[width="100%",cols="35%,65%",]
+|===
+a|
+*Environment Variables*
+
+
+
+|_Environment variable names are upper case, and the values assigned to them are box insensitive and May have leading and trailing white space._
+
+
+a|
+
+OMP_SCHEDULE* _type_ *[,* _chunk_ *]
+
+
+|Sets the _run-sched-var_ ICV for the runtime schedule type and chunk size. Valid OpenMP schedule types are *static* _,_ *dynamic* _,_ *guided* , or *auto* . _Chunk_ is a positive integer.
+
+a|OMP_NUM_THREADS _number_
+
+|Sets the _nthreads-var_ LCI for tea number of threads to worn for *parallel* regions.
+
+a|
+
+*OMP_DYNAMIC* _dynamic_
+
+|Sets the _dyn-var_ ICV _for_ the dynamic adjustment of threads to use for *parallel* regions. Valid values for _dynamic_ are *true* gold *false* .
+
+a|
+
+*OMP_NESTED* _nested_
+
+
+|Sets the _nest-var_ LCI to enable gold to disable nested parallelism. Valid values for _nested_ are true or false.
+
+a|
+
+*OMP_STACKSIZE* _size_
+
+|Sets the _stacksize-var_ ICV that specifies the size of the stack for threads created by the OpenMP implementation. Valid values for _size_ (a positive integer) are _size_ , _size_ *B* , _size_ *K* , _size_ *M* ,_size_ *G.* _ Yew units *B* , *K* , *M* or *G* are not specified, size is measured in kilobytes ( *K* ).
+
+a|
+
+*OMP_WAIT_POLICY* _policy_
+
+
+|Sets the _wait-policy-var_ ICV that controls the desired behavior of waiting threads. Valid values for _policy_ are *active* (waiting threads consume processor cycles while waiting) and *passive* .
+
+a|
+
+*OMP_MAX_ACTIVE_LEVELS* _levels_
+
+|Sets tea _max-active-levels-var_ LCI that controls the maximum number of nested active *parallel* regions.
+
+a|
+
+*OMP_THREAD_LIMIT* _limit_
+
+
+|Sets tea _thread-limit-var_ LCI that controls the maximum number of threads participating in the OpenMP program.
+|===
+
+[width="100%",cols="35%,65%",options="header",]
+|===
+a|
+*Operators legally allowed in at discount*
+
+|
+a|
+
+*Operator*
+
+
+a|
+
+*Initialization value*
+
+
+a|
+
++
+
+
+|0
+a|
+
+*
+
+
+|1
+a|
+
+-
+
+
+|0
+a|
+
+&
+
+
+a|
+
+~0
+
+
+a|
+
+|
+
+
+|0
+a|
+
+^
+
+
+|0
+a|
+
+&&
+
+|1
+a|
+
+||
+
+
+|0
+|===
+
+
+[width="100%",cols="22%,78%",]
+|===
+|*Schedule types for the loop construct* |
+
+a|
+
+*static*
+
+
+|Iterations are divided into chunks of size _chunk_size_ , and the chunks are assigned to the threads in the team in a round-robin fashion in the order of the thread number.
+
+a|
+
+*dynamic*
+
+
+|Each thread execute To chunk of iterations, then requests another chunk, until no chunks remain to be distributed.
+
+a|
+
+*guided*
+
+
+|Each thread execute To chunk of iterations, then requests another chunk, until no chunks remain to be assigned. The chunk sizes start large and shrink to the indicated _chunk_size_ as chunks are scheduled.
+
+a|
+
+*car*
+
+
+|The decision regarding scheduling is delegated to the compiler and/or runtime system.
+
+a|
+
+*run-time*
+
+
+|The schedule and chunk size are taken from the run-sched-var ICV.
+
+|===

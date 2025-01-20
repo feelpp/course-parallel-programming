@@ -1,10 +1,22 @@
 name: parallel-programming
-title: Template Project
+title: Main
 version: ~
 start_page: index.adoc
 asciidoc:
   attributes:
     project_name: Parallel Programming
+    showproof: 3
+    dynamic-blocks@: ''
+    page-toclevels: 3@
+    cpp: C++
+    gpp: g++
+    plus: +
+    numbered: true
+    allow-uri-read: true
+    hide-uri-scheme: true
+    feelpp: Feel++
+    stem: latexmath
+    python: Python
 ext:
   collector:
     - run:
@@ -13,6 +25,13 @@ ext:
         dir: jupyter/
         files: '**/*.ipynb'
         base: modules/ROOT/attachments/
+    - run:
+        command: |
+          ./generate-jupyter.sh docs/modules/exos
+      scan:
+        dir: jupyter/exos/
+        files: '**/*.ipynb'
+        base: modules/exos/attachments/
 nav:
 - modules/ROOT/nav.adoc
 

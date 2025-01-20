@@ -1,0 +1,326 @@
+= CUDA Coding Practice
+
+image::CUDA_Logo.png[Img401,50,50,role="left"]
+
+* Compiling a program for CUDA 
+*** For example, to compile MyProg.cu you would use a command like
+*** nvcc -o MyProg MyProg.cu
+
+
+.Start
+[.examp]
+****
+
+.Code Start with GPU
+[source,cu]
+----
+include::ROOT:example$src/Cuda/Start/hello.cu[indent=0]
+----
+****
+
+
+
+.Array Addition Examples in CPU/GPU
+[.examp]
+****
+* Array Addition Examples in CPU/GPU
+
+.Code Array Addition CPU
+[source,cpp]
+----
+include::ROOT:example$src/Cuda/Array_Addition/01_array_addition_cpu.cpp[indent=0]
+----
+
+.Code Array Addition GPU
+[source,cu]
+----
+include::ROOT:example$src/Cuda/Array_Addition/02_array_addition_gpu.cu[indent=0]
+----
+****
+
+
+.*Profiling Performance*
+****
+ADD SOME RESULTS
+****
+
+
+
+
+
+
+.Array Reduce Examples in CPU
+[.examp]
+****
+* Array Reduce Examples in CPU/GPU
+
+A reduction of an array to a single value on a GPU. Data is copied to the GPU memory, where each thread adds one element to the accumulated value. The thread-safe atomic operations have to be used in order to ensure that there are no race conditions. Many threads will run simultaneously on a GPU, so there is no need for a loop over the indices.
+
+.Code Array Reduce CPU
+[source,cpp]
+----
+include::ROOT:example$src/Cuda/Array_Reduce/01_array_reduce_cpu.cu[indent=0]
+----
+
+.Code Array Reduce GPU
+[source,cu]
+----
+include::ROOT:example$src/Cuda/Array_Reduce/02_array_reduce_gpu.cu[indent=0]
+----
+
+.Code Array Reduce Atomic GPU
+[source,cu]
+----
+include::ROOT:example$src/Cuda/Array_Reduce/03_array_reduce_gpu_atomic.cu[indent=0]
+----
+
+A reduction of an array to a single value on a GPU. Data is copied to the GPU memory, where each thread adds one element to the accumulated value. Note that the thread-safe atomic operations have to be used in order to ensure that there are no race conditions. Many threads will run simultaneously on a GPU, so there is no need for a loop over the indices.
+
+.Code Array Reduce Shuffle GPU
+[source,cu]
+----
+include::ROOT:example$src/Cuda/Array_Reduce/04_array_reduce_gpu_shuffle.cu[indent=0]
+----
+
+.Code Array Reduce Parallelism GPU
+[source,cu]
+----
+include::ROOT:example$src/Cuda/Array_Reduce/05_array_reduce_gpu_parallelism.cu[indent=0]
+----
+
+.Code Array Reduce Static GPU
+[source,cu]
+----
+include::ROOT:example$src/Cuda/Array_Reduce/06_array_reduce_gpu_static.cu[indent=0]
+----
+
+****
+
+.*Profiling Performance*
+****
+ADD SOME RESULTS
+****
+
+
+
+
+
+
+
+
+.Matrix Summation Examples in GPU
+[.examp]
+****
+* Matrix SummationExamples in GPU
+
+.Code GPU Grid Info
+[source,cu]
+----
+include::ROOT:example$src/Cuda/Matrix_Summation/01_GPU_grid_block_thread_info.cu[indent=0]
+----
+
+.Code Matrix Thread Index Info
+[source,cu]
+----
+include::ROOT:example$src/Cuda/Matrix_Summation/02_matrix_thread_index_info.cu[indent=0]
+----
+
+.Code Matrix Summation
+[source,cu]
+----
+include::ROOT:example$src/Cuda/Matrix_Summation/03_matrix_summation_GPU_2D2D_2D1D_1D1D.cu[indent=0]
+----
+
+
+
+****
+.*Profiling Performance*
+****
+ADD SOME RESULTS
+****
+
+
+
+.Parallel reduction Examples in CPU/GPU
+[.examp]
+****
+* Parallel reduction Examples in CPU/GPU
+
+.Code Parallel Reduction CPU1
+[source,cpp]
+----
+include::ROOT:example$src/Cuda/Parallel_Reduction/reduction_cpu_1.cpp[indent=0]
+----
+
+.Code Parallel Reduction CPU2
+[source,cpp]
+----
+include::ROOT:example$src/Cuda/Parallel_Reduction/reduction_cpu_2.cpp[indent=0]
+----
+
+.Code Parallel Reduction GPU1
+[source,cu]
+----
+include::ROOT:example$src/Cuda/Parallel_Reduction/reduction_gpu_1.cu[indent=0]
+----
+
+.Code Parallel Reduction GPU2
+[source,cu]
+----
+include::ROOT:example$src/Cuda/Parallel_Reduction/reduction_gpu_2.cu[indent=0]
+----
+
+.Code Parallel Reduction GPU3
+[source,cu]
+----
+include::ROOT:example$src/Cuda/Parallel_Reduction/reduction_gpu_3.cu[indent=0]
+----
+
+.Code Parallel Reduction GPU4
+[source,cu]
+----
+include::ROOT:example$src/Cuda/Parallel_Reduction/reduction_gpu_4.cu[indent=0]
+----
+
+.Code Parallel Reduction GPU5
+[source,cu]
+----
+include::ROOT:example$src/Cuda/Parallel_Reduction/reduction_gpu_5.cu[indent=0]
+----
+
+.Code Parallel Reduction GPU6
+[source,cu]
+----
+include::ROOT:example$src/Cuda/Parallel_Reduction/reduction_gpu_6.cu[indent=0]
+----
+
+.Code Parallel Reduction GPU7
+[source,cu]
+----
+include::ROOT:example$src/Cuda/Parallel_Reduction/reduction_gpu_7.cu[indent=0]
+----
+
+
+
+
+****
+.*Profiling Performance*
+****
+ADD SOME RESULTS
+****
+
+
+.Task Parallelism Examples in CPU/GPU
+[.examp]
+****
+* Task Parallelism Examples in CPU/GPU
+
+.Code Task Parallelism Async Vers1 CPP
+[source,cpp]
+----
+include::ROOT:example$src/Cuda/Task_Parallelism/Async1/Solution/async_cpu.cpp[indent=0]
+----
+
+.Code Task Parallelism Async Vers1 GPU
+[source,cu]
+----
+include::ROOT:example$src/Cuda/Task_Parallelism/Async1/Solution/async_gpu_1.cu[indent=0]
+----
+
+.Code Task Parallelism Async Vers1 GPU
+[source,cu]
+----
+include::ROOT:example$src/Cuda/Task_Parallelism/Async1/Solution/async_gpu_2.cu[indent=0]
+----
+
+
+.Code Task Parallelism Async Vers2 CPP
+[source,cpp]
+----
+include::ROOT:example$src/Cuda/Task_Parallelism/Async2/Solution/async_cpu.cpp[indent=0]
+----
+
+.Code Task Parallelism Async Vers2 GPU
+[source,cu]
+----
+include::ROOT:example$src/Cuda/Task_Parallelism/Async2/Solution/async_gpu_1.cu[indent=0]
+----
+
+.Code Task Parallelism Async Vers2 GPU
+[source,cu]
+----
+include::ROOT:example$src/Cuda/Task_Parallelism/Async2/Solution/async_gpu_2.cu[indent=0]
+----
+
+.Code Task Parallelism Async Vers3 GPU
+[source,cu]
+----
+include::ROOT:example$src/Cuda/Task_Parallelism/Async2/Solution/async_gpu_3.cu[indent=0]
+----
+
+.Code Task Parallelism Async Vers4 GPU
+[source,cu]
+----
+include::ROOT:example$src/Cuda/Task_Parallelism/Async2/Solution/async_gpu_4.cu[indent=0]
+----
+
+
+
+****
+.*Profiling Performance*
+****
+ADD SOME RESULTS
+****
+
+
+
+.Vector Examples in CPU/GPU
+[.examp]
+****
+
+****
+.*Profiling Performance*
+****
+ADD SOME RESULTS
+****
+
+
+.Dynamic Sync
+[.examp]
+****
+
+.Code Dynamic Sync
+[source,cu]
+----
+include::ROOT:example$src/Cuda/DynamicSync/simple.cu[indent=0]
+----
+****
+
+
+.Simple Streams
+[.examp]
+****
+
+.Code Simple Stream
+[source,cu]
+----
+include::ROOT:example$src/Cuda/SimpleStreams/streams.cu[indent=0]
+----
+****
+
+
+.Jacobi
+[.examp]
+****
+
+.Code Jacobi
+[source,cu]
+----
+include::ROOT:example$src/Cuda/Jacobi/jacobi.cu[indent=0]
+----
+****
+
+
+
+...
+

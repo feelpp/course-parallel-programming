@@ -1,0 +1,71 @@
+= Hybrid MPI and OpenMP
+
+[.text-justify]
+== MPI, OpenMP two complementary parallelization models.
+
+* MPI is a multi-process model whose mode of communication between the processes is *explicit* (communication management is the responsibility of the user). MPI is generally used on multiprocessor machines with distributed memory. MPI is a library for passing messages between processes without sharing.
+
+* OpenMP is a multitasking model whose mode of communication between tasks is *implicit* (the management of communications is the responsibility of the compiler). OpenMP is used on shared-memory multiprocessor machines. It focuses on shared memory paradigms. It is a language extension for expressing data-parallel operations (usually parallelized arrays over loops).
+
+Note: on a cluster of independent shared-memory multiprocessor machines (nodes), the implementation of a two-level parallelization (MPI, OpenMP) in the same program can be a major advantage for the parallel performance of the code.
+
+image::image7.png[xref=#fragment7,width=581,height=336]
+
+
+== MPI vs OpenMP comparison 
+
+[width="100%",cols="50%,50%",]
+|===
+|*MPI vs. OpenMP* |
+|*MPI pos* |*OpenMP pos*
+a|
+Portable to a distributed and shared memory machine.
+
+Scale beyond a node
+
+No data placement issues
+
+a|
+Easy to implement parallelism
+
+Implicit communications
+
+Low latency, high bandwidth
+
+Dynamic Load Balancing
+
+|*MPI negative* |*OpenMP negative*
+a|
+Explicit communication
+
+High latency, low bandwidth
+
+Difficult load balancing
+
+a|
+Only on nodes or shared memory machines
+
+Scale on Node
+
+Data placement problem
+
+|===
+[.text-justify]
+Hybrid application programs using MPI + OpenMP are now commonplace on large HPC systems. There are basically two main motivations for this combination of programming models:
+[.text-justify]
+{empty}1. Reduced memory footprint, both in the application and in the MPI library (eg communication buffers).
+[.text-justify]
+{empty}2. Improved performance, especially at high core counts where pure MPI scalability runs out.
+
+== A common hybrid approach
+
+image::image9.png[xref=#fragment9,width=307,height=155]
+[.text-justify]
+* From dequential code, alongside MPI first, then try adding OpenMP
+* From MPI code, add OpenMP
+* From OpenMP code, treat as serial code
+* The simplest and least error-prone method is to use MPI outside the parallel region and allow only the master thread to communicate between MPI tasks.
+* Could use MPI in parallel region with thread-safe MPI.
+
+
+

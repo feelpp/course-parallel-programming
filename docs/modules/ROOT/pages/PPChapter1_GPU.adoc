@@ -1,0 +1,77 @@
+= GPU (Graphics Processing Unit is a graphics (co-)processor)
+
+image::GPU.jpg[xref=#fragment02,width=322,height=220]
+
+[.text-justify]
+== Definition 
+
+Graphics Processing Unit is a graphics (co-)processor capable of very efficiently performing calculations on images (2D, 3D, videos, etc.). The raw computing power offered is higher due to the large number of processors present on these cards. This is why it is not uncommon to obtain large acceleration factors between CPU and GPU for the same application.
+
+Explicit code targeting GPUs: CUDA, HIP, SYCL, Kokkos, RAJA,...
+
+image:image2.png[xref=#fragment2,width=488,height=342]
+
+_Fig: illustrates the main hardware architecture differences between CPUs and GPUs. The transistor counts associated with various functions are represented abstractly by the relative sizes of the various shaded areas. In the figure, the green corresponds to the calculation; gold is instruction processing; purple is the L1 cache; blue is top level cache and orange is memory (DRAM, which really should be thousands of times larger than caches)._
+
+[.text-justify]
+GPUs were originally designed to render graphics. They work great for shading, texturing, and rendering the thousands of independent polygons that make up a 3D object. CPUs, on the other hand, are meant to control the logical flow of any general-purpose program, where a lot of digit manipulation may (or may not) be involved. Due to these very different roles, GPUs are characterized by having many more processing units and higher overall memory bandwidth, while CPUs offer more sophisticated instruction processing and faster clock speed.
+
+[.text-justify]
+== CPU vs GPU comparison 
+
+[width="100%",cols="23%,44%,33%",]
+|===
+| |*CPU: Latency-oriented design* |*GPU: Throughput Oriented Design*
+
+|*Clock* |High clock frequency |Moderate clock frequency
+
+|*Caches* a|
+Large sizes
+
+Converts high latency accesses in memory to low latency accesses in
+cache
+
+a|
+Small caches
+
+To maximize memory throughput
+
+|*Control* a|
+Sophisticated control system
+
+Branch prediction to reduce latency due to branching +
+Data loading to reduce latency due to data access
+
+a|
+Single controlled
+
+No branch prediction
+
+No data loading
+
+|*Powerful Arithmetic Logic Unit (ALU)* |Reduced operation latency
+|Numerous, high latency but heavily pipelined for high throughput
+
+|*Other aspects* a|
+Lots of space devoted to caching and control logic. Multi-level caches
+used to avoid latency
+
+Limited number of registers due to fewer active threads
+
+Control logic to reorganize execution, provide ILP, and minimize
+pipeline hangs
+
+|Requires a very large number of threads for latency to be tolerable
+
+|*Beneficial aspects for applications* a|
+CPUs for sequential games where latency is critical.
+
+CPUs can be 10+X faster than GPUs for sequential code.
+
+a|
+GPUs for parallel parts where throughput is critical.
+
+GPUs can be 10+X faster than GPUs for parallel code.
+
+|===
+
