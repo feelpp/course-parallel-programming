@@ -18,7 +18,7 @@
 ** xref:PPChapter2_OpenMP2.adoc[OpenMP more information]
 ** xref:PPChapter2_Hybrid.adoc[Hybrid MPI with OpenMP]
 
-* xref:PPChapter3.adoc[StarPU]
-
-* xref:PPChapter4.adoc[Specx]
+* Runtime Systems
+** xref:PPChapter3.adoc[StarPU]
+** xref:PPChapter4.adoc[Specx]
 
