@@ -67,7 +67,6 @@ include::ROOT:example$src/HIP/Matrix_Summation/03_matrix_summation_GPU_2D2D_2D1D
 
 
 
-****
 .*Profiling Performance*
 ****
 ADD SOME RESULTS
