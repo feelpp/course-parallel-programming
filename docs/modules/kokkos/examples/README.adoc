@@ -1,0 +1,10 @@
+= Configure this repository
+
+[source, sh]
+----
+mkdir build
+cd build
+cmake -DKokkos_OPENMP=ON ..
+
+make
+----
