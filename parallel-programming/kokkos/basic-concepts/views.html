@@ -310,13 +310,47 @@ The View life cycle is an essential aspect of using Kokkos effectively. When a V
 In the context of high-performance computing, Kokkos Views shine in their ability to handle large, multidimensional data structures efficiently. They are particularly useful in scientific simulations, linear algebra operations, and other computationally intensive tasks.</p>
 </div>
 <div class="paragraph">
-<p>&#8230;&#8203;</p>
+<p>Here&#8217;s an example of using a Kokkos View in C++:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>#include &lt;Kokkos_Core.hpp&gt;</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>int main(int argc, char* argv[]) {
+Kokkos::initialize(argc, argv);
+{
+    const size_t N = 1000000;
+    // Create a 1D View of doubles
+    Kokkos::View&lt;double*&gt; myView("MyView", N);
+    // Fill the View with data
+    Kokkos::parallel_for(N, KOKKOS_LAMBDA(const int i) { myView(i) = i * 2.0; });
+    // Compute the sum of all elements
+    double sum = 0.0;
+    Kokkos::parallel_reduce(N, KOKKOS_LAMBDA(const int i, double&amp; partial_sum) {
+    partial_sum += myView(i);
+    }, sum);
+    std::cout &lt;&lt; "Sum: " &lt;&lt; sum &lt;&lt; std::endl;
+}
+Kokkos::finalize();
+return 0;
+}</pre>
+</div>
 </div>
 <div class="paragraph">
-<p>(See:
-<strong> [1] <a href="https://docs.trilinos.org/dev/packages/kokkos/doc/html/classKokkos_1_1View.html" class="bare">docs.trilinos.org/dev/packages/kokkos/doc/html/classKokkos_1_1View.html</a>
-</strong> [2] <a href="https://kokkos.org/kokkos-core-wiki/API/core/view/view.html" class="bare">kokkos.org/kokkos-core-wiki/API/core/view/view.html</a>
-)</p>
+<p>See:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>[1] <a href="https://kokkos.org/kokkos-core-wiki/API/core/view/view.html" class="bare">kokkos.org/kokkos-core-wiki/API/core/view/view.html</a></p>
+</li>
+<li>
+<p>[2] <a href="https://docs.trilinos.org/dev/packages/kokkos/doc/html/classKokkos_1_1View.html" class="bare">docs.trilinos.org/dev/packages/kokkos/doc/html/classKokkos_1_1View.html</a></p>
+</li>
+</ul>
 </div>
 </div>
 </div>
