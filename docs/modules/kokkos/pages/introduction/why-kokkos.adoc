@@ -1,1 +1,28 @@
-= Why Kokkos ?
+= What is Kokkos ? 
+
+image::kokkos1.png[xref=#fragment100,width=322,height=220]
+
+[.text-justify]
+We have previously explored various hardware architectures, specialized languages, and advanced parallel programming techniques. At the heart of this technological complexity emerges Kokkos, a framework that, like a conductor, harmonizes and simplifies these diverse concepts. Kokkos offers a unified approach, allowing developers to efficiently navigate this complex ecosystem of parallel programming.
+
+[.text-justify]
+The main appeal of Kokkos lies in its ability to abstract hardware-specific details, allowing programmers to write code once and deploy it across diverse architectures. This "write once, run anywhere" approach is particularly valuable in today's context where supercomputers and high-performance computing clusters often integrate heterogeneous accelerators. Kokkos offers powerful abstractions such as execution spaces, execution policies, and data containers like Kokkos::View, which automatically adapt to the underlying architecture.
+
+[.text-justify]
+Another major advantage of Kokkos is its rich ecosystem, which we will see in more detail later, including profiling tools like Kokkos::Tools, which allow developers to fine-tune their applications. Moreover, Kokkos integrates well with other essential technologies of high-performance computing, such as MPI for inter-node communication, thus offering a complete solution for the development of large-scale parallel applications.
+
+[.text-justify]
+Kokkos is thus a C++ library designed to address the growing challenges of parallel programming and performance portability in the field of high-performance computing (HPC). Its unified approach to target both CPUs and GPUs from different manufacturers (NVIDIA, AMD, Intel) makes it particularly attractive in a constantly evolving technology landscape.
+
+[.text-justify]
+Its major advantage is the **simplification of parallel programming** and its ability to offer **performance portability**. It provides a programming model based on clear and scalable parallel patterns, such as `parallel_for` and `parallel_reduce`, which allow developers to efficiently exploit hardware resources without having to directly manage underlying complexities such as threads or CUDA/AMD blocks. Kokkos allows writing a single code that can be efficiently executed on different platforms. This approach significantly reduces the learning curve compared to other models such as CUDA, AMD or OpenMP while providing comparable flexibility.
+
+[.text-justify]
+In addition, Kokkos promotes **increased productivity** thanks to its seamless integration with the C++ language. It is not a new language or extension, but a library that leverages modern C++ features, such as lambda functions, to write compact and high-performance computing kernels. This allows developers to focus on the algorithmic logic while letting Kokkos handle the architecture-specific details
+
+[.text-justify]
+In conclusion, using Kokkos effectively addresses the challenges related to performance portability, simplifying parallel programming, and code sustainability. Its combination of advanced abstractions, a robust ecosystem, and cross-platform compatibility makes it a strategic choice for developers working in the field of scientific and technical computing. *Therefore, I invite you to use Kokkos!*
+
+
+For more information please visit the official webpage (See: https://kokkos.org/)
+
