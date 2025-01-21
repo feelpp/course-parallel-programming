@@ -1,0 +1,23 @@
+= Views
+
+== What is Kokkos View ? 
+
+[.text-justify]
+Kokkos Views are a fundamental abstraction in the Kokkos programming model, designed to provide a portable and efficient way to manage multidimensional arrays across diverse computing architectures. These Views serve as the primary data structure in Kokkos, offering a powerful mechanism for handling data in high-performance computing applications.
+Views can have up to eight dimensions, and these dimensions can be specified at either compile-time or run-time. The flexibility in dimension specification allows for efficient memory management and optimization across different hardware architectures.
+The motivation behind the View abstraction stems from the evolving landscape of high-performance computing. The memory space, which can be explicitly specified as an additional template parameter, determines where the data resides and which execution units can access it.
+The View life cycle is an essential aspect of using Kokkos effectively. When a View is constructed, it allocates memory in the specified memory space. Kokkos employs a reference-counting mechanism to manage the lifetime of this allocation . As Views are copied or assigned, the reference count is adjusted accordingly. The View abstraction is part of Kokkos' broader machine model, which assumes a hierarchy of execution spaces and memory spaces . This model anticipates future shared-memory computing architectures, where nodes might contain multiple types of compute engines and memory systems. By abstracting these details through Views, Kokkos allows developers to write code that can adapt to evolving hardware landscapes without significant rewrites.
+In the context of high-performance computing, Kokkos Views shine in their ability to handle large, multidimensional data structures efficiently. They are particularly useful in scientific simulations, linear algebra operations, and other computationally intensive tasks. 
+
+
+...
+
+(See: 
+** [1] https://docs.trilinos.org/dev/packages/kokkos/doc/html/classKokkos_1_1View.html
+** [2] https://kokkos.org/kokkos-core-wiki/API/core/view/view.html
+)
+
+== Key View concepts and template parameters 
+
+...
+
