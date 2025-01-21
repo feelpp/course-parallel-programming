@@ -1,6 +1,6 @@
 = Views
 
-== What is Kokkos View ? 
+== What is Kokkos View ?
 
 [.text-justify]
 Kokkos Views are a fundamental abstraction in the Kokkos programming model, designed to provide a portable and efficient way to manage multidimensional arrays across diverse computing architectures. These Views serve as the primary data structure in Kokkos, offering a powerful mechanism for handling data in high-performance computing applications.
@@ -11,48 +11,12 @@ The motivation behind the View abstraction stems from the evolving landscape of 
 [.text-justify]
 The View life cycle is an essential aspect of using Kokkos effectively. When a View is constructed, it allocates memory in the specified memory space. Kokkos employs a reference-counting mechanism to manage the lifetime of this allocation . As Views are copied or assigned, the reference count is adjusted accordingly. The View abstraction is part of Kokkos' broader machine model, which assumes a hierarchy of execution spaces and memory spaces . This model anticipates future shared-memory computing architectures, where nodes might contain multiple types of compute engines and memory systems. By abstracting these details through Views, Kokkos allows developers to write code that can adapt to evolving hardware landscapes without significant rewrites.
 [.text-justify]
-In the context of high-performance computing, Kokkos Views shine in their ability to handle large, multidimensional data structures efficiently. They are particularly useful in scientific simulations, linear algebra operations, and other computationally intensive tasks. 
-
-
-Here's an example of using a Kokkos View in C++:
-
-    #include <Kokkos_Core.hpp>
-
-    int main(int argc, char* argv[]) {
-    Kokkos::initialize(argc, argv);
-    {
-        const size_t N = 1000000;
-        // Create a 1D View of doubles
-        Kokkos::View<double*> myView("MyView", N);
-        // Fill the View with data
-        Kokkos::parallel_for(N, KOKKOS_LAMBDA(const int i) { myView(i) = i * 2.0; });
-        // Compute the sum of all elements
-        double sum = 0.0;
-        Kokkos::parallel_reduce(N, KOKKOS_LAMBDA(const int i, double& partial_sum) {
-        partial_sum += myView(i);
-        }, sum);
-        std::cout << "Sum: " << sum << std::endl;
-    }
-    Kokkos::finalize();
-    return 0;
-    }
-
-See: 
-
-** [1] https://kokkos.org/kokkos-core-wiki/API/core/view/view.html
-
-** [2] https://docs.trilinos.org/dev/packages/kokkos/doc/html/classKokkos_1_1View.html
-
-
-== Key View concepts and template parameters 
-
-...
+In the context of high-performance computing, Kokkos Views shine in their ability to handle large, multidimensional data structures efficiently. They are particularly useful in scientific simulations, linear algebra operations, and other computationally intensive tasks.
 
 
 
-= Views
+== Key View concepts and template parameters
 
-== What are views?
 
 A _view_ is a lightweight object that provides a way to access data in a multi-dimensional array.
 They behave like pointers, so they can be used in the same way as pointers in C++.
@@ -140,6 +104,12 @@ Views have several properties that can be queried at runtime:
 
 == Exercice
 
-Exercice taken from the Kokkos tutorial: xref:basic-concepts/views_exercice_tutorial.adoc[Inner Product, Flat Parallelism an the CPU, with Views]
+Exercice taken from the Kokkos tutorial: xref:basic-concepts/views_exercice_tutorial.adoc[Inner Product, Flat Parallelism an the CPU, with Views].
 
 
+
+[bibliography]
+== References
+
+. Kokkos documentation API https://kokkos.org/kokkos-core-wiki/API/core/view/view.html
+. Kokkos package description https://docs.trilinos.org/dev/packages/kokkos/doc/html/classKokkos_1_1View.html

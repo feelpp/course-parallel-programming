@@ -1,21 +1,22 @@
 #include <Kokkos_Core.hpp>
+#include <iostream>
 
 int main(int argc, char* argv[]) {
-    Kokkos::initialize(argc, argv);
-    {
-        // Define a 1D view of doubles with 10 elements
-        Kokkos::View<double*> view("view", 10);
+Kokkos::initialize(argc, argv);
+{
+    const size_t N = 100000;
+    // Create a 1D View of doubles
+    Kokkos::View<int*> myView("MyView", N);
+    // Fill the View with data
+    Kokkos::parallel_for(N, KOKKOS_LAMBDA(const int i) { myView(i) = i; });
+    // Compute the sum of all elements
+    int sum = 0.0;
+    Kokkos::parallel_reduce(N, KOKKOS_LAMBDA(const int i, int& partial_sum) {
+    partial_sum += myView(i);
+    }, sum);
 
-        // Initialize the view using parallel_for
-        Kokkos::parallel_for("InitView", 10, KOKKOS_LAMBDA(const int i) {
-            view(i) = i * 1.0;
-        });
-
-        // Print the view elements
-        Kokkos::parallel_for("PrintView", 10, KOKKOS_LAMBDA(const int i) {
-            printf("view(%d) = %f\n", i, view(i));
-        });
-    }
-    Kokkos::finalize();
-    return 0;
+    std::cout << "Sum: " << sum <<  std::endl;
+}
+Kokkos::finalize();
+return 0;
 }
