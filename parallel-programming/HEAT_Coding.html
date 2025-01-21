@@ -297,16 +297,11 @@ MathJax.Hub.Config({
 </aside>
 <article class="doc">
 <h1 class="page">Heat Equation Parallel Programming Comparison</h1>
-<div class="sidebarblock examp">
-<div class="content">
-<div class="title">Heat equation in 2D</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Theory</p>
-</li>
-</ul>
-</div>
+<div class="sect1">
+<h2 id="_heat_equation_in_2d"><a class="anchor" href="#_heat_equation_in_2d"></a>1. Heat equation in 2D</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_theory"><a class="anchor" href="#_theory"></a>1.1. Theory</h3>
 <div class="paragraph">
 <p>Heat (or diffusion) equation is a partial differential equation that describes the variation of temperature in a given region over time</p>
 </div>
@@ -349,16 +344,19 @@ u^{m+1}(i,j) = u^m(i,j) + \Delta t \alpha \nabla^2 u^m(i,j)
 <div class="paragraph">
 <p>Note: The algorithm is stable only when</p>
 </div>
-<div class="paragraph">
-<p>\begin{align*}
-\Delta t &lt; \frac{1}{2 \alpha} \frac{(\Delta x \Delta y)^2}{(\Delta x)^2 (\Delta y)^2}
-\end{align*}</p>
-</div>
-</div>
-</div>
-<div class="sidebarblock examp">
+<div class="stemblock">
 <div class="content">
-<div class="title">Code</div>
+\[\begin{align*}
+\Delta t &lt; \frac{1}{2 \alpha} \frac{(\Delta x \Delta y)^2}{(\Delta x)^2 (\Delta y)^2}
+\end{align*}\]
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_code"><a class="anchor" href="#_code"></a>2. Code</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>The solver carries out the time development of the 2D heat equation over the number of time steps provided by the user. The default geometry is a flat
 rectangle (with grid size provided by the user), but other shapes may be used via input files. The program will produce an image (PNG) of the temperature field after every 100 iterations.</p>
@@ -651,18 +649,18 @@ void update_device(field *temperature)
 }</code></pre>
 </div>
 </div>
-</div>
-</div>
 <div class="sidebarblock">
 <div class="content">
-<div class="title"><strong>Performance</strong></div>
 <div class="paragraph">
+<div class="title"><strong>Performance</strong></div>
 <p>ADD SOME RESULTS</p>
 </div>
 </div>
 </div>
 <div class="paragraph">
 <p>&#8230;&#8203;</p>
+</div>
+</div>
 </div>
 </article>
   </div>

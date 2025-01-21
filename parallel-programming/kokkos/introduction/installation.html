@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Untitled :: Parallel Programming</title>
+    <title>Installation :: Parallel Programming</title>
     <link rel="canonical" href="https://feelpp.github.io/parallel-programming/parallel-programming/kokkos/introduction/installation.html">
     <meta name="generator" content="Antora 3.1.10">
     <link rel="stylesheet" href="../../../_/css/site.css">
@@ -298,7 +298,114 @@ MathJax.Hub.Config({
   <div class="toc-menu"></div>
 </aside>
 <article class="doc">
-
+<h1 class="page">Installation</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Kokkos is avaiable on a GitHub repository: <a href="https://github.com/kokkos/kokkos">github.com/kokkos/kokkos</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_via_cmake"><a class="anchor" href="#_via_cmake"></a>1. Via CMake</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To build Kokkos with CMake, you can use the following commands:</p>
+</div>
+<div class="paragraph">
+<p>NOTE:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sh hljs" data-lang="sh">cmake -DKokkos_&lt;BACKEND&gt;=ON</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Where <code>&lt;BACKEND&gt;</code> is one of the following:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Backend</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SERIAL</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Enables serial execution backend</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">OPENMP</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Enables OpenMP backend</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CUDA</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Enables CUDA backend</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">HIP</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Enables HIP backend</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SYCL</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Enables SYCL backend</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">THREADS</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Enables POSIX threads backend</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_via_spack"><a class="anchor" href="#_via_spack"></a>2. Via Spack</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="https://spack.io/">Spack</a> is a package manager for supercomputers, Linux, and macOS.
+It makes installing scientific software easy.
+To install Kokkos with Spack, you can use the following commands:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sh hljs" data-lang="sh">spack install kokkos</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Some variants are available for Kokkos, you can use the following command to see the full list of variants:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sh hljs" data-lang="sh">spack info kokkos</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>On <code>gaya</code>, there are environments already set with spack.
+You can load the environment with the following command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sh hljs" data-lang="sh">spacktivate feelpp-openmpi4-rocm-kokkos</code></pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
 </article>
   </div>
 </main>
