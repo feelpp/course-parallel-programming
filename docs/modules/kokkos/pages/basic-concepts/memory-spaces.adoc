@@ -20,6 +20,7 @@ Kokkos annotation macros play a vital role in achieving portability across archi
 [.text-justify]
 In conclusion, Kokkos' Memory Spaces, initialization/finalization procedures, and annotation macros form a cohesive framework for developing portable, high-performance code for heterogeneous computing environments, allowing efficient utilization of diverse hardware resources while maintaining a single, portable codebase.
 
+...
 
 See: 
 
@@ -29,6 +30,28 @@ See:
 
 
 == Instances of Kokkos Memory Spaces
+
+Memory spaces in Kokkos are dynamic and flexible, offering programmers the ability to allocate data across various memory types, including on-package memory, DRAM, and non-volatile memories. Each memory space has specific instances that enable precise data storage allocation, with flexibility for developers to strategically choose memory locations for different data structures. As follows :
+
+1. Memory Spaces:
+   - Memory spaces, like execution spaces, have specific instances.
+   - An instance of a memory space allows the programmer to request data storage allocations.
+   - Different types of memory are available, such as on-package memory, slower DRAM, and non-volatile memories.
+   - GPUs may have their own local memory space.
+
+2. Memory Allocation:
+   - The programmer can choose where to allocate each data structure.
+   - Kokkos provides abstraction for allocation routines and memory management operations.
+
+3. Atomic Accesses:
+   - Used to prevent race conditions when multiple threads access the same memory address.
+   - Atomic operations ensure that a read, simple computation, and write to memory are completed as a single unit.
+
+4. Memory Consistency:
+   - Kokkos assumes a very weak memory consistency model.
+   - Programmers should not assume any specific ordering of memory operations within a kernel.
+   - Kokkos provides a fence operation to ensure completion of memory operations.
+
 
 ...
 
