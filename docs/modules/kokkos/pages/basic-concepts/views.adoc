@@ -1,0 +1,91 @@
+= Views
+
+== What are views?
+
+A _view_ is a lightweight object that provides a way to access data in a multi-dimensional array.
+They behave like pointers, so they can be used in the same way as pointers in C++.
+
+[source,c++]
+----
+View<double*, ...> x(...), y(...);
+...
+
+parallel_for("DAXPY", N, [=] const int64_t i {
+    // Views x and y are captured by value (copy)
+  y(i) = a * x(i) + y(i);
+});
+----
+
+Some general aspects of views:
+
+* They are *multi-diemensional arrays* of dimension 0 (scalar), 1 (vector), 2 (matrix), etc (to 8). Their number of dimension (named _rank_) is fixed at compilation.
+* They are *rectangular* arrays, i.e., all dimensions are fixed at construction, and
+* the sizes of dimensions are set either at compile-time or runtime.
+* The elements can easily be accessed via the operator `()`.
+
+.Example of a 3D array with dimension set either at compilation or at runtime
+[source,c++]
+----
+View<double***> data("label", N, M, K);     // 3 at runtime, 0 at compilation
+View<double**[K]> data("label", N, M);      // 2 at runtime, 1 at compilation
+View<double[N][M][K]> data("label");        // 3 at compilation
+
+data(i, j, k) = 3.14;
+----
+
+NOTE: The `label` of the view is not mandatory, but it is useful for debugging and profiling.
+
+
+== Usage
+
+
+.*First example:* build and fill-up a view
+[tabs]
+[%collapsible]
+====
+1D example::
++
+[source,c++]
+----
+include::example$src/01_views_1D.cpp[indent=0]
+----
+
+2D example::
++
+[source,c++]
+----
+include::example$src/02_views_2D.cpp[indent=0]
+----
+
+====
+
+
+Views behave like `std::shared_ptr` in the sense that they are reference-counted objects. They are automatically deleted when the last reference to them is removed:
+
+[source, c++]
+----
+include::example$src/00_views.cpp[indent=0]
+----
+.Result
+[source]
+----
+Label of c: b
+a(0, 2) = 3
+----
+
+
+== Properties
+
+Views have several properties that can be queried at runtime:
+
+* `label()`: the label of the view
+* `rank()`: the number of dimensions of the view
+* `extent(i)`: the size of the `i`-th dimension
+* `span()`: the total number of elements in the view
+* `data()`: a pointer to the data
+* `operator()`: access to the data
+
+
+== Exercice
+
+Exercice taken from the Kokkos tutorial: xref:basic-concepts/views_exercice_tutorial.adoc[Inner Product, Flat Parallelism an the CPU, with Views]

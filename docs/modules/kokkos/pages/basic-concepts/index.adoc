@@ -1,0 +1,19 @@
+= Basic concepts
+
+
+The content of this part has ben  constructed from the slides from the https://indico.math.cnrs.fr/event/12037/[Kokkos training days] held in 2024.
+
+
+== Other ressources
+
+- Organization Kokkos on GitHub: https://github.com/kokkos[github.com/kokkos],
+- Slides, recording and Q&A for the Lectures: https://github.com/kokkos/kokkos-tutorials/wiki/Kokkos-Lecture-Series[github.com/kokkos/kokkos-tutorials/wiki],
+- Kokkos Core Wiki, with API documentation: https://kokkos.github.io/kokkos-core-wiki[kokkos.github.io/kokkos-core-wiki],
+- Slack channel for Kokkos: https://kokkos.slack.com[kokkosteam.slack.com].
+
+
+== Contents
+
+- xref:basic-concepts/views.adoc[Views]
+- xref:basic-concepts/execution-spaces.adoc[Execution Spaces]
+- xref:basic-concepts/memory-spaces.adoc[Memory Spaces]

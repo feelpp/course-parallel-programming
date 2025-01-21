@@ -1,6 +1,6 @@
-image::kokkos1.jpg[xref=#fragment100,width=322,height=181]
+= What is Kokkos ?
 
-= What is Kokkos ? 
+image::kokkos1.jpg[xref=#fragment100,width=322,height=181]
 
 [.text-justify]
 We have previously explored various hardware architectures, specialized languages, and advanced parallel programming techniques. At the heart of this technological complexity emerges Kokkos, a framework that, like a conductor, harmonizes and simplifies these diverse concepts. Kokkos offers a unified approach, allowing developers to efficiently navigate this complex ecosystem of parallel programming.

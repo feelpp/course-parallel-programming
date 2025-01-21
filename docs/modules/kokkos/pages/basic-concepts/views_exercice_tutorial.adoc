@@ -1,0 +1,14 @@
+= Inner Product, Flat Parallelism and the CPU, with Views
+
+Exercise 02 taken from the https://github.com/kokkos/kokkos-tutorials[Kokkos tutorial].
+The initial code file to complete can be found on https://github.com/kokkos/kokkos-tutorials/blob/main/Exercises/02/Begin/exercise_2_begin.cpp[this link].
+
+.Goals of the exercise
+****
+Replace raw allocations with Kokkos Views.
+
+1. Define device views.
+2. Replace data access with view access operators.
+****
+
+
