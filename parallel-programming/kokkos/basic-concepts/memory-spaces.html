@@ -327,6 +327,9 @@ MathJax.Hub.Config({
 <p>In conclusion, Kokkos' Memory Spaces, initialization/finalization procedures, and annotation macros form a cohesive framework for developing portable, high-performance code for heterogeneous computing environments, allowing efficient utilization of diverse hardware resources while maintaining a single, portable codebase.</p>
 </div>
 <div class="paragraph">
+<p>&#8230;&#8203;</p>
+</div>
+<div class="paragraph">
 <p>See:</p>
 </div>
 <div class="ulist">
@@ -347,6 +350,74 @@ MathJax.Hub.Config({
 <div class="sect1">
 <h2 id="_instances_of_kokkos_memory_spaces"><a class="anchor" href="#_instances_of_kokkos_memory_spaces"></a>2. Instances of Kokkos Memory Spaces</h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>Memory spaces in Kokkos are dynamic and flexible, offering programmers the ability to allocate data across various memory types, including on-package memory, DRAM, and non-volatile memories. Each memory space has specific instances that enable precise data storage allocation, with flexibility for developers to strategically choose memory locations for different data structures. As follows :</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Memory Spaces:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Memory spaces, like execution spaces, have specific instances.</p>
+</li>
+<li>
+<p>An instance of a memory space allows the programmer to request data storage allocations.</p>
+</li>
+<li>
+<p>Different types of memory are available, such as on-package memory, slower DRAM, and non-volatile memories.</p>
+</li>
+<li>
+<p>GPUs may have their own local memory space.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Memory Allocation:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>The programmer can choose where to allocate each data structure.</p>
+</li>
+<li>
+<p>Kokkos provides abstraction for allocation routines and memory management operations.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Atomic Accesses:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Used to prevent race conditions when multiple threads access the same memory address.</p>
+</li>
+<li>
+<p>Atomic operations ensure that a read, simple computation, and write to memory are completed as a single unit.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Memory Consistency:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Kokkos assumes a very weak memory consistency model.</p>
+</li>
+<li>
+<p>Programmers should not assume any specific ordering of memory operations within a kernel.</p>
+</li>
+<li>
+<p>Kokkos provides a fence operation to ensure completion of memory operations.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
 <div class="paragraph">
 <p>&#8230;&#8203;</p>
 </div>
