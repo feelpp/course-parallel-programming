@@ -1,0 +1,58 @@
+= Kokkos Memory Spaces
+
+
+image::kokkos-node-doc.png[xref=#fragment101,width=322,height=181]
+
+== Introduction
+
+[.text-justify]
+Kokkos, a performance portability programming model, introduces the concept of Memory Spaces as a fundamental abstraction to address the complexities of heterogeneous computing environments. Memory Spaces in Kokkos represent distinct memory areas with specific characteristics and accessibility patterns. These abstractions enable programmers to express algorithms independently of hardware specifics while maintaining control over data placement and movement. The Kokkos machine model envisions future computing nodes as complex systems with multiple execution units and memory hierarchies.
+
+[.text-justify]
+In heterogeneous nodes, Kokkos' space abstractions prove particularly valuable. Such nodes may include CPU cores, GPU accelerators, and other specialized processing units, each with access to different memory types like host memory, device memory, or high-bandwidth memory. Kokkos abstracts these hardware-specific details, allowing developers to focus on algorithm structure rather than platform intricacies[1][2].
+
+[.text-justify]
+To control data residence, Kokkos provides mechanisms to specify the desired Memory Space when creating Views. A View in Kokkos is a multidimensional array abstraction encapsulating both data and layout. By specifying the appropriate Memory Space template parameter, developers can dictate where data should reside, enabling optimizations based on access patterns and hardware characteristics.
+
+[.text-justify]
+Kokkos annotation macros play a vital role in achieving portability across architectures, allowing developers to provide hints and directives to the runtime. These macros are particularly important in performance-critical code sections, enabling expression of parallelism, memory access, and execution space preferences.
+
+[.text-justify]
+In conclusion, Kokkos' Memory Spaces, initialization/finalization procedures, and annotation macros form a cohesive framework for developing portable, high-performance code for heterogeneous computing environments, allowing efficient utilization of diverse hardware resources while maintaining a single, portable codebase.
+
+...
+
+See: 
+
+** [1] https://www.epj-conferences.org/articles/epjconf/pdf/2021/05/epjconf_chep2021_03034.pdf
+** [2] https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/HierarchicalParallelism.html
+** [3] https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/Machine-Model.html
+
+
+== Instances of Kokkos Memory Spaces
+
+Memory spaces in Kokkos are dynamic and flexible, offering programmers the ability to allocate data across various memory types, including on-package memory, DRAM, and non-volatile memories. Each memory space has specific instances that enable precise data storage allocation, with flexibility for developers to strategically choose memory locations for different data structures. As follows :
+
+1. Memory Spaces:
+   - Memory spaces, like execution spaces, have specific instances.
+   - An instance of a memory space allows the programmer to request data storage allocations.
+   - Different types of memory are available, such as on-package memory, slower DRAM, and non-volatile memories.
+   - GPUs may have their own local memory space.
+
+2. Memory Allocation:
+   - The programmer can choose where to allocate each data structure.
+   - Kokkos provides abstraction for allocation routines and memory management operations.
+
+3. Atomic Accesses:
+   - Used to prevent race conditions when multiple threads access the same memory address.
+   - Atomic operations ensure that a read, simple computation, and write to memory are completed as a single unit.
+
+4. Memory Consistency:
+   - Kokkos assumes a very weak memory consistency model.
+   - Programmers should not assume any specific ordering of memory operations within a kernel.
+   - Kokkos provides a fence operation to ensure completion of memory operations.
+
+
+...
+
+
