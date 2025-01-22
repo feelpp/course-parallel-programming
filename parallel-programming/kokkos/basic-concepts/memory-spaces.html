@@ -312,10 +312,10 @@ MathJax.Hub.Config({
 <h2 id="_introduction"><a class="anchor" href="#_introduction"></a>1. Introduction</h2>
 <div class="sectionbody">
 <div class="paragraph text-justify">
-<p>Kokkos, a performance portability programming model, introduces the concept of Memory Spaces as a fundamental abstraction to address the complexities of heterogeneous computing environments. Memory Spaces in Kokkos represent distinct memory areas with specific characteristics and accessibility patterns. These abstractions enable programmers to express algorithms independently of hardware specifics while maintaining control over data placement and movement. The Kokkos machine model envisions future computing nodes as complex systems with multiple execution units and memory hierarchies.</p>
+<p>Kokkos, a performance portability programming model, introduces the concept of Memory Spaces as a fundamental abstraction to address the complexities of heterogeneous computing environments. Memory Spaces [1] in Kokkos represent distinct memory areas with specific characteristics and accessibility patterns. These abstractions enable programmers to express algorithms independently of hardware specifics while maintaining control over data placement and movement. The Kokkos machine model envisions future computing nodes as complex systems with multiple execution units and memory hierarchies.</p>
 </div>
 <div class="paragraph text-justify">
-<p>In heterogeneous nodes, Kokkos' space abstractions prove particularly valuable. Such nodes may include CPU cores, GPU accelerators, and other specialized processing units, each with access to different memory types like host memory, device memory, or high-bandwidth memory. Kokkos abstracts these hardware-specific details, allowing developers to focus on algorithm structure rather than platform intricacies[1][2].</p>
+<p>In heterogeneous nodes, Kokkos' space abstractions prove particularly valuable. Such nodes may include CPU cores, GPU accelerators, and other specialized processing units, each with access to different memory types like host memory, device memory, or high-bandwidth memory. Kokkos abstracts these hardware-specific details, allowing developers to focus on algorithm structure rather than platform intricacies[2][3].</p>
 </div>
 <div class="paragraph text-justify">
 <p>To control data residence, Kokkos provides mechanisms to specify the desired Memory Space when creating Views. A View in Kokkos is a multidimensional array abstraction encapsulating both data and layout. By specifying the appropriate Memory Space template parameter, developers can dictate where data should reside, enabling optimizations based on access patterns and hardware characteristics.</p>
@@ -335,13 +335,16 @@ MathJax.Hub.Config({
 <div class="ulist">
 <ul>
 <li>
-<p>[1] <a href="https://www.epj-conferences.org/articles/epjconf/pdf/2021/05/epjconf_chep2021_03034.pdf" class="bare">www.epj-conferences.org/articles/epjconf/pdf/2021/05/epjconf_chep2021_03034.pdf</a></p>
+<p>[1] <a href="https://kokkos.org/kokkos-core-wiki/API/core/memory_spaces.html" class="bare">kokkos.org/kokkos-core-wiki/API/core/memory_spaces.html</a></p>
 </li>
 <li>
-<p>[2] <a href="https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/HierarchicalParallelism.html" class="bare">kokkos.org/kokkos-core-wiki/ProgrammingGuide/HierarchicalParallelism.html</a></p>
+<p>[2] <a href="https://www.epj-conferences.org/articles/epjconf/pdf/2021/05/epjconf_chep2021_03034.pdf" class="bare">www.epj-conferences.org/articles/epjconf/pdf/2021/05/epjconf_chep2021_03034.pdf</a></p>
 </li>
 <li>
-<p>[3] <a href="https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/Machine-Model.html" class="bare">kokkos.org/kokkos-core-wiki/ProgrammingGuide/Machine-Model.html</a></p>
+<p>[3] <a href="https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/HierarchicalParallelism.html" class="bare">kokkos.org/kokkos-core-wiki/ProgrammingGuide/HierarchicalParallelism.html</a></p>
+</li>
+<li>
+<p>[4] <a href="https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/Machine-Model.html" class="bare">kokkos.org/kokkos-core-wiki/ProgrammingGuide/Machine-Model.html</a></p>
 </li>
 </ul>
 </div>
