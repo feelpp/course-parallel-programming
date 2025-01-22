@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Untitled :: Parallel Programming</title>
+    <title>Kokkos Execution Spaces :: Parallel Programming</title>
     <link rel="canonical" href="https://feelpp.github.io/parallel-programming/parallel-programming/kokkos/basic-concepts/execution-spaces.html">
     <meta name="generator" content="Antora 3.1.10">
     <link rel="stylesheet" href="../../../_/css/site.css">
@@ -298,7 +298,161 @@ MathJax.Hub.Config({
   <div class="toc-menu"></div>
 </aside>
 <article class="doc">
-
+<h1 class="page">Kokkos Execution Spaces</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="imageblock">
+<div class="content">
+<a class="image" href="#fragment101"><img src="../_images/kokkos-core.png" alt="kokkos core" width="322" height="181"></a>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_introduction"><a class="anchor" href="#_introduction"></a>1. Introduction</h2>
+<div class="sectionbody">
+<div class="paragraph text-justify">
+<p>In a simple way, Kokkos introduces the concept of execution spaces as a fundamental abstraction for parallel computing. Execution spaces in Kokkos represent the logical grouping of computational units that share identical performance properties, providing a unified interface to target diverse hardware architectures [1].</p>
+</div>
+<div class="paragraph text-justify">
+<p>Basically, a defined execution space where parallel operations can be executed in a heterogeneous computing environment. In modern GPU/CPU hybrid systems, for example, two main types of execution spaces emerge: GPU cores and CPU cores. This abstraction thus allows developers to write code that can seamlessly adapt to different hardware configurations without major modifications. So it is easier to do than to worry about how to do it for different configurations.</p>
+</div>
+<div class="paragraph text-justify">
+<p>Another point, controlling the execution location of parallel bodies in Kokkos is a crucial aspect of performance optimization and hardware utilization. By default, Kokkos will execute parallel operations in the default execution space, unless otherwise specified [2]. However, developers have several methods at their disposal to fine-tune the execution location of their parallel code.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_methods_for_controlling_execution_spaces"><a class="anchor" href="#_methods_for_controlling_execution_spaces"></a>2. Methods for Controlling Execution Spaces</h2>
+<div class="sectionbody">
+<div class="imageblock">
+<div class="content">
+<a class="image" href="#fragment101"><img src="../_images/kokkos-abstractions-doc.png" alt="kokkos abstractions doc" width="322" height="181"></a>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Specifying Execution Spaces</strong> : One approach to control the Execution Space is by explicitly defining it in the parallel dispatch call. This can be achieved by using the RangePolicy template argument [3]. For example, In this code, <strong>ExecutionSpace</strong> is replaced with the desired Execution Space, such as <strong>Kokkos::Cuda</strong> for NVIDIA GPUs or <strong>Kokkos::HIP</strong> for AMD GPUs  or <strong>Kokkos::OpenMP</strong> for multi-core CPUs. Also it is quite simple !</p>
+<div class="literalblock">
+<div class="content">
+<pre>parallel_for("Label", RangePolicy&lt;ExecutionSpace&gt;(0, numberOfIntervals),
+    [=] (const int64_t i) {
+        /* ... body ... */
+    });</pre>
+</div>
+</div>
+</li>
+<li>
+<p><strong>Changing the Default Execution Space</strong> : Another method involves changing the default Execution Space at compilation time. This approach affects all parallel operations that do not explicitly specify an Execution Space. While this method provides a global solution, it may limit flexibility in scenarios where different parts of the application benefit from distinct Execution Spaces.</p>
+</li>
+<li>
+<p><strong>Functor-based Control</strong> : For more granular control, developers can define functors with an execution_space public typedef. This approach ensures that the parallel dispatch will only run the functor in the specified Execution Space, providing a robust mechanism for execution space-specific optimizations.</p>
+</li>
+<li>
+<p><strong>Requirements and Considerations</strong> : It is important to note that utilizing specific Execution Spaces comes with certain requirements. The desired Execution Space must be enabled during Kokkos compilation and properly initialized (and later finalized) in the application. Additionally, for non-CPU Execution Spaces, functions and lambdas may need to be annotated with specific macros to ensure portability [3].</p>
+</li>
+<li>
+<p><strong>Performance Implications</strong> : The choice of Execution Space can significantly impact performance. Kokkos allows developers to target different parts of heterogeneous hardware architectures, enabling optimized utilization of available resources [4]. For instance, compute-intensive operations might benefit from GPU Execution Spaces, while memory-bound tasks could be more suited for CPU Execution Spaces.</p>
+</li>
+<li>
+<p><strong>Advanced Concepts: Team Policies</strong> : For more complex parallel patterns, Kokkos introduces Team Policies, which implement hierarchical parallelism [4]. Team Policies group threads into teams, allowing for sophisticated parallel structures that can better match the underlying hardware topology. This concept is particularly useful for architectures with multiple levels of parallelism, such as GPUs with their warp and block structures.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_execution_patterns"><a class="anchor" href="#_execution_patterns"></a>3. Execution Patterns</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Execution Patterns are the fundamental parallel algorithms in which an application has to be expressed. Examples are</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>parallel_for()</strong>: execute a function in undetermined order a specified amount of times,</p>
+</li>
+<li>
+<p><strong>parallel_reduce()</strong>: which combines parallel_for() execution with a reduction operation,</p>
+</li>
+<li>
+<p><strong>parallel_scan()</strong>: which combines a parallel_for() operation with a prefix or postfix scan on output values of each operation, and</p>
+</li>
+<li>
+<p><strong>task</strong>: which executes a single function with dependencies on other functions.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Expressing an application in these patterns allows the underlying implementation or the used compiler to reason about valid transformations.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_execution_policies"><a class="anchor" href="#_execution_policies"></a>4. Execution Policies</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In the realm of parallel computing, Execution Policies act as the conductors of a grand digital orchestra, directing how functions perform their symphonies of calculations. Among these maestros, Range Policies stand as the simplest, guiding operations through elements like a steady metronome, without concern for order or synchronization. An Execution Policy determines, together with an Execution Pattern, How a function is executed.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Range Policies</strong>: Simple policies for executing operations on each element in a range, without specifying order or concurrency.</p>
+</li>
+<li>
+<p><strong>Team Policies</strong> : Used for hierarchical parallelism, grouping threads into teams. Key features include:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>League size (number of teams) and team size (threads per team)</p>
+</li>
+<li>
+<p>Concurrent execution within a team</p>
+</li>
+<li>
+<p>Team synchronization via barriers</p>
+</li>
+<li>
+<p>Scratch pad memory for temporary storage</p>
+</li>
+<li>
+<p>Nested parallel operations</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The model is inspired by CUDA and OpenMP, aiming to improve performance across various hardware architectures by encouraging locality-aware programming. [5]</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_references"><a class="anchor" href="#_references"></a>5. References</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>[1] <a href="https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/Machine-Model.html" class="bare">kokkos.org/kokkos-core-wiki/ProgrammingGuide/Machine-Model.html</a></p>
+</li>
+<li>
+<p>[2] <a href="https://kokkos.org/kokkos-core-wiki/API/core/execution_spaces.html#" class="bare">kokkos.org/kokkos-core-wiki/API/core/execution_spaces.html#</a></p>
+</li>
+<li>
+<p>[3] <a href="https://indico.math.cnrs.fr/event/12037/attachments/5040/8129/" class="bare">indico.math.cnrs.fr/event/12037/attachments/5040/8129/</a></p>
+</li>
+<li>
+<p>[4] <a href="https://github.com/kokkos/kokkos-core-wiki/blob/main/docs/source/ProgrammingGuide/ProgrammingModel.md" class="bare">github.com/kokkos/kokkos-core-wiki/blob/main/docs/source/ProgrammingGuide/ProgrammingModel.md</a></p>
+</li>
+<li>
+<p>[5] <a href="https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/ProgrammingModel.html" class="bare">kokkos.org/kokkos-core-wiki/ProgrammingGuide/ProgrammingModel.html</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
 </article>
   </div>
 </main>
