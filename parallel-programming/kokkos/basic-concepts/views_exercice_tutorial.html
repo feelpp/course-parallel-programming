@@ -297,9 +297,24 @@ MathJax.Hub.Config({
 </aside>
 <article class="doc">
 <h1 class="page">Inner Product, Flat Parallelism and the CPU, with Views</h1>
+<div id="preamble">
+<div class="sectionbody">
 <div class="paragraph">
 <p>Exercise 02 taken from the <a href="https://github.com/kokkos/kokkos-tutorials">Kokkos tutorial</a>.
 The initial code file to complete can be found on <a href="https://github.com/kokkos/kokkos-tutorials/blob/main/Exercises/02/Begin/exercise_2_begin.cpp">this link</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_problem_statement"><a class="anchor" href="#_problem_statement"></a>1. Problem statement</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The code provided in the exercise is a simple matrix-vector multiplication:</p>
+</div>
+<div class="stemblock">
+<div class="content">
+\[y = A * x\]
+</div>
 </div>
 <div class="sidebarblock">
 <div class="content">
@@ -316,6 +331,86 @@ The initial code file to complete can be found on <a href="https://github.com/ko
 <p>Replace data access with view access operators.</p>
 </li>
 </ol>
+</div>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Run the exercise</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sh hljs" data-lang="sh">./04_kokkos_exercise_views -S 26</code></pre>
+</div>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+The solution are present just below, so if you wann try it by yourself, stop reading this page !
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_solutions"><a class="anchor" href="#_solutions"></a>2. Solutions</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="title">Allocating memory</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-diff hljs" data-lang="diff">- double * const y = new double[ N ];
++ ViewVectorType y( "y", N );
+- double * const x = new double[ M ];
++ ViewVectorType x( "x", M );
+- double * const A = new double[ N * M ];
++ ViewMatrixType A( "A", N, M );</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Initialize data</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-diff hljs" data-lang="diff">- for ( int i = 0; i &lt; N; ++i ) {
+-   y[ i ] = 1;
+- }
++ Kokkos::parallel_for( N, KOKKOS_LAMBDA ( int i ) {
++   y( i ) = 1;
++ });
+
+- for ( int i = 0; i &lt; M; ++i ) {
+-   x[ i ] = 1;
+- }
++ Kokkos::parallel_for( M, KOKKOS_LAMBDA ( int i ) {
++ x( i ) = 1;
++ });</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Matrix-vector multiplication</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-diff hljs" data-lang="diff">- for ( int j = 0; j &lt; N; ++j ) {
+-   for ( int i = 0; i &lt; M; ++i ) {
+-     A[ j * M + i ] = 1;
+-   }
+- }
++ Kokkos::parallel_for( N, KOKKOS_LAMBDA ( int j ) {
++   for ( int i = 0; i &lt; M; ++i ) {
++     A( j, i ) = 1;
++   }
++ });</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Concerning deallocation, Kokkos will automatically deallocate the memory when the views go out of scope.</p>
+</div>
+<div class="listingblock">
+<div class="title">Deallocate memory</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-diff hljs" data-lang="diff">- delete [] y;
+- delete [] x;
+- delete [] A;</code></pre>
+</div>
 </div>
 </div>
 </div>
