@@ -25,7 +25,6 @@ In conclusion, Kokkos' Memory Spaces, initialization/finalization procedures, an
 See: 
 
 ** [1] https://kokkos.org/kokkos-core-wiki/API/core/memory_spaces.html
-
 ** [2] https://www.epj-conferences.org/articles/epjconf/pdf/2021/05/epjconf_chep2021_03034.pdf
 ** [3] https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/HierarchicalParallelism.html
 ** [4] https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/Machine-Model.html
