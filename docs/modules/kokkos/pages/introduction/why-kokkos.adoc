@@ -11,6 +11,8 @@ The main appeal of Kokkos lies in its ability to abstract hardware-specific deta
 [.text-justify]
 Another major advantage of Kokkos is its rich ecosystem, which we will see in more detail later, including profiling tools like Kokkos::Tools, which allow developers to fine-tune their applications. Moreover, Kokkos integrates well with other essential technologies of high-performance computing, such as MPI for inter-node communication, thus offering a complete solution for the development of large-scale parallel applications.
 
+image::kokkos-EcoSystem.png[xref=#fragment102,width=442,height=237]
+
 [.text-justify]
 Kokkos is thus a C++ library designed to address the growing challenges of parallel programming and performance portability in the field of high-performance computing (HPC). Its unified approach to target both CPUs and GPUs from different manufacturers (NVIDIA, AMD, Intel) makes it particularly attractive in a constantly evolving technology landscape.
 
