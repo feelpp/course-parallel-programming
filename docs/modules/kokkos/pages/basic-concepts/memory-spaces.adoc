@@ -6,7 +6,7 @@ image::kokkos-node-doc.png[xref=#fragment101,width=322,height=181]
 == Introduction
 
 [.text-justify]
-Kokkos, a performance portability programming model, introduces the concept of Memory Spaces as a fundamental abstraction to address the complexities of heterogeneous computing environments. Memory Spaces [1] in Kokkos represent distinct memory areas with specific characteristics and accessibility patterns. These abstractions enable programmers to express algorithms independently of hardware specifics while maintaining control over data placement and movement. The Kokkos machine model envisions future computing nodes as complex systems with multiple execution units and memory hierarchies.
+Kokkos, a performance portability programming model, introduces the concept of _Memory Spaces_ as a fundamental abstraction to address the complexities of heterogeneous computing environments. Memory Spaces [1] in Kokkos represent distinct memory areas with specific characteristics and accessibility patterns. These abstractions enable programmers to express algorithms independently of hardware specifics while maintaining control over data placement and movement. The Kokkos machine model envisions future computing nodes as complex systems with multiple execution units and memory hierarchies.
 
 [.text-justify]
 In heterogeneous nodes, Kokkos' space abstractions prove particularly valuable. Such nodes may include CPU cores, GPU accelerators, and other specialized processing units, each with access to different memory types like host memory, device memory, or high-bandwidth memory. Kokkos abstracts these hardware-specific details, allowing developers to focus on algorithm structure rather than platform intricacies [2][3].
