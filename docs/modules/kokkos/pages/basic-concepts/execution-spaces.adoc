@@ -19,12 +19,13 @@ Another point, controlling the execution location of parallel bodies in Kokkos i
 image::kokkos-abstractions-doc.png[xref=#fragment101,width=322,height=181]
 
 * *Specifying Execution Spaces* : One approach to control the Execution Space is by explicitly defining it in the parallel dispatch call. This can be achieved by using the RangePolicy template argument [3]. For example, In this code, *ExecutionSpace* is replaced with the desired Execution Space, such as *Kokkos::Cuda* for NVIDIA GPUs or *Kokkos::HIP* for AMD GPUs  or *Kokkos::OpenMP* for multi-core CPUs. Also it is quite simple !
-
+[source,c++]
+----
     parallel_for("Label", RangePolicy<ExecutionSpace>(0, numberOfIntervals),
         [=] (const int64_t i) {
             /* ... body ... */
         });
-
+----
 * *Changing the Default Execution Space* : Another method involves changing the default Execution Space at compilation time. This approach affects all parallel operations that do not explicitly specify an Execution Space. While this method provides a global solution, it may limit flexibility in scenarios where different parts of the application benefit from distinct Execution Spaces.
 
 * *Functor-based Control* : For more granular control, developers can define functors with an execution_space public typedef. This approach ensures that the parallel dispatch will only run the functor in the specified Execution Space, providing a robust mechanism for execution space-specific optimizations.

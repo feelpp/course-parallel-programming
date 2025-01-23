@@ -26,9 +26,10 @@ The View's Layout parameter in Kokkos is a powerful tool for controlling data la
 ** These layouts determine how multidimensional data is stored in memory.
 
 For example, to create a 2D view with a specific layout:
-
+[source,c++]
+----
     Kokkos::View<double**, Kokkos::LayoutRight> view2D("view2D", 64, 64);
-
+----
 This creates a 64x64 2D array with a row-major layout.
 
 === Kokkos Mapping and Memory Access Patterns
@@ -39,14 +40,15 @@ Kokkos maps parallel work indices to the layout of multidimensional array data:
 ** This mapping is crucial for performance, as it determines how threads access memory.
 
 Consider this example:
-
+[source,c++]
+----
     View<double***, ...> view(...);
     Kokkos::parallel_for("Label", ...,
     KOKKOS_LAMBDA (int workIndex) {
         view(workIndex, ..., ...) = ...; // Efficient access
         view(..., workIndex, ...) = ...; // Less efficient
     });
-
+----
 
 Here, accessing the view with `workIndex` as the first parameter is more efficient due to the default layout and mapping.
 
@@ -65,7 +67,8 @@ Concrete Example of Memory Configuration Performance
 image::kokkos-layout-Left-Right.png[xref=#fragment101,width=483,height=270]
 
 Let's consider a simple inner product computation:
-
+[source,c++]
+----
     Kokkos::parallel_reduce("Label",
     RangePolicy<ExecutionSpace>(0, N),
     KOKKOS_LAMBDA (const size_t row, double& valueToUpdate) {
@@ -75,7 +78,7 @@ Let's consider a simple inner product computation:
         }
         valueToUpdate += y(row) * thisRowsSum;
     }, result);
-
+----
 
 Remark in this example:
 
