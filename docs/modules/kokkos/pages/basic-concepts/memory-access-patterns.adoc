@@ -99,6 +99,25 @@ To optimize for both architectures, you might need to transpose the data or use 
 .*Points to keep in mind*
 ****
 
-...
+
+*Important concept concerning layout*
+
+** Every *View* has multidimensional array Layout set at compile-time
+** Most-common layouts are *LayoutLeft* and *LayoutRight*.
+** Layouts are extensible and flexible
+** If no layout specified, default for that memory space is used. *LayoutLeft* for *CudaSpace*, *LayoutRight* for *HostSpace*.
+** LayoutRight row-major HostSpace: cached (good),CudaSpace: uncoalesced (bad)
+** LayoutLeft column-major HostSpace: uncached (bad),CudaSpace: coalesced (good)
+** Kokkos architecture-dependent HostSpace: cached (good)  CudaSpace: coalesced (good)
+
+*Performance*
+
+** For performance, accesses to views in *HostSpace* must *be cached*, while access to views in *CudaSpace* must be *coalesced*.
+** *Uncoalesced access* on *GPUs* and *non-cached loads* on CPUs greatly *reduces performance (can be 10X)*
+** Kokkos maps parallel work indices and multidimensional array layout for *performance portable memory access patterns*.
+
+*Memory spaces available*
+** HostSpace, CudaSpace, CudaUVMSpace, ... more
+** Remark here is no UVMSpace for HIP, In the meantime, another strategy will have to be used.
 
 ****
