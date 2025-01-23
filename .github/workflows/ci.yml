@@ -47,7 +47,7 @@ jobs:
     -
       name: Build
       run: |
-        spacktivate feelpp-openmpi4-kokkos
+        spack env activate feelpp-openmpi4-kokkos
         cmake --preset default
         cmake --build --preset default
     -
