@@ -7,6 +7,7 @@ At the heart of Kokkos' hierarchical parallelism lies the ability to exploit mul
 ...
 
 
+
 == References
 ** [1] https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/HierarchicalParallelism.html
 

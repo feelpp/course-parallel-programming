@@ -51,44 +51,49 @@ Memory spaces in Kokkos are dynamic and flexible, offering programmers the abili
 * *Memory Spaces and Allocation*
 
 ** Allocating in default memory space:
-
+[source, c++]
+----
     Kokkos::View<double*> defaultView("defaultView", 1000);
-
+----
 ** Allocating in CUDA memory space:
-
+[source, c++]
+----
     Kokkos::View<double*, Kokkos::CudaSpace> cudaView("cudaView", 1000);
-
+----
 ** Allocating in host memory space:
-
+[source, c++]
+----
     Kokkos::View<double*, Kokkos::HostSpace> hostView("hostView", 1000);
 
-
+----
 * *Atomic Accesses*
 
 ** Example of atomic addition:
 
 [source, c++]
 ----
-KOKKOS_INLINE_FUNCTION
-void atomicAdd(int* addr, int val) {
-    Kokkos::atomic_add(addr, val);
-}
+        KOKKOS_INLINE_FUNCTION
+        void atomicAdd(int* addr, int val) {
+            Kokkos::atomic_add(addr, val);
+        }
 ----
 
 * *Memory Consistency*
 
 ** Using fence operation:
-
-    Kokkos::fence();
-
+[source, c++]
+----
+        Kokkos::fence();
+----
 
 *  *Memory Space Instances*
 
 ** Creating a memory pool for custom allocation:
-
-    Kokkos::MemoryPool<Kokkos::CudaSpace> memoryPool(cudaSpace, totalSize);
-    void* ptr = memoryPool.allocate(allocSize);
-
+[source, c++]
+----
+        Kokkos::MemoryPool<Kokkos::CudaSpace> memoryPool(cudaSpace, totalSize);
+        void* ptr = memoryPool.allocate(allocSize);
+----
 
 [.text-justify]
 These examples demonstrate how Kokkos allows flexible memory allocation across different memory spaces, provides atomic operations for thread-safe memory access, and offers memory consistency control through fencing. The MemoryPool example shows how specific instances of memory spaces can be used for custom allocation strategies [5].
