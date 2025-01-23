@@ -19,7 +19,7 @@ In the context of high-performance computing, Kokkos Views shine in their abilit
 
 
 A _view_ is a lightweight object that provides a way to access data in a multi-dimensional array.
-They behave like pointers, so they can be used in the same way as pointers in `C++`.
+They behave like pointers, so they can be used in the same way as pointers in CPP.
 
 [source,c++]
 ----
