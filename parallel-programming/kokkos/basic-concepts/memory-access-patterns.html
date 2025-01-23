@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Kokkos Execution Spaces :: Parallel Programming</title>
-    <link rel="canonical" href="https://feelpp.github.io/parallel-programming/parallel-programming/kokkos/basic-concepts/execution-spaces.html">
+    <title>Kokkos Memory Access Patterns :: Parallel Programming</title>
+    <link rel="canonical" href="https://feelpp.github.io/parallel-programming/parallel-programming/kokkos/basic-concepts/memory-access-patterns.html">
     <meta name="generator" content="Antora 3.1.10">
     <link rel="stylesheet" href="../../../_/css/site.css">
 <link rel="icon" href="../../../_/img/favicon.ico" type="image/x-icon">
@@ -232,13 +232,13 @@ MathJax.Hub.Config({
   <li class="nav-item" data-depth="3">
     <a class="nav-link" href="views.html">Views</a>
   </li>
-  <li class="nav-item is-current-page" data-depth="3">
+  <li class="nav-item" data-depth="3">
     <a class="nav-link" href="execution-spaces.html">Execution Spaces</a>
   </li>
   <li class="nav-item" data-depth="3">
     <a class="nav-link" href="memory-spaces.html">Memory Spaces</a>
   </li>
-  <li class="nav-item" data-depth="3">
+  <li class="nav-item is-current-page" data-depth="3">
     <a class="nav-link" href="memory-access-patterns.html">Memory Access Patterns</a>
   </li>
 </ul>
@@ -276,12 +276,12 @@ MathJax.Hub.Config({
     <li><a href="../../index.html">Main</a></li>
     <li><a href="../index.html">Kokkos</a></li>
     <li><a href="index.html">Basic Concepts</a></li>
-    <li><a href="execution-spaces.html">Execution Spaces</a></li>
+    <li><a href="memory-access-patterns.html">Memory Access Patterns</a></li>
   </ul>
 </nav>
 
   
-    <div class="edit-this-page"><a href="https://github.com/feelpp/course-parallel-programming/edit/feature/kokkos/docs/modules/kokkos/pages/basic-concepts/execution-spaces.adoc">Edit this Page</a></div>
+    <div class="edit-this-page"><a href="https://github.com/feelpp/course-parallel-programming/edit/feature/kokkos/docs/modules/kokkos/pages/basic-concepts/memory-access-patterns.adoc">Edit this Page</a></div>
   
   <div class="page-downloads">
   <span class="label">Download as</span>
@@ -301,181 +301,183 @@ MathJax.Hub.Config({
   <div class="toc-menu"></div>
 </aside>
 <article class="doc">
-<h1 class="page">Kokkos Execution Spaces</h1>
-<div id="preamble">
-<div class="sectionbody">
-<div class="imageblock">
-<div class="content">
-<a class="image" href="#fragment101"><img src="../_images/kokkos-core.png" alt="kokkos core" width="322" height="181"></a>
-</div>
-</div>
-</div>
-</div>
+<h1 class="page">Kokkos Memory Access Patterns</h1>
 <div class="sect1">
 <h2 id="_introduction"><a class="anchor" href="#_introduction"></a>1. Introduction</h2>
 <div class="sectionbody">
 <div class="paragraph text-justify">
-<p>In a simple way, Kokkos introduces the concept of execution spaces as a fundamental abstraction for parallel computing. Execution spaces in Kokkos represent the logical grouping of computational units that share identical performance properties, providing a unified interface to target diverse hardware architectures [1].</p>
+<p>In the realm of high-performance computing, managing memory access patterns is crucial for achieving optimal performance across diverse hardware architectures. The View&#8217;s Layout parameter plays a pivotal role in determining how data is organized in memory. Kokkos offers several layout options, including LayoutRight, LayoutLeft, and LayoutStride [1]. LayoutRight, which is typically the default for CPU architectures, organizes data in a row-major format, where elements of the rightmost dimension are contiguous in memory. Conversely, LayoutLeft, often preferred for GPU architectures, uses a column-major layout. This flexibility allows developers to tailor the data organization to the specific requirements of their target hardware, maximizing performance across different platforms.</p>
 </div>
 <div class="paragraph text-justify">
-<p>Basically, a defined execution space where parallel operations can be executed in a heterogeneous computing environment. In modern GPU/CPU hybrid systems, for example, two main types of execution spaces emerge: GPU cores and CPU cores. This abstraction thus allows developers to write code that can seamlessly adapt to different hardware configurations without major modifications. So it is easier to do than to worry about how to do it for different configurations.</p>
+<p>Memory access patterns in Kokkos are intricately linked to how parallel work indices are mapped to the layout of multidimensional array data. The library provides a sophisticated mapping mechanism that aligns the iteration space of parallel computations with the underlying memory layout. This alignment is critical for performance, as it directly impacts how efficiently the hardware can fetch and process data [2]. For instance, when using a LayoutRight View on a CPU, iterating over the rightmost dimension in the innermost loop of a parallel_for construct will result in cache-friendly, stride-1 memory accesses [3].</p>
 </div>
 <div class="paragraph text-justify">
-<p>Another point, controlling the execution location of parallel bodies in Kokkos is a crucial aspect of performance optimization and hardware utilization. By default, Kokkos will execute parallel operations in the default execution space, unless otherwise specified [2]. However, developers have several methods at their disposal to fine-tune the execution location of their parallel code.</p>
+<p>The significance of proper memory access patterns and layouts cannot be overstated when it comes to performance. On CPUs, well-aligned access patterns lead to efficient cache utilization, reducing memory latency and improving overall throughput. The importance of caching is particularly evident in operations like inner products, where repeated access to the same data can benefit greatly from cache locality [2]. On GPUs, coalesced memory accesses are paramount. When threads in a warp access contiguous memory locations, the GPU can combine these accesses into fewer, larger transactions, significantly boosting memory bandwidth utilization [4].</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_methods_for_controlling_execution_spaces"><a class="anchor" href="#_methods_for_controlling_execution_spaces"></a>2. Methods for Controlling Execution Spaces</h2>
+<h2 id="_managing_memory_access_patterns"><a class="anchor" href="#_managing_memory_access_patterns"></a>2. Managing Memory Access Patterns</h2>
 <div class="sectionbody">
-<div class="imageblock">
-<div class="content">
-<a class="image" href="#fragment101"><img src="../_images/kokkos-abstractions-doc.png" alt="kokkos abstractions doc" width="322" height="181"></a>
+<div class="paragraph">
+<p>Memory access patterns play a pivotal role in achieving performance portability with Kokkos. The library provides mechanisms to control data layout and optimize memory access for different architectures.</p>
 </div>
+<div class="sect2">
+<h3 id="_views_layout_parameter_and_data_layout_control"><a class="anchor" href="#_views_layout_parameter_and_data_layout_control"></a>2.1. View&#8217;s Layout Parameter and Data Layout Control</h3>
+<div class="paragraph">
+<p>The View&#8217;s Layout parameter in Kokkos is a powerful tool for controlling data layout:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p><strong>Specifying Execution Spaces</strong> : One approach to control the Execution Space is by explicitly defining it in the parallel dispatch call. This can be achieved by using the RangePolicy template argument [3]. For example, In this code, <strong>ExecutionSpace</strong> is replaced with the desired Execution Space, such as <strong>Kokkos::Cuda</strong> for NVIDIA GPUs or <strong>Kokkos::HIP</strong> for AMD GPUs  or <strong>Kokkos::OpenMP</strong> for multi-core CPUs. Also it is quite simple !</p>
+<p>Kokkos provides different layout options, primarily <code>LayoutRight</code> and <code>LayoutLeft</code>.</p>
+</li>
+<li>
+<p><code>LayoutRight</code> is typically the default for CPUs, representing row-major order.</p>
+</li>
+<li>
+<p><code>LayoutLeft</code> is often the default for GPUs, representing column-major order.</p>
+</li>
+<li>
+<p>These layouts determine how multidimensional data is stored in memory.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>For example, to create a 2D view with a specific layout:</p>
+</div>
 <div class="literalblock">
 <div class="content">
-<pre>parallel_for("Label", RangePolicy&lt;ExecutionSpace&gt;(0, numberOfIntervals),
-    [=] (const int64_t i) {
-        /* ... body ... */
-    });</pre>
+<pre>Kokkos::View&lt;double**, Kokkos::LayoutRight&gt; view2D("view2D", 64, 64);</pre>
 </div>
 </div>
+<div class="paragraph">
+<p>This creates a 64x64 2D array with a row-major layout.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_kokkos_mapping_and_memory_access_patterns"><a class="anchor" href="#_kokkos_mapping_and_memory_access_patterns"></a>2.2. Kokkos Mapping and Memory Access Patterns</h3>
+<div class="paragraph">
+<p>Kokkos maps parallel work indices to the layout of multidimensional array data:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The mapping aims to provide efficient access if iteration indices correspond to the first index of the array.</p>
 </li>
 <li>
-<p><strong>Changing the Default Execution Space</strong> : Another method involves changing the default Execution Space at compilation time. This approach affects all parallel operations that do not explicitly specify an Execution Space. While this method provides a global solution, it may limit flexibility in scenarios where different parts of the application benefit from distinct Execution Spaces.</p>
-</li>
-<li>
-<p><strong>Functor-based Control</strong> : For more granular control, developers can define functors with an execution_space public typedef. This approach ensures that the parallel dispatch will only run the functor in the specified Execution Space, providing a robust mechanism for execution space-specific optimizations.</p>
-</li>
-<li>
-<p><strong>Requirements and Considerations</strong> : It is important to note that utilizing specific Execution Spaces comes with certain requirements. The desired Execution Space must be enabled during Kokkos compilation and properly initialized (and later finalized) in the application. Additionally, for non-CPU Execution Spaces, functions and lambdas may need to be annotated with specific macros to ensure portability [3].</p>
-</li>
-<li>
-<p><strong>Performance Implications</strong> : The choice of Execution Space can significantly impact performance. Kokkos allows developers to target different parts of heterogeneous hardware architectures, enabling optimized utilization of available resources [4]. For instance, compute-intensive operations might benefit from GPU Execution Spaces, while memory-bound tasks could be more suited for CPU Execution Spaces.</p>
-</li>
-<li>
-<p><strong>Advanced Concepts: Team Policies</strong> : For more complex parallel patterns, Kokkos introduces Team Policies, which implement hierarchical parallelism [4]. Team Policies group threads into teams, allowing for sophisticated parallel structures that can better match the underlying hardware topology. This concept is particularly useful for architectures with multiple levels of parallelism, such as GPUs with their warp and block structures.</p>
+<p>This mapping is crucial for performance, as it determines how threads access memory.</p>
 </li>
 </ul>
+</div>
+<div class="paragraph">
+<p>Consider this example:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>View&lt;double***, ...&gt; view(...);
+Kokkos::parallel_for("Label", ...,
+KOKKOS_LAMBDA (int workIndex) {
+    view(workIndex, ..., ...) = ...; // Efficient access
+    view(..., workIndex, ...) = ...; // Less efficient
+});</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Here, accessing the view with <code>workIndex</code> as the first parameter is more efficient due to the default layout and mapping.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_performance_impact_of_memory_access_patterns_and_layouts"><a class="anchor" href="#_performance_impact_of_memory_access_patterns_and_layouts"></a>2.3. Performance Impact of Memory Access Patterns and Layouts</h3>
+<div class="paragraph">
+<p>To illustrate the performance impact of different memory configurations, consider a simple inner product computation. When implemented with a LayoutRight View on a CPU, the operation benefits from efficient cache usage as it iterates over contiguous memory. However, the same layout on a GPU may lead to uncoalesced memory accesses, potentially reducing performance by an order of magnitude or more [2]. Conversely, a LayoutLeft View would provide coalesced accesses on the GPU but might suffer from cache thrashing on the CPU. This example underscores the importance of selecting the appropriate layout for each target architecture to achieve optimal performance</p>
+</div>
+<div class="paragraph">
+<p>Thefore, the significance of memory access patterns and layouts on performance cannot be overstated:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>On CPUs, proper access patterns lead to effective caching, reducing memory latency.</p>
+</li>
+<li>
+<p>On GPUs, coalesced memory access is crucial for performance, where adjacent threads access adjacent memory locations.</p>
+</li>
+<li>
+<p>Misaligned or non-coalesced access can lead to significant performance degradation, potentially by more than 10x on GPUs.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Concrete Example of Memory Configuration Performance</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<a class="image" href="#fragment101"><img src="../_images/kokkos-layout-Left-Right.png" alt="kokkos layout Left Right" width="483" height="270"></a>
+</div>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s consider a simple inner product computation:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Kokkos::parallel_reduce("Label",
+RangePolicy&lt;ExecutionSpace&gt;(0, N),
+KOKKOS_LAMBDA (const size_t row, double&amp; valueToUpdate) {
+    double thisRowsSum = 0;
+    for (size_t entry = 0; entry &lt; M; ++entry) {
+    thisRowsSum += A(row, entry) * x(entry);
+    }
+    valueToUpdate += y(row) * thisRowsSum;
+}, result);</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Remark in this example:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>For a CPU with <code>LayoutRight</code>, this access pattern is cache-friendly.</p>
+</li>
+<li>
+<p>For a GPU with <code>LayoutLeft</code>, the access to <code>A(row, entry)</code> might not be coalesced, potentially leading to performance issues.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>To optimize for both architectures, you might need to transpose the data or use different layouts for different devices. That&#8217;s all.</p>
+</div>
+<div class="paragraph">
+<p>&#8230;&#8203;</p>
+</div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_execution_patterns"><a class="anchor" href="#_execution_patterns"></a>3. Execution Patterns</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Execution Patterns are the fundamental parallel algorithms in which an application has to be expressed. Examples are</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>parallel_for()</strong>: execute a function in undetermined order a specified amount of times,</p>
-</li>
-<li>
-<p><strong>parallel_reduce()</strong>: which combines parallel_for() execution with a reduction operation,</p>
-</li>
-<li>
-<p><strong>parallel_scan()</strong>: which combines a parallel_for() operation with a prefix or postfix scan on output values of each operation, and</p>
-</li>
-<li>
-<p><strong>task</strong>: which executes a single function with dependencies on other functions.</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>Expressing an application in these patterns allows the underlying implementation or the used compiler to reason about valid transformations.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_execution_policies"><a class="anchor" href="#_execution_policies"></a>4. Execution Policies</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>In the realm of parallel computing, Execution Policies act as the conductors of a grand digital orchestra, directing how functions perform their symphonies of calculations. Among these maestros, Range Policies stand as the simplest, guiding operations through elements like a steady metronome, without concern for order or synchronization. An Execution Policy determines, together with an Execution Pattern, How a function is executed.</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>Range Policies</strong>: Simple policies for executing operations on each element in a range, without specifying order or concurrency.</p>
-</li>
-<li>
-<p><strong>Team Policies</strong> : Used for hierarchical parallelism, grouping threads into teams. Key features include:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>League size (number of teams) and team size (threads per team)</p>
-</li>
-<li>
-<p>Concurrent execution within a team</p>
-</li>
-<li>
-<p>Team synchronization via barriers</p>
-</li>
-<li>
-<p>Scratch pad memory for temporary storage</p>
-</li>
-<li>
-<p>Nested parallel operations</p>
-</li>
-</ul>
-</div>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>The model is inspired by CUDA and OpenMP, aiming to improve performance across various hardware architectures by encouraging locality-aware programming. [5]</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_references"><a class="anchor" href="#_references"></a>5. References</h2>
+<h2 id="_references"><a class="anchor" href="#_references"></a>3. References</h2>
 <div class="sectionbody">
 <div class="ulist">
 <ul>
 <li>
-<p>[1] <a href="https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/Machine-Model.html" class="bare">kokkos.org/kokkos-core-wiki/ProgrammingGuide/Machine-Model.html</a></p>
+<p>[1] <a href="https://github.com/CExA-project/cheat-sheet-for-kokkos/blob/main/utilization.md" class="bare">github.com/CExA-project/cheat-sheet-for-kokkos/blob/main/utilization.md</a></p>
 </li>
 <li>
-<p>[2] <a href="https://kokkos.org/kokkos-core-wiki/API/core/execution_spaces.html#" class="bare">kokkos.org/kokkos-core-wiki/API/core/execution_spaces.html#</a></p>
+<p>[2] <a href="https://www.nersc.gov/assets/Uploads/Kokkos-training-Day1-NewUsers-Bruno-v2.pdf" class="bare">www.nersc.gov/assets/Uploads/Kokkos-training-Day1-NewUsers-Bruno-v2.pdf</a></p>
 </li>
 <li>
-<p>[3] <a href="https://indico.math.cnrs.fr/event/12037/attachments/5040/8129/" class="bare">indico.math.cnrs.fr/event/12037/attachments/5040/8129/</a></p>
+<p>[3] <a href="https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/View.html" class="bare">kokkos.org/kokkos-core-wiki/ProgrammingGuide/View.html</a></p>
 </li>
 <li>
-<p>[4] <a href="https://github.com/kokkos/kokkos-core-wiki/blob/main/docs/source/ProgrammingGuide/ProgrammingModel.md" class="bare">github.com/kokkos/kokkos-core-wiki/blob/main/docs/source/ProgrammingGuide/ProgrammingModel.md</a></p>
-</li>
-<li>
-<p>[5] <a href="https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/ProgrammingModel.html" class="bare">kokkos.org/kokkos-core-wiki/ProgrammingGuide/ProgrammingModel.html</a></p>
+<p>[4] <a href="https://aiichironakano.github.io/cs653/Edwards-Kokkos-JPDC14.pdf" class="bare">aiichironakano.github.io/cs653/Edwards-Kokkos-JPDC14.pdf</a></p>
 </li>
 </ul>
 </div>
 <div class="sidebarblock">
 <div class="content">
 <div class="title"><strong>Points to keep in mind</strong></div>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>Space Accessibility</strong></p>
-</li>
-</ul>
-</div>
 <div class="paragraph">
-<p>Space Accessibility is a trait that expresses the accessibility and assignability relationships between different memory and execution spaces. It allows to determine:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Whether an execution space can access a given memory space.</p>
-</li>
-<li>
-<p>Whether data can be assigned or copied between different memory spaces.</p>
-</li>
-</ul>
+<p>&#8230;&#8203;</p>
 </div>
 </div>
 </div>
