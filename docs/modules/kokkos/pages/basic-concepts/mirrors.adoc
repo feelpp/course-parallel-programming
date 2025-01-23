@@ -1,0 +1,64 @@
+= Mirrors
+
+== Overview
+
+_Mirrors_ are views that reference data in a possibly different memory space.
+They are used to access data in a different memory space without copying it.
+
+.Mirroring schematic
+[source, c++]
+----
+Kokkos::View<double**, Space> view(...);
+auto host_mirror = Kokkos::create_mirror_view(view);
+----
+
+image::kokkos-mirrors-schematic.png[]
+
+Two views are created: `view` in the memory space `Space` and `host_mirror` in the host memory space.
+The data are copied back and forth between the two views using the `Kokkos::deep_copy` function.
+
+
+== Mirroring pattern
+
+. *Create* a `view` in a specific memory space.
+
+[source, c++]
+----
+Kokkos::View<double**, Space> view(...);
+----
+
+[start=2]
+. *Create* a mirror view in the host memory space, `host_mirror`.
+
+[source, c++]
+----
+auto host_mirror = Kokkos::create_mirror_view(view);
+----
+
+[start=3]
+. *Populate* `host_mirror` with data (from file, user input, etc.).
+. *Copy* data from `host_mirror` to `view` using `Kokkos::deep_copy`.
+. *Perform* computations on `view`:
+
+[source, c++]
+----
+Kokkos::parallel_for("Operation",
+    RangePolicy<Space>(0, view.extent(0)),
+    KOKKOS_LAMBDA(...) { /* use and change view */ }
+);
+----
+
+[start=6]
+. If nedded, *copy* data back to `host_mirror` using `Kokkos::deep_copy`.
+
+[source, c++]
+----
+Kokkos::deep_copy(host_mirror, view);
+----
+
+
+NOTE: `create_mirror_view` allocates data only if the host process cannon access `view` 's data.
+Otherwise, it returns a view that references the same data as `view`.
+The ++command++ `create_mirror` makes always make data allocation.
+
+{cpp}

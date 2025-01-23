@@ -10,6 +10,7 @@
 *** xref:basic-concepts/views.adoc[Views]
 *** xref:basic-concepts/execution-spaces.adoc[Execution Spaces]
 *** xref:basic-concepts/memory-spaces.adoc[Memory Spaces]
+*** xref:basic-concepts/mirrors.adoc[Mirrors]
 *** xref:basic-concepts/memory-access-patterns.adoc[Memory Access Patterns]
 
 ** xref:advanced-concepts/index.adoc[Advanced Concepts]

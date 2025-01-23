@@ -65,6 +65,6 @@ You can load the environment with the following command:
 
 [source,sh]
 ----
-spacktivate feelpp-openmpi4-rocm-kokkos
+spacktivate feelpp-openmpi4-kokkos
 ----
 ====
