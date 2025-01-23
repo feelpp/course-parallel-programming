@@ -11,3 +11,7 @@
 *** xref:basic-concepts/execution-spaces.adoc[Execution Spaces]
 *** xref:basic-concepts/memory-spaces.adoc[Memory Spaces]
 *** xref:basic-concepts/memory-access-patterns.adoc[Memory Access Patterns]
+
+** xref:advanced-concepts/index.adoc[Advanced Concepts]
+*** xref:advanced-concepts/advanced-reductions.adoc[Advanced Reductions]
+
