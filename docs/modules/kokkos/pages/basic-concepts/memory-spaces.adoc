@@ -67,11 +67,13 @@ Memory spaces in Kokkos are dynamic and flexible, offering programmers the abili
 
 ** Example of atomic addition:
 
-    KOKKOS_INLINE_FUNCTION
-    void atomicAdd(int* addr, int val) {
-        Kokkos::atomic_add(addr, val);
-    }
-
+[source, c++]
+----
+KOKKOS_INLINE_FUNCTION
+void atomicAdd(int* addr, int val) {
+    Kokkos::atomic_add(addr, val);
+}
+----
 
 * *Memory Consistency*
 

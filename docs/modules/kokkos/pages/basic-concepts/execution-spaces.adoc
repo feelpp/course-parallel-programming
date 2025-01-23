@@ -21,10 +21,10 @@ image::kokkos-abstractions-doc.png[xref=#fragment101,width=322,height=181]
 * *Specifying Execution Spaces* : One approach to control the Execution Space is by explicitly defining it in the parallel dispatch call. This can be achieved by using the RangePolicy template argument [3]. For example, In this code, *ExecutionSpace* is replaced with the desired Execution Space, such as *Kokkos::Cuda* for NVIDIA GPUs or *Kokkos::HIP* for AMD GPUs  or *Kokkos::OpenMP* for multi-core CPUs. Also it is quite simple !
 [source,c++]
 ----
-    parallel_for("Label", RangePolicy<ExecutionSpace>(0, numberOfIntervals),
-        [=] (const int64_t i) {
-            /* ... body ... */
-        });
+parallel_for("Label", RangePolicy<ExecutionSpace>(0, numberOfIntervals),
+    [=] (const int64_t i) {
+        /* ... body ... */
+    });
 ----
 * *Changing the Default Execution Space* : Another method involves changing the default Execution Space at compilation time. This approach affects all parallel operations that do not explicitly specify an Execution Space. While this method provides a global solution, it may limit flexibility in scenarios where different parts of the application benefit from distinct Execution Spaces.
 
@@ -46,11 +46,11 @@ Execution Patterns are the fundamental parallel algorithms in which an applicati
 * *parallel_scan()*: which combines a parallel_for() operation with a prefix or postfix scan on output values of each operation, and
 * *task*: which executes a single function with dependencies on other functions.
 
-Expressing an application in these patterns allows the underlying implementation or the used compiler to reason about valid transformations. 
+Expressing an application in these patterns allows the underlying implementation or the used compiler to reason about valid transformations.
 
 == Execution Policies
 
-In the realm of parallel computing, Execution Policies act as the conductors of a grand digital orchestra, directing how functions perform their symphonies of calculations. Among these maestros, Range Policies stand as the simplest, guiding operations through elements like a steady metronome, without concern for order or synchronization. An Execution Policy determines, together with an Execution Pattern, How a function is executed. 
+In the realm of parallel computing, Execution Policies act as the conductors of a grand digital orchestra, directing how functions perform their symphonies of calculations. Among these maestros, Range Policies stand as the simplest, guiding operations through elements like a steady metronome, without concern for order or synchronization. An Execution Policy determines, together with an Execution Pattern, How a function is executed.
 
 * *Range Policies*: Simple policies for executing operations on each element in a range, without specifying order or concurrency.
 
