@@ -33,6 +33,8 @@ if (FEELPP_ENABLE_KOKKOS)
     add_executable(03_views_properties 03_views_properties.cpp)
     add_executable(04_kokkos_exercise_views 04_kokkos_exercise_views.cpp)
 
+    feelpp_add_application(kokkos SRCS feelpp_kokkos.cpp)
+
     # Link Kokkos to the executable
     target_link_libraries(00_views Kokkos::kokkos)
     target_link_libraries(01_views_1D Kokkos::kokkos)
