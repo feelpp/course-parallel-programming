@@ -253,6 +253,12 @@ MathJax.Hub.Config({
   <li class="nav-item" data-depth="3">
     <a class="nav-link" href="../advanced-concepts/advanced-reductions.html">Advanced Reductions</a>
   </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../advanced-concepts/multidimensional-loops-and-data-structure.html">Multidimensional Loops and Data Structure</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../advanced-concepts/hierarchical-parallelism.html">Hierarchical Parallelism</a>
+  </li>
 </ul>
   </li>
 </ul>
@@ -488,9 +494,10 @@ KOKKOS_LAMBDA (const size_t row, double&amp; valueToUpdate) {
 <div class="sidebarblock">
 <div class="content">
 <div class="title"><strong>Points to keep in mind</strong></div>
-<div class="paragraph">
+<div class="ulist">
+<ul>
+<li>
 <p><strong>Important concept concerning layout</strong></p>
-</div>
 <div class="ulist">
 <ul>
 <li>
@@ -516,9 +523,9 @@ KOKKOS_LAMBDA (const size_t row, double&amp; valueToUpdate) {
 </li>
 </ul>
 </div>
-<div class="paragraph">
+</li>
+<li>
 <p><strong>Performance</strong></p>
-</div>
 <div class="ulist">
 <ul>
 <li>
@@ -532,10 +539,21 @@ KOKKOS_LAMBDA (const size_t row, double&amp; valueToUpdate) {
 </li>
 </ul>
 </div>
-<div class="paragraph">
-<p><strong>Memory spaces available</strong>
-<strong> HostSpace, CudaSpace, CudaUVMSpace, &#8230;&#8203; more
-</strong> Remark here is no UVMSpace for HIP, In the meantime, another strategy will have to be used.</p>
+</li>
+<li>
+<p><strong>Memory spaces available</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>HostSpace, CudaSpace, CudaUVMSpace, &#8230;&#8203; more</p>
+</li>
+<li>
+<p>Remark here is no UVMSpace for HIP, In the meantime, another strategy will have to be used.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
 </div>
 </div>
 </div>
