@@ -100,3 +100,29 @@ These examples demonstrate how Kokkos allows flexible memory allocation across d
 ** [3] https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/HierarchicalParallelism.html
 ** [4] https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/Machine-Model.html
 ** [5] https://docs.trilinos.org/dev/packages/kokkos/doc/html/
+
+
+
+
+.*Points to keep in mind*
+****
+
+* *Memory Spaces*
+
+Memory Spaces represent the places where data physically resides. They specify:
+
+*** The physical location of the data (e.g., CPU memory, GPU memory).
+*** The access characteristics to that data.
+
+Each execution space in Kokkos has a default Memory Space associated with it.
+
+
+The main difference between *Memory Spaces* and *Space Accessibility* is that:
+
+** Memory Spaces define **where** data is stored.
+** Space Accessibility determines **how** these spaces can interact with each other.
+
+Space Accessibility therefore provides an additional layer of abstraction to manage the complex relationships between different spaces in a heterogeneous architecture.
+
+****
+
