@@ -71,3 +71,18 @@ The model is inspired by CUDA and OpenMP, aiming to improve performance across v
 ** [3] https://indico.math.cnrs.fr/event/12037/attachments/5040/8129/
 ** [4] https://github.com/kokkos/kokkos-core-wiki/blob/main/docs/source/ProgrammingGuide/ProgrammingModel.md
 ** [5] https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/ProgrammingModel.html
+
+
+
+.*Points to keep in mind*
+****
+
+* *Space Accessibility*
+
+Space Accessibility is a trait that expresses the accessibility and assignability relationships between different memory and execution spaces. It allows to determine:
+
+*** Whether an execution space can access a given memory space.
+*** Whether data can be assigned or copied between different memory spaces.
+
+****
+
