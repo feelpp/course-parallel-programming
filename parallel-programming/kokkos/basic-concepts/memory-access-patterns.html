@@ -477,7 +477,53 @@ KOKKOS_LAMBDA (const size_t row, double&amp; valueToUpdate) {
 <div class="content">
 <div class="title"><strong>Points to keep in mind</strong></div>
 <div class="paragraph">
-<p>&#8230;&#8203;</p>
+<p><strong>Important concept concerning layout</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Every <strong>View</strong> has multidimensional array Layout set at compile-time</p>
+</li>
+<li>
+<p>Most-common layouts are <strong>LayoutLeft</strong> and <strong>LayoutRight</strong>.</p>
+</li>
+<li>
+<p>Layouts are extensible and flexible</p>
+</li>
+<li>
+<p>If no layout specified, default for that memory space is used. <strong>LayoutLeft</strong> for <strong>CudaSpace</strong>, <strong>LayoutRight</strong> for <strong>HostSpace</strong>.</p>
+</li>
+<li>
+<p>LayoutRight row-major HostSpace: cached (good),CudaSpace: uncoalesced (bad)</p>
+</li>
+<li>
+<p>LayoutLeft column-major HostSpace: uncached (bad),CudaSpace: coalesced (good)</p>
+</li>
+<li>
+<p>Kokkos architecture-dependent HostSpace: cached (good)  CudaSpace: coalesced (good)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Performance</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>For performance, accesses to views in <strong>HostSpace</strong> must <strong>be cached</strong>, while access to views in <strong>CudaSpace</strong> must be <strong>coalesced</strong>.</p>
+</li>
+<li>
+<p><strong>Uncoalesced access</strong> on <strong>GPUs</strong> and <strong>non-cached loads</strong> on CPUs greatly <strong>reduces performance (can be 10X)</strong></p>
+</li>
+<li>
+<p>Kokkos maps parallel work indices and multidimensional array layout for <strong>performance portable memory access patterns</strong>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Memory spaces available</strong>
+<strong> HostSpace, CudaSpace, CudaUVMSpace, &#8230;&#8203; more
+</strong> Remark here is no UVMSpace for HIP, In the meantime, another strategy will have to be used.</p>
 </div>
 </div>
 </div>
