@@ -239,6 +239,9 @@ MathJax.Hub.Config({
     <a class="nav-link" href="memory-spaces.html">Memory Spaces</a>
   </li>
   <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="mirrors.html">Mirrors</a>
+  </li>
+  <li class="nav-item" data-depth="3">
     <a class="nav-link" href="memory-access-patterns.html">Memory Access Patterns</a>
   </li>
 </ul>
@@ -324,7 +327,7 @@ MathJax.Hub.Config({
 <h2 id="_introduction"><a class="anchor" href="#_introduction"></a>1. Introduction</h2>
 <div class="sectionbody">
 <div class="paragraph text-justify">
-<p>Kokkos, a performance portability programming model, introduces the concept of Memory Spaces as a fundamental abstraction to address the complexities of heterogeneous computing environments. Memory Spaces [1] in Kokkos represent distinct memory areas with specific characteristics and accessibility patterns. These abstractions enable programmers to express algorithms independently of hardware specifics while maintaining control over data placement and movement. The Kokkos machine model envisions future computing nodes as complex systems with multiple execution units and memory hierarchies.</p>
+<p>Kokkos, a performance portability programming model, introduces the concept of <em>Memory Spaces</em> as a fundamental abstraction to address the complexities of heterogeneous computing environments. Memory Spaces [1] in Kokkos represent distinct memory areas with specific characteristics and accessibility patterns. These abstractions enable programmers to express algorithms independently of hardware specifics while maintaining control over data placement and movement. The Kokkos machine model envisions future computing nodes as complex systems with multiple execution units and memory hierarchies.</p>
 </div>
 <div class="paragraph text-justify">
 <p>In heterogeneous nodes, Kokkos' space abstractions prove particularly valuable. Such nodes may include CPU cores, GPU accelerators, and other specialized processing units, each with access to different memory types like host memory, device memory, or high-bandwidth memory. Kokkos abstracts these hardware-specific details, allowing developers to focus on algorithm structure rather than platform intricacies [2][3].</p>
