@@ -355,9 +355,9 @@ MathJax.Hub.Config({
 <div class="paragraph">
 <p>For example, to create a 2D view with a specific layout:</p>
 </div>
-<div class="literalblock">
+<div class="listingblock">
 <div class="content">
-<pre>Kokkos::View&lt;double**, Kokkos::LayoutRight&gt; view2D("view2D", 64, 64);</pre>
+<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    Kokkos::View&lt;double**, Kokkos::LayoutRight&gt; view2D("view2D", 64, 64);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -382,14 +382,14 @@ MathJax.Hub.Config({
 <div class="paragraph">
 <p>Consider this example:</p>
 </div>
-<div class="literalblock">
+<div class="listingblock">
 <div class="content">
-<pre>View&lt;double***, ...&gt; view(...);
-Kokkos::parallel_for("Label", ...,
-KOKKOS_LAMBDA (int workIndex) {
-    view(workIndex, ..., ...) = ...; // Efficient access
-    view(..., workIndex, ...) = ...; // Less efficient
-});</pre>
+<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    View&lt;double***, ...&gt; view(...);
+    Kokkos::parallel_for("Label", ...,
+    KOKKOS_LAMBDA (int workIndex) {
+        view(workIndex, ..., ...) = ...; // Efficient access
+        view(..., workIndex, ...) = ...; // Less efficient
+    });</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -428,17 +428,17 @@ KOKKOS_LAMBDA (int workIndex) {
 <div class="paragraph">
 <p>Let&#8217;s consider a simple inner product computation:</p>
 </div>
-<div class="literalblock">
+<div class="listingblock">
 <div class="content">
-<pre>Kokkos::parallel_reduce("Label",
-RangePolicy&lt;ExecutionSpace&gt;(0, N),
-KOKKOS_LAMBDA (const size_t row, double&amp; valueToUpdate) {
-    double thisRowsSum = 0;
-    for (size_t entry = 0; entry &lt; M; ++entry) {
-    thisRowsSum += A(row, entry) * x(entry);
-    }
-    valueToUpdate += y(row) * thisRowsSum;
-}, result);</pre>
+<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    Kokkos::parallel_reduce("Label",
+    RangePolicy&lt;ExecutionSpace&gt;(0, N),
+    KOKKOS_LAMBDA (const size_t row, double&amp; valueToUpdate) {
+        double thisRowsSum = 0;
+        for (size_t entry = 0; entry &lt; M; ++entry) {
+        thisRowsSum += A(row, entry) * x(entry);
+        }
+        valueToUpdate += y(row) * thisRowsSum;
+    }, result);</code></pre>
 </div>
 </div>
 <div class="paragraph">

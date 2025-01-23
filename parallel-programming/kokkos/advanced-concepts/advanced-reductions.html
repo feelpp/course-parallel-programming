@@ -314,13 +314,13 @@ MathJax.Hub.Config({
 <div class="sect1">
 <h2 id="_introduction"><a class="anchor" href="#_introduction"></a>1. Introduction</h2>
 <div class="sectionbody">
-<div class="paragraph">
+<div class="paragraph text-justify">
 <p>In Kokkos C++, a reduction is a parallel operation that combines the results of individual calculations into a single final value. [1][2] This mechanism, primarily implemented through the Kokkos::parallel_reduce function, offers a powerful paradigm for consolidating data distributed across different processing units. The concept of a "Reducer" in Kokkos encapsulates the logic of combining intermediate values, defining not only the merging operation but also the initialization of thread-private variables and the localization of the final result.</p>
 </div>
-<div class="paragraph">
+<div class="paragraph text-justify">
 <p>Kokkos allows for multiple reductions to be performed within a single kernel, which can significantly reduce kernel launch overhead and improve overall performance. It also offers the ability to use Views as reduction targets, enabling asynchronous reduction operations. This capability is particularly valuable in scenarios where the reduction result is needed for further computation or when overlapping computation and communication.</p>
 </div>
-<div class="paragraph">
+<div class="paragraph text-justify">
 <p>For cases where built-in reducers do not suffice, Kokkos provides mechanisms for implementing custom reductions. This extensibility allows developers to define complex reduction operations tailored to their specific computational needs. Custom reductions can be particularly useful for domain-specific algorithms or when dealing with non-standard data types [3].</p>
 </div>
 </div>
@@ -357,13 +357,13 @@ MathJax.Hub.Config({
 <div class="paragraph">
 <p>Example:</p>
 </div>
-<div class="literalblock">
+<div class="listingblock">
 <div class="content">
-<pre>double result;
-Kokkos::parallel_reduce("Sum", policy,
-KOKKOS_LAMBDA (const int i, double&amp; lsum) {
-    lsum += data[i];
-}, Kokkos::Sum&lt;double&gt;(result));</pre>
+<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    double result;
+    Kokkos::parallel_reduce("Sum", policy,
+    KOKKOS_LAMBDA (const int i, double&amp; lsum) {
+        lsum += data[i];
+    }, Kokkos::Sum&lt;double&gt;(result));</code></pre>
 </div>
 </div>
 <div class="ulist">
@@ -376,23 +376,20 @@ KOKKOS_LAMBDA (const int i, double&amp; lsum) {
 <div class="paragraph">
 <p>Kokkos allows performing multiple reductions simultaneously:</p>
 </div>
-<div class="literalblock">
+<div class="listingblock">
 <div class="content">
-<pre>struct MultipleResults {
-    double sum;
-    int max;
-};</pre>
-</div>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>MultipleResults results;
-Kokkos::parallel_reduce("MultiReduce", policy,
-KOKKOS_LAMBDA (const int i, MultipleResults&amp; lresults) {
-    lresults.sum += data[i];
-    if (data[i] &gt; lresults.max) lresults.max = data[i];
-},
-Kokkos::Sum&lt;MultipleResults&gt;(results));</pre>
+<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    struct MultipleResults {
+        double sum;
+        int max;
+    };
+
+    MultipleResults results;
+    Kokkos::parallel_reduce("MultiReduce", policy,
+    KOKKOS_LAMBDA (const int i, MultipleResults&amp; lresults) {
+        lresults.sum += data[i];
+        if (data[i] &gt; lresults.max) lresults.max = data[i];
+    },
+    Kokkos::Sum&lt;MultipleResults&gt;(results));</code></pre>
 </div>
 </div>
 <div class="ulist">
@@ -405,13 +402,13 @@ Kokkos::Sum&lt;MultipleResults&gt;(results));</pre>
 <div class="paragraph">
 <p>For asynchronous operations, you can use <code>Kokkos::View</code> as the reduction target:</p>
 </div>
-<div class="literalblock">
+<div class="listingblock">
 <div class="content">
-<pre>Kokkos::View&lt;double*&gt; result("Result", 1);
-Kokkos::parallel_reduce("AsyncReduce", policy,
-KOKKOS_LAMBDA (const int i, double&amp; lsum) {
-    lsum += data[i];
-}, Kokkos::Sum&lt;double&gt;(result(0)));</pre>
+<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    Kokkos::View&lt;double*&gt; result("Result", 1);
+    Kokkos::parallel_reduce("AsyncReduce", policy,
+    KOKKOS_LAMBDA (const int i, double&amp; lsum) {
+        lsum += data[i];
+    }, Kokkos::Sum&lt;double&gt;(result(0)));</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -427,26 +424,23 @@ KOKKOS_LAMBDA (const int i, double&amp; lsum) {
 <div class="paragraph">
 <p>Kokkos supports custom reduction operations:</p>
 </div>
-<div class="literalblock">
+<div class="listingblock">
 <div class="content">
-<pre>struct CustomReducer {
-typedef double value_type;
-KOKKOS_INLINE_FUNCTION void join(value_type&amp; dest, const value_type&amp; src) const {
-    dest = (dest &gt; src) ? dest : src;  // Custom max operation
-}
-KOKKOS_INLINE_FUNCTION void init(value_type&amp; val) const {
-    val = std::numeric_limits&lt;double&gt;::lowest();
-}
-};</pre>
-</div>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>double result;
-Kokkos::parallel_reduce("CustomReduce", policy,
-KOKKOS_LAMBDA (const int i, double&amp; lval) {
-    lval = (lval &gt; data[i]) ? lval : data[i];
-}, CustomReducer());</pre>
+<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    struct CustomReducer {
+    typedef double value_type;
+    KOKKOS_INLINE_FUNCTION void join(value_type&amp; dest, const value_type&amp; src) const {
+        dest = (dest &gt; src) ? dest : src;  // Custom max operation
+    }
+    KOKKOS_INLINE_FUNCTION void init(value_type&amp; val) const {
+        val = std::numeric_limits&lt;double&gt;::lowest();
+    }
+    };
+
+    double result;
+    Kokkos::parallel_reduce("CustomReduce", policy,
+    KOKKOS_LAMBDA (const int i, double&amp; lval) {
+        lval = (lval &gt; data[i]) ? lval : data[i];
+    }, CustomReducer());</code></pre>
 </div>
 </div>
 </div>

@@ -346,15 +346,19 @@ MathJax.Hub.Config({
 <ul>
 <li>
 <p><strong>Specifying Execution Spaces</strong> : One approach to control the Execution Space is by explicitly defining it in the parallel dispatch call. This can be achieved by using the RangePolicy template argument [3]. For example, In this code, <strong>ExecutionSpace</strong> is replaced with the desired Execution Space, such as <strong>Kokkos::Cuda</strong> for NVIDIA GPUs or <strong>Kokkos::HIP</strong> for AMD GPUs  or <strong>Kokkos::OpenMP</strong> for multi-core CPUs. Also it is quite simple !</p>
-<div class="literalblock">
-<div class="content">
-<pre>parallel_for("Label", RangePolicy&lt;ExecutionSpace&gt;(0, numberOfIntervals),
-    [=] (const int64_t i) {
-        /* ... body ... */
-    });</pre>
-</div>
-</div>
 </li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>    parallel_for("Label", RangePolicy&lt;ExecutionSpace&gt;(0, numberOfIntervals),
+        [=] (const int64_t i) {
+            /* ... body ... */
+        });</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
 <li>
 <p><strong>Changing the Default Execution Space</strong> : Another method involves changing the default Execution Space at compilation time. This approach affects all parallel operations that do not explicitly specify an Execution Space. While this method provides a global solution, it may limit flexibility in scenarios where different parts of the application benefit from distinct Execution Spaces.</p>
 </li>
