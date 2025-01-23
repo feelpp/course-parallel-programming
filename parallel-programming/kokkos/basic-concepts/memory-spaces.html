@@ -458,18 +458,22 @@ MathJax.Hub.Config({
 <ul>
 <li>
 <p>Example of atomic addition:</p>
-<div class="literalblock">
-<div class="content">
-<pre>KOKKOS_INLINE_FUNCTION
-void atomicAdd(int* addr, int val) {
-    Kokkos::atomic_add(addr, val);
-}</pre>
-</div>
-</div>
 </li>
 </ul>
 </div>
 </li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">KOKKOS_INLINE_FUNCTION
+void atomicAdd(int* addr, int val) {
+    Kokkos::atomic_add(addr, val);
+}</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
 <li>
 <p><strong>Memory Consistency</strong></p>
 <div class="ulist">
