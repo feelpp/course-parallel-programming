@@ -1,0 +1,120 @@
+= Kokkos Advanced Reductions
+
+== Introduction
+
+In Kokkos C++, a reduction is a parallel operation that combines the results of individual calculations into a single final value. [1][2] This mechanism, primarily implemented through the Kokkos::parallel_reduce function, offers a powerful paradigm for consolidating data distributed across different processing units. The concept of a "Reducer" in Kokkos encapsulates the logic of combining intermediate values, defining not only the merging operation but also the initialization of thread-private variables and the localization of the final result.
+
+Kokkos allows for multiple reductions to be performed within a single kernel, which can significantly reduce kernel launch overhead and improve overall performance. It also offers the ability to use Views as reduction targets, enabling asynchronous reduction operations. This capability is particularly valuable in scenarios where the reduction result is needed for further computation or when overlapping computation and communication.
+
+For cases where built-in reducers do not suffice, Kokkos provides mechanisms for implementing custom reductions. This extensibility allows developers to define complex reduction operations tailored to their specific computational needs. Custom reductions can be particularly useful for domain-specific algorithms or when dealing with non-standard data types [3].
+
+
+== Advanced Reductions
+
+Kokkos provides powerful tools for performing reductions in parallel computations.
+
+** Using Reducers for Different Reductions
+
+Kokkos offers various built-in reducers for common operations:
+
+    ** `Kokkos::Sum` for summation
+    ** `Kokkos::Prod` for product
+    ** `Kokkos::Min` and `Kokkos::Max` for minimum and maximum
+
+Example:
+
+    double result;
+    Kokkos::parallel_reduce("Sum", policy,
+    KOKKOS_LAMBDA (const int i, double& lsum) {
+        lsum += data[i];
+    }, Kokkos::Sum<double>(result));
+
+
+** Multiple Reductions in One Kernel
+
+Kokkos allows performing multiple reductions simultaneously:
+
+    struct MultipleResults {
+        double sum;
+        int max;
+    };
+
+    MultipleResults results;
+    Kokkos::parallel_reduce("MultiReduce", policy,
+    KOKKOS_LAMBDA (const int i, MultipleResults& lresults) {
+        lresults.sum += data[i];
+        if (data[i] > lresults.max) lresults.max = data[i];
+    },
+    Kokkos::Sum<MultipleResults>(results));
+
+
+** Using Kokkos::View as Result for Asynchronicity
+
+For asynchronous operations, you can use `Kokkos::View` as the reduction target:
+
+    Kokkos::View<double*> result("Result", 1);
+    Kokkos::parallel_reduce("AsyncReduce", policy,
+    KOKKOS_LAMBDA (const int i, double& lsum) {
+        lsum += data[i];
+    }, Kokkos::Sum<double>(result(0)));
+
+
+This allows the reduction to be performed asynchronously, with the result available in the view.
+
+** Custom Reductions
+
+Kokkos supports custom reduction operations:
+
+    struct CustomReducer {
+    typedef double value_type;
+    KOKKOS_INLINE_FUNCTION void join(value_type& dest, const value_type& src) const {
+        dest = (dest > src) ? dest : src;  // Custom max operation
+    }
+    KOKKOS_INLINE_FUNCTION void init(value_type& val) const {
+        val = std::numeric_limits<double>::lowest();
+    }
+    };
+
+    double result;
+    Kokkos::parallel_reduce("CustomReduce", policy,
+    KOKKOS_LAMBDA (const int i, double& lval) {
+        lval = (lval > data[i]) ? lval : data[i];
+    }, CustomReducer());
+
+
+
+== References
+
+** [1] https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/Custom-Reductions.html
+** [2] https://kokkos.org/kokkos-core-wiki/API/core/builtinreducers/ReducerConcept.html
+** [3] https://www.nersc.gov/assets/Uploads/Kokkos-training-Day1-NewUsers-Bruno-v2.pdf
+
+
+.*Points to keep in mind*
+****
+
+* *Reduction* aggregates values computed by different threads or computing units in parallel.
+
+* *Types of reductions*:
+*** By default, Kokkos performs a "sum" reduction.
+*** Custom reductions are possible for more complex operations.
+
+* *Reducer concept*:
+*** A Reducer is a class that defines how to join (reduce) two values.
+*** It also specifies the initialization of thread-private variables and the location of the final result.
+
+* *Usage*:
+*** Reduction is usually done with the `Kokkos::parallel_reduce` function.
+*** It can be used with lambdas or CPP functors.
+
+* *Data types*:
+*** Built-in reductions work with CPP intrinsic and `Kokkos::complex` types.
+*** For custom types, a specialization of `Kokkos::reduction_identity` is required.
+
+* *Flexibility*:
+*** Kokkos allows reductions on scalars, but also on more complex structures like matrices.
+
+* *Performance*:
+*** Reductions are optimized for different hardware architectures, ensuring performance portability.
+
+****

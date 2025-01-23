@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(KokkosExample)
 
 option(FEELPP_ENABLE_KOKKOS "Enable Kokkos support" ON)
 set(Kokkos_ENABLE_OPENMP ON )
