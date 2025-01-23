@@ -1,0 +1,193 @@
+= Kokkos Multidimensional Loops and Data Structure
+
+== Introduction
+
+[.text-justify]
+Kokkos offers powerful abstractions for handling *multidimensional loops*, *data structures*, and *memory management*. Here we will look at several key aspects of Kokkos, providing an overview of its capabilities and best practices for effective parallel programming.
+
+...
+
+== MultiDimensional Loops and Data Structures in Kokkos
+
+[.text-justify]
+Kokkos provides the *MDRangePolicy*, a sophisticated tool for parallelizing tightly nested loops across multiple dimensions. This policy allows developers to express complex multidimensional algorithms with ease and efficiency [5]. The *MDRangePolicy* can handle loops of 2 to 6 dimensions, making it suitable for a wide range of scientific and engineering applications [1].
+
+To utilize the *MDRangePolicy*, one must specify the dimensionality of the loop using the Rank<DIM> template parameter. The syntax for creating an MDRangePolicy is as follows:
+
+[source,c++]
+----
+    Kokkos::parallel_for("Label", 
+    Kokkos::MDRangePolicy<Kokkos::Rank<3>>({0,0,0}, {N0,N1,N2}),
+    KOKKOS_LAMBDA (int64_t i, int64_t j, int64_t k) {
+        // Loop body
+    }
+    );
+----
+
+[.text-justify]
+In this example, we create a three-dimensional iteration space. The policy takes two required arguments: an initializer list for the beginning indices and another for the end indices[5]. Optionally, a third argument can be provided to specify tiling dimensions, which can be crucial for performance tuning[9].
+
+A more elaborate example demonstrating the use of *MDRangePolicy* in the context of tensor operations is as follows:
+
+[source,c++]
+----
+    Kokkos::parallel_for("mdr_for_all_cells",
+    Kokkos::MDRangePolicy<Kokkos::Rank<3>>({0,0,0}, {C,F,P}),
+    KOKKOS_LAMBDA (const int c, const int f, const int p) {
+        auto result = Kokkos::subview(outputField, c, f, p, Kokkos::ALL);
+        auto left = Kokkos::subview(inputData, c, p, Kokkos::ALL, Kokkos::ALL);
+        auto right = Kokkos::subview(inputField, c, f, p, Kokkos::ALL);
+        for (int i=0; i<D; ++i) {
+        double tmp(0);
+        for (int j=0; j<D; ++j)
+            tmp += left(i, j)*right(j);
+        result(i) = tmp;
+        }
+    }
+    );
+----
+
+This code snippet showcases how MDRangePolicy can be used in conjunction with subviews to perform complex tensor operations efficiently [9].
+
+== Subviews: Taking Slices of Views with Kokkos
+
+[.text-justify]
+*Subviews* in Kokkos provide a powerful mechanism for creating views that reference a subset of an existing view's data. This capability is essential for efficient data manipulation and algorithm implementation.
+
+The basic syntax for creating a subview is:
+
+[source,c++]
+----
+    auto subview = Kokkos::subview(view, index1, index2, ...);
+----
+
+Kokkos offers flexible indexing options for *subviews*. You can use integer indices for single elements, Kokkos::ALL for entire dimensions, or Kokkos::pair<int,int> for ranges [9].
+
+When working with *subviews*, it's important to understand the view assignment rules. Kokkos ensures that view assignments are only allowed when the memory spaces are compatible and the shapes match. This strict checking helps prevent errors and ensures performance portability across different architectures.
+
+== Unmanaged Views: Dealing with External Memory with Kokkos
+
+[.text-justify]
+Unmanaged views in Kokkos provide a way to work with externally allocated memory, which is particularly useful when integrating Kokkos into existing codebases or when interfacing with external libraries [6].
+
+To create an unmanaged view, you can use the following syntax:
+
+[source,c++]
+----
+    Kokkos::View<double*, Kokkos::HostSpace, Kokkos::MemoryTraits<Kokkos::Unmanaged>> 
+    unmanaged_view(external_ptr, size);
+----
+
+Unmanaged views are essential when you need to wrap externally allocated data into Kokkos views. This is often necessary when Kokkos is used in a library that receives pointers to data allocations as input [6].
+
+When working with unmanaged views, it's crucial to ensure that the lifetime of the external memory outlives the Kokkos view. Additionally, be cautious when using unmanaged views with device memory, as the memory management becomes the responsibility of the developer.
+
+== Thread Safety and Atomic Operations with Kokkos
+
+[.text-justify]
+In parallel programming, ensuring *thread safety* is paramount. Kokkos provides *atomic* operations to handle situations where multiple threads might attempt to access and modify the same memory location concurrently [7].
+
+*Atomic* operations in Kokkos are particularly useful for implementing the scatter-add pattern, where multiple threads contribute to a shared result. While atomic operations provide thread safety, they can impact performance, especially under high contention.
+
+The performance characteristics of atomic operations can vary significantly between CPUs and GPUs, and even among different data types. On CPUs, atomic operations on integers are generally faster than on floating-point types. On GPUs, the performance impact of atomics can be more pronounced, especially for global memory operations[7].
+
+To use atomic operations in Kokkos, you can employ the Kokkos::atomic_* functions:
+
+[source,c++]
+----
+    Kokkos::atomic_add(&value, increment);
+----
+
+It's important to note that while atomics provide a solution for thread safety, they should be used judiciously, as overuse can lead to performance bottlenecks.
+
+Another example:
+
+Atomics: the portable and thread-scalable solution
+
+[source,c++]
+----
+    parallel_for(N, KOKKOS_LAMBDA(const size_t index) { const Something value = ...;
+        const int bucketIndex = computeBucketIndex(value); Kokkos::atomic_add(&_histogram(bucketIndex), 1);
+    });
+----
+
+Atomics are the only scalable solution to thread safety.
+Locks are not portable.
+Data replication is not thread scalable.
+
+== DualView with Kokkos
+
+[.text-justify]
+*DualView* is a powerful abstraction in Kokkos that manages mirrored data on both host and device. This is particularly valuable in heterogeneous computing environments where data needs to be accessed and modified on both the CPU and accelerators like GPUs. *DualView* simplifies the task of managing data movement between memory spaces, e.g., host and device.
+
+image::kokkos-DualView.png[xref=#fragment101,width=320,height=150]
+
+The primary motivation for *DualView* is to simplify data management and synchronization between host and device memory spaces. It automatically tracks which side (host or device) has been modified and needs synchronization, reducing the likelihood of errors due to out-of-sync data.
+
+To create a DualView, you can use the following syntax:
+
+[source,c++]
+----
+    Kokkos::DualView<double*> dual_data("label", size);
+----
+
+*DualView* provides methods like *sync()* and *modify()* to manage data coherency between *host* and *device*. This abstraction significantly simplifies the development of applications that need to work efficiently across different memory spaces, enhancing both productivity and performance portability.
+
+
+*Kokkos* offers a rich set of tools and abstractions for high-performance, portable parallel programming. By leveraging features like *MDRangePolicy*, *subviews*, *unmanaged views*, *atomic operations*, and *DualView*, developers can create efficient, scalable applications that perform well across a wide range of hardware architectures.
+
+... 
+
+== References
+** [1] https://indico.math.cnrs.fr/event/12037/attachments/5040/8130/KokkosTutorial_03_MDRangeMoreViews.pdf
+** [2] https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/View.html
+** [3] https://github.com/kokkos/kokkos/issues/549
+** [4] https://indico.math.cnrs.fr/event/12037/attachments/5040/8129/KokkosTutorial_02_ViewsAndSpaces.pdf
+** [5] https://kokkos.org/kokkos-core-wiki/API/core/policies/MDRangePolicy.html
+** [6] https://github.com/kokkos/kokkos-core-wiki/blob/main/docs/source/ProgrammingGuide/Interoperability.md
+** [7] https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/Machine-Model.html
+** [8] https://extremecomputingtraining.anl.gov/wp-content/uploads/sites/96/2024/08/ATPESC-2024-Track-2d-Talk-1-Turcksin-Kokkos.pdf
+** [9] https://kokkos.org/kokkos-core-wiki/usecases/MDRangePolicy.html
+** [10] https://github.com/kokkos/kokkos/issues/102
+** [11] https://gensoft.pasteur.fr/docs/lammps/2020.03.03/Speed_kokkos.html
+
+
+
+.*Points to keep in mind*
+****
+
+* *MDRangePolicy*
+
+** The MDRangePolicy allows parallelization of tightly nested loops of 2 to 6 dimensions.
+** It provides a more intuitive and potentially more efficient alternative to flattening multidimensional loops.
+
+* *Subviews: Taking Slices of Views with Kokkos*
+
+** Subviews in Kokkos allow you to create views that reference a subset of an existing view's data.
+** Similar capability as provided by Matlab, Fortran, or Python.
+** Prefer the use of auto for the type.
+    View<int ***> v("v", N0, N1, N2);
+    auto sv = subview(v, i0, ALL, make_pair(start,end));
+
+* *Unmanaged Views*
+** Interoperability with externally allocated arrays.
+** No reference counting, memory not deallocated at destruction.
+** User is responsible for insuring proper dynamic and/or static extents, MemorySpace, Layout, etc.
+    View<float**, LayoutRight, HostSpace> v_unmanaged(raw_ptr , N0, N1);
+
+
+* *Atomic operations*
+** Atomic functions available on the host or the device (e.g. Kokkos::atomic add).
+** Use Atomic memory trait for atomic accesses on Views. 
+    View<int*> v("v", N0);
+    View <int*, MemoryTraits <Atomic >> v_atomic = v;
+**  Use ScatterView for scatter-add parallel pattern. ScatterView can transparently switch between Atomic and Data Replication based scatter algorithms.
+
+
+* *Dual Views*
+** For managing data synchronization between host and device.
+** Helps in codes with no holistic view of data flow.
+
+****
+
+

@@ -1,0 +1,22 @@
+= Kokkos Hierarchical Parallelism
+
+== Introduction
+
+At the heart of Kokkos' hierarchical parallelism lies the ability to exploit multiple levels of shared-memory parallelism. This paradigm allows developers to find and leverage more parallelism in their computations, potentially leading to significant performance improvements. The framework supports various levels of parallelism, including thread teams, threads within a team, and vector lanes, which can be nested to create complex parallel structures [1]. And...
+
+...
+
+
+== References
+** [1] https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/HierarchicalParallelism.html
+
+
+
+
+
+.*Points to keep in mind*
+****
+
+
+****
+
