@@ -518,6 +518,50 @@ void* ptr = memoryPool.allocate(allocSize);</pre>
 </li>
 </ul>
 </div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title"><strong>Points to keep in mind</strong></div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Memory Spaces</strong></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Memory Spaces represent the places where data physically resides. They specify:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The physical location of the data (e.g., CPU memory, GPU memory).</p>
+</li>
+<li>
+<p>The access characteristics to that data.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Each execution space in Kokkos has a default Memory Space associated with it.</p>
+</div>
+<div class="paragraph">
+<p>The main difference between <strong>Memory Spaces</strong> and <strong>Space Accessibility</strong> is that:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Memory Spaces define <strong>where</strong> data is stored.</p>
+</li>
+<li>
+<p>Space Accessibility determines <strong>how</strong> these spaces can interact with each other.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Space Accessibility therefore provides an additional layer of abstraction to manage the complex relationships between different spaces in a heterogeneous architecture.</p>
+</div>
+</div>
+</div>
 </div>
 </div>
 </article>
