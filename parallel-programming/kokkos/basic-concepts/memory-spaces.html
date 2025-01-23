@@ -433,31 +433,43 @@ MathJax.Hub.Config({
 <ul>
 <li>
 <p>Allocating in default memory space:</p>
-<div class="literalblock">
-<div class="content">
-<pre>Kokkos::View&lt;double*&gt; defaultView("defaultView", 1000);</pre>
-</div>
-</div>
-</li>
-<li>
-<p>Allocating in CUDA memory space:</p>
-<div class="literalblock">
-<div class="content">
-<pre>Kokkos::View&lt;double*, Kokkos::CudaSpace&gt; cudaView("cudaView", 1000);</pre>
-</div>
-</div>
-</li>
-<li>
-<p>Allocating in host memory space:</p>
-<div class="literalblock">
-<div class="content">
-<pre>Kokkos::View&lt;double*, Kokkos::HostSpace&gt; hostView("hostView", 1000);</pre>
-</div>
-</div>
 </li>
 </ul>
 </div>
 </li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>    Kokkos::View&lt;double*&gt; defaultView("defaultView", 1000);</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Allocating in CUDA memory space:</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>    Kokkos::View&lt;double*, Kokkos::CudaSpace&gt; cudaView("cudaView", 1000);</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Allocating in host memory space:</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>    Kokkos::View&lt;double*, Kokkos::HostSpace&gt; hostView("hostView", 1000);</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
 <li>
 <p><strong>Atomic Accesses</strong></p>
 <div class="ulist">
@@ -472,10 +484,10 @@ MathJax.Hub.Config({
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">KOKKOS_INLINE_FUNCTION
-void atomicAdd(int* addr, int val) {
-    Kokkos::atomic_add(addr, val);
-}</code></pre>
+<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">        KOKKOS_INLINE_FUNCTION
+        void atomicAdd(int* addr, int val) {
+            Kokkos::atomic_add(addr, val);
+        }</code></pre>
 </div>
 </div>
 <div class="ulist">
@@ -486,32 +498,36 @@ void atomicAdd(int* addr, int val) {
 <ul>
 <li>
 <p>Using fence operation:</p>
-<div class="literalblock">
-<div class="content">
-<pre>Kokkos::fence();</pre>
-</div>
-</div>
 </li>
 </ul>
 </div>
 </li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>        Kokkos::fence();</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
 <li>
 <p><strong>Memory Space Instances</strong></p>
 <div class="ulist">
 <ul>
 <li>
 <p>Creating a memory pool for custom allocation:</p>
-<div class="literalblock">
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="listingblock">
 <div class="content">
-<pre>Kokkos::MemoryPool&lt;Kokkos::CudaSpace&gt; memoryPool(cudaSpace, totalSize);
-void* ptr = memoryPool.allocate(allocSize);</pre>
+<pre>        Kokkos::MemoryPool&lt;Kokkos::CudaSpace&gt; memoryPool(cudaSpace, totalSize);
+        void* ptr = memoryPool.allocate(allocSize);</pre>
 </div>
-</div>
-</li>
-</ul>
-</div>
-</li>
-</ul>
 </div>
 <div class="paragraph text-justify">
 <p>These examples demonstrate how Kokkos allows flexible memory allocation across different memory spaces, provides atomic operations for thread-safe memory access, and offers memory consistency control through fencing. The MemoryPool example shows how specific instances of memory spaces can be used for custom allocation strategies [5].</p>
