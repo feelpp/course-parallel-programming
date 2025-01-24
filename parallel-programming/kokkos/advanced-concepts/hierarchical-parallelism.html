@@ -323,8 +323,327 @@ MathJax.Hub.Config({
 <div class="sect1">
 <h2 id="_introduction"><a class="anchor" href="#_introduction"></a>1. Introduction</h2>
 <div class="sectionbody">
+<div class="paragraph text-justify">
+<p>Kokkos' <strong>hierarchical parallelism</strong> is a paradigm that enables the exploitation of multiple levels of <strong>shared-memory parallelism</strong>, allowing developers to leverage increased parallelism in their computations for potential performance improvements. This framework supports various levels of parallelism, including thread teams, threads within a team, and vector lanes, which can be nested to create complex parallel structures.</p>
+</div>
+<div class="paragraph text-justify">
+<p>The paradigm employs a two-tiered approach: an outer level, often implemented using a league of teams, which divides the overall workload into larger chunks, and an inner level, typically comprising threads within a team, which focuses on finer-grained parallelism within these chunks. <strong>Thread teams</strong>, a fundamental concept in Kokkos, represent collections of threads that can synchronize and share a common scratch pad memory.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_hierarchical_parallelism"><a class="anchor" href="#_hierarchical_parallelism"></a>2. hierarchical parallelism</h2>
+<div class="sectionbody">
+<div class="paragraph text-justify">
+<p>At the heart of Kokkos' <strong>hierarchical parallelism</strong> lies the ability to exploit multiple levels of <strong>shared-memory parallelism</strong>.
+This approach allows developers to map complex algorithms to the hierarchical nature of modern hardware, from multi-core CPUs to many-core GPUs and leverage more parallelism in their computations, potentially leading to significant performance improvements. The framework supports various levels of parallelism, including thread teams, threads within a team, and vector lanes, which can be nested to create complex parallel structures [1][2][6].</p>
+</div>
 <div class="paragraph">
-<p>At the heart of Kokkos' hierarchical parallelism lies the ability to exploit multiple levels of shared-memory parallelism. This paradigm allows developers to find and leverage more parallelism in their computations, potentially leading to significant performance improvements. The framework supports various levels of parallelism, including thread teams, threads within a team, and vector lanes, which can be nested to create complex parallel structures [1]. And&#8230;&#8203;</p>
+<p><strong>Similarities and Differences Between Outer and Inner Levels of Parallelism</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Outer Level (League)</strong>: The outermost level of parallelism, often referred to as the "league," typically corresponds to coarse-grained work distribution. This level is suitable for dividing large workloads across multiple compute units or NUMA domains.</p>
+</li>
+<li>
+<p><strong>Inner Level (Team)</strong>: The inner level, or "team," represents a finer-grained parallelism within each league member. Teams often map to hardware-specific groupings like CUDA thread blocks or CPU core groups.</p>
+</li>
+<li>
+<p><strong>Similarities</strong>: Both levels support parallel patterns such as for-loops, reductions, and scans, allowing for consistent programming models across levels.</p>
+</li>
+<li>
+<p><strong>Differences</strong>: Inner levels have access to fast, shared memory resources and synchronization primitives, while outer levels are more independent and lack direct communication mechanisms.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Thread Teams</strong></p>
+</div>
+<div class="paragraph">
+<p>Kokkos introduces the concept of <strong>thread teams</strong>, which organizes parallel work into a two-dimensional structure:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>League</strong>: A collection of teams that can execute independently.</p>
+</li>
+<li>
+<p><strong>Team</strong>: A group of threads that can synchronize and share resources.</p>
+</li>
+<li>
+<p><strong>Thread</strong>: The basic unit of parallel execution within a team.</p>
+<div class="literalblock">
+<div class="content">
+<pre>This hierarchical structure allows for efficient mapping of algorithms to hardware:</pre>
+</div>
+</div>
+</li>
+<li>
+<p>On <strong>GPUs</strong>, <strong>teams</strong> often correspond to thread blocks, with threads mapping to CUDA threads or vectorized operations.</p>
+</li>
+<li>
+<p>On <strong>CPUs</strong>, <strong>teams</strong> might represent groups of cores, with threads corresponding to individual CPU threads or SIMD lanes.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Performance Improvement with Well-Coordinated Teams</strong></p>
+</div>
+<div class="paragraph">
+<p>Well-coordinated teams can significantly boost performance by:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Optimizing Memory Access</strong>: Teams can cooperatively load data into shared memory, reducing global memory accesses.</p>
+</li>
+<li>
+<p><strong>Load Balancing</strong>: The two-level structure allows for dynamic work distribution, adapting to varying workloads across different parts of the computation.</p>
+</li>
+<li>
+<p><strong>Hardware Utilization</strong>: By matching the team structure to hardware capabilities, Kokkos can achieve high occupancy and efficient resource usage [3].</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Example</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    struct HierarchicalParallelism {
+        Kokkos::View&lt;double**&gt; matrix;
+        HierarchicalParallelism(int N, int M) : matrix("matrix", N, M) {}
+        KOKKOS_INLINE_FUNCTION
+        void operator()(const Kokkos::TeamPolicy&lt;&gt;::member_type&amp; team_member) const {
+            const int i = team_member.league_rank();
+            Kokkos::parallel_for(Kokkos::TeamThreadRange(team_member, matrix.extent(1)),
+            [&amp;] (const int j) {
+                matrix(i, j) = i * matrix.extent(1) + j;
+            });
+
+            team_member.team_barrier();
+            if (team_member.team_rank() == 0) {
+            double sum = 0.0;
+            Kokkos::parallel_reduce(Kokkos::TeamThreadRange(team_member, matrix.extent(1)),
+                [&amp;] (const int j, double&amp; lsum) {
+                lsum += matrix(i, j);
+            }, sum);
+
+            Kokkos::single(Kokkos::PerTeam(team_member), [&amp;] () {
+                matrix(i, 0) = sum;
+            });
+            }
+        }
+    };
+
+    int main(int argc, char* argv[]) {
+        Kokkos::initialize(argc, argv);
+        {
+            const int N = 1000;
+            const int M = 100;
+            HierarchicalParallelism functor(N, M);
+            Kokkos::parallel_for(Kokkos::TeamPolicy&lt;&gt;(N, Kokkos::AUTO), functor);
+        }
+        Kokkos::finalize();
+        return 0
+        }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Hierarchical parallelism is implemented as follows:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The top level uses <code>Kokkos::TeamPolicy</code> to parallelize on the rows of the matrix.</p>
+</li>
+<li>
+<p><code>Kokkos::TeamThreadRange</code> is used to parallelize operations on columns within each team.</p>
+</li>
+<li>
+<p><code>Kokkos::single</code> is used to ensure that some operations are performed only once per team.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_scratch_memory"><a class="anchor" href="#_scratch_memory"></a>3. Scratch Memory</h2>
+<div class="sectionbody">
+<div class="paragraph text-justify">
+<p><strong>Scratch memory</strong>, or <strong>scratch pad</strong>,  in Kokkos provides a powerful mechanism for managing temporary, fast-access storage within parallel kernels. This feature is crucial for optimizing performance in memory-bound applications [4]. The scratch pad is accessible only by threads within a team and has a lifetime equal to that of the team. It allows algorithms to load a workset into a shared space, enabling collaborative work among team members. This approach can significantly reduce global memory accesses, as intermediate results and frequently accessed data can be stored in the faster, more local scratch memory.</p>
+</div>
+<div class="paragraph">
+<p><strong>Concept of Team and Thread Private Scratch Pads</strong></p>
+</div>
+<div class="paragraph">
+<p>Kokkos offers two levels of scratch memory: <strong>Team Scratch</strong>,<strong>Thread Scratch</strong>. These scratch pads provide a flexible way to manage temporary data without relying on slower global memory accesses.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Team Scratch</strong>: Shared among all threads in a team, analogous to CUDA shared memory.</p>
+</li>
+<li>
+<p><strong>Thread Scratch</strong>: Private to individual threads, useful for thread-local computations.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Reducing Global Memory Accesses</strong></p>
+</div>
+<div class="paragraph">
+<p>Scratch memory significantly reduces global memory traffic by:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Data Reuse</strong>: Frequently accessed data can be loaded once into scratch memory and reused by multiple threads.</p>
+</li>
+<li>
+<p><strong>Intermediate Results</strong>: Temporary computations can be stored in scratch memory, avoiding redundant global memory writes.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>When to Use Scratch Memory</strong></p>
+</div>
+<div class="paragraph">
+<p>Scratch memory is particularly beneficial in scenarios such as:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Stencil Computations</strong>: Where neighboring data elements are repeatedly accessed.</p>
+</li>
+<li>
+<p><strong>Reduction Operations</strong>: For efficient partial sum calculations within teams.</p>
+</li>
+<li>
+<p><strong>Data Gather-Scatter</strong>: When reorganizing data for more efficient processing.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Using Scratch Memory and Necessary Barriers</strong></p>
+</div>
+<div class="paragraph">
+<p>To effectively use scratch memory:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Allocate scratch memory using <code>team_shmem_size()</code> or <code>thread_shmem_size()</code> in the execution policy.</p>
+</li>
+<li>
+<p>Create scratch views within kernels using <code>ScratchView</code> or <code>team_scratch()</code>/<code>thread_scratch()</code>.</p>
+</li>
+<li>
+<p>Use team barriers (<code>team.team_barrier()</code>) to ensure data consistency when sharing scratch memory among threads.</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_unique_token"><a class="anchor" href="#_unique_token"></a>4. Unique Token</h2>
+<div class="sectionbody">
+<div class="paragraph text-justify">
+<p><strong>Unique tokens</strong> in Kokkos provide a mechanism for thread-safe resource allocation and access in parallel environments [5]. This feature is particularly useful when multiple threads or teams need to access shared resources without conflicts. Unique tokens come in two scopes: Global and Instance. The Global scope provides identifiers that are unique across the entire execution space, while the Instance scope offers identifiers that are unique within a specific instance of parallel execution. This distinction allows developers to choose the appropriate level of uniqueness based on their specific requirements.</p>
+</div>
+<div class="paragraph">
+<p><strong>Unique tokens</strong> ensure that each thread or team can acquire a distinct identifier or resource without conflicts. This mechanism is crucial for scenarios where threads need exclusive access to shared resources or need to perform thread-specific operations.</p>
+</div>
+<div class="paragraph">
+<p><strong>Acquiring Per-Team Unique IDs</strong></p>
+</div>
+<div class="paragraph">
+<p>To acquire unique IDs:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Create a <code>UniqueToken</code> object for the desired execution space.</p>
+</li>
+<li>
+<p>Use the <code>acquire()</code> method within parallel kernels to obtain a unique identifier.</p>
+</li>
+<li>
+<p>Release the token using <code>release()</code> when it&#8217;s no longer needed.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p><strong>Difference Between Global and Instance Scope</strong></p>
+</div>
+<div class="paragraph">
+<p>Kokkos offers two scopes for unique tokens: <strong>Global Scope</strong> and <strong>Instance Scope</strong>. The choice of scope depends on the required level of uniqueness and the potential for resource contention in the application.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Global Scope</strong>: Tokens are unique across all instances of <code>UniqueToken</code> in the application.</p>
+</li>
+<li>
+<p><strong>Instance Scope</strong>: Tokens are unique only within a specific instance of <code>UniqueToken</code>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Example</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    Kokkos::initialize(argc, argv);
+    {
+        // Size of the array
+        const int N = 100;
+        // Kokkos view to store the results
+        Kokkos::View&lt;int*&gt; results("results", N);
+        // Create a UniqueToken (based on thread execution)
+        Kokkos::Experimental::UniqueToken&lt;Kokkos::DefaultExecutionSpace&gt; unique_token;
+        // Number of available threads
+        const int num_threads = unique_token.size();
+        std::cout &lt;&lt; "Number of threads: " &lt;&lt; num_threads &lt;&lt; std::endl;
+        Kokkos::parallel_for("UniqueTokenExample", N, KOKKOS_LAMBDA(const int i) {
+            // Get a unique identifier for this thread
+            int token = unique_token.acquire();
+            results(i) = token;
+            unique_token.release(token);
+        });
+        // Copy the results to the host for display
+        auto host_results = Kokkos::create_mirror_view_and_copy(Kokkos::HostSpace(), results);
+        std::cout &lt;&lt; "Results: ";
+        for (int i = 0; i &lt; N; ++i) {
+            std::cout &lt;&lt; host_results(i) &lt;&lt; " ";
+        }
+        std::cout &lt;&lt; std::endl;
+    }
+    Kokkos::finalize();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Explanations:</p>
+</div>
+<div class="paragraph">
+<p><strong>UniqueToken</strong> :
+    <code>Kokkos::Experimental::UniqueToken</code> is used to generate unique identifiers in a parallel context.
+    The <code>acquire()</code> method provides a unique identifier.
+    The <code>release()</code> method releases this identifier so that it can be reused.</p>
+</div>
+<div class="paragraph">
+<p><strong>Kokkos view</strong> :
+    Data is stored in a view (<code>Kokkos::View</code>), which is an abstraction for managing data across different memory spaces.</p>
+</div>
+<div class="paragraph">
+<p><strong>Parallel loop</strong> :
+    <code>Kokkos::parallel_for</code> executes a loop in parallel.
+    Each iteration gets a unique identifier via <code>unique_token.acquire()</code>.</p>
+</div>
+<div class="paragraph">
+<p><strong>Copying results</strong>:
+    Data is copied to the host using <code>Kokkos::create_mirror_view_and_copy</code> for display.</p>
 </div>
 <div class="paragraph">
 <p>&#8230;&#8203;</p>
@@ -332,19 +651,110 @@ MathJax.Hub.Config({
 </div>
 </div>
 <div class="sect1">
-<h2 id="_references"><a class="anchor" href="#_references"></a>2. References</h2>
+<h2 id="_references"><a class="anchor" href="#_references"></a>5. References</h2>
 <div class="sectionbody">
 <div class="ulist">
 <ul>
 <li>
 <p>[1] <a href="https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/HierarchicalParallelism.html" class="bare">kokkos.org/kokkos-core-wiki/ProgrammingGuide/HierarchicalParallelism.html</a></p>
 </li>
+<li>
+<p>[2] <a href="https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/ProgrammingModel.html" class="bare">kokkos.org/kokkos-core-wiki/ProgrammingGuide/ProgrammingModel.html</a></p>
+</li>
+<li>
+<p>[3] <a href="https://indico.mathrice.fr/event/303/attachments/598/799/cafe_calcul_kokkos_2021.pdf" class="bare">indico.mathrice.fr/event/303/attachments/598/799/cafe_calcul_kokkos_2021.pdf</a></p>
+</li>
+<li>
+<p>[4] <a href="https://github.com/kokkos/kokkos/issues/1932" class="bare">github.com/kokkos/kokkos/issues/1932</a></p>
+</li>
+<li>
+<p>[5] <a href="https://www.nersc.gov/assets/Uploads/Kokkos-training-Day2-NewUsers-Bruno-v2.pdf" class="bare">www.nersc.gov/assets/Uploads/Kokkos-training-Day2-NewUsers-Bruno-v2.pdf</a></p>
+</li>
+<li>
+<p>[6] <a href="https://indico.math.cnrs.fr/event/12037/attachments/5040/8137/KokkosTutorial_04_HierarchicalParallelism.pdf" class="bare">indico.math.cnrs.fr/event/12037/attachments/5040/8137/KokkosTutorial_04_HierarchicalParallelism.pdf</a></p>
+</li>
 </ul>
 </div>
 <div class="sidebarblock">
 <div class="content">
 <div class="title"><strong>Points to keep in mind</strong></div>
-
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Hierarchal Parallelism</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Hierarchical work can be parallelized via hierarchical parallelism.</p>
+</li>
+<li>
+<p>Hierarchical parallelism is leveraged using thread teams launched with a TeamPolicy.</p>
+</li>
+<li>
+<p>Team “worksets” are processed by a team in nested parallel for (or reduce or scan) calls with a TeamThreadRange and ThreadVectorRange policy.</p>
+</li>
+<li>
+<p>Execution can be restricted to a subset of the team with the single pattern using either a PerTeam or PerThread policy.</p>
+</li>
+<li>
+<p>Teams can be used to reduce contention for global resources even in “flat” algorithms.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Scratch Space</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Scratch Memory can be use with the TeamPolicy to provide thread or team private memory.</p>
+</li>
+<li>
+<p>Scratch memory exposes on-chip user managed caches (e.g. on NVIDIA GPUs)</p>
+</li>
+<li>
+<p>The size must be determined before launching a kernel.</p>
+</li>
+<li>
+<p>Two levels are available: large/slow and small/fast.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Tocken</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>UniqueToken provides a thread safe portable way to divide thread or team specific resources</p>
+</li>
+<li>
+<p>UniqueToken can be sized, such that it returns only ids within a specific range.</p>
+</li>
+<li>
+<p>A Global scope UniqueToken can be acquired, allowing safe ids accross disjoint concurrent code sections.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Unique Token</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>UniqueToken give a thread safe portable way to divide thread specific resources</p>
+</li>
+<li>
+<p>UniqueToken can be sized to restrict ids to a range.</p>
+</li>
+<li>
+<p>A Global UniqueToken is available.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
 </div>
 </div>
 </div>
