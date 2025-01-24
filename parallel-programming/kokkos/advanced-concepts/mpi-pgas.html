@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Kokkos Memory Spaces :: Parallel Programming</title>
-    <link rel="canonical" href="https://feelpp.github.io/parallel-programming/parallel-programming/kokkos/basic-concepts/memory-spaces.html">
+    <title>Kokkos MPI (Message Passing Interface)  and PGAS (Partitioned Global Address Space) :: Parallel Programming</title>
+    <link rel="canonical" href="https://feelpp.github.io/parallel-programming/parallel-programming/kokkos/advanced-concepts/mpi-pgas.html">
     <meta name="generator" content="Antora 3.1.10">
     <link rel="stylesheet" href="../../../_/css/site.css">
 <link rel="icon" href="../../../_/img/favicon.ico" type="image/x-icon">
@@ -227,40 +227,40 @@ MathJax.Hub.Config({
   </li>
   <li class="nav-item" data-depth="2">
     <button class="nav-item-toggle"></button>
-    <a class="nav-link" href="index.html">Basic Concepts</a>
+    <a class="nav-link" href="../basic-concepts/index.html">Basic Concepts</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="views.html">Views</a>
+    <a class="nav-link" href="../basic-concepts/views.html">Views</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="execution-spaces.html">Execution Spaces</a>
-  </li>
-  <li class="nav-item is-current-page" data-depth="3">
-    <a class="nav-link" href="memory-spaces.html">Memory Spaces</a>
+    <a class="nav-link" href="../basic-concepts/execution-spaces.html">Execution Spaces</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="mirrors.html">Mirrors</a>
+    <a class="nav-link" href="../basic-concepts/memory-spaces.html">Memory Spaces</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="memory-access-patterns.html">Memory Access Patterns</a>
+    <a class="nav-link" href="../basic-concepts/mirrors.html">Mirrors</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../basic-concepts/memory-access-patterns.html">Memory Access Patterns</a>
   </li>
 </ul>
   </li>
   <li class="nav-item" data-depth="2">
     <button class="nav-item-toggle"></button>
-    <a class="nav-link" href="../advanced-concepts/index.html">Advanced Concepts</a>
+    <a class="nav-link" href="index.html">Advanced Concepts</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="../advanced-concepts/advanced-reductions.html">Advanced Reductions</a>
+    <a class="nav-link" href="advanced-reductions.html">Advanced Reductions</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="../advanced-concepts/multidimensional-loops-and-data-structure.html">Multidimensional Loops and Data Structure</a>
+    <a class="nav-link" href="multidimensional-loops-and-data-structure.html">Multidimensional Loops and Data Structure</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="../advanced-concepts/hierarchical-parallelism.html">Hierarchical Parallelism</a>
+    <a class="nav-link" href="hierarchical-parallelism.html">Hierarchical Parallelism</a>
   </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="../advanced-concepts/mpi-pgas.html">MPI and PGAS</a>
+  <li class="nav-item is-current-page" data-depth="3">
+    <a class="nav-link" href="mpi-pgas.html">MPI and PGAS</a>
   </li>
 </ul>
   </li>
@@ -296,13 +296,13 @@ MathJax.Hub.Config({
   <ul>
     <li><a href="../../index.html">Main</a></li>
     <li><a href="../index.html">Kokkos</a></li>
-    <li><a href="index.html">Basic Concepts</a></li>
-    <li><a href="memory-spaces.html">Memory Spaces</a></li>
+    <li><a href="index.html">Advanced Concepts</a></li>
+    <li><a href="mpi-pgas.html">MPI and PGAS</a></li>
   </ul>
 </nav>
 
   
-    <div class="edit-this-page"><a href="https://github.com/feelpp/course-parallel-programming/edit/feature/kokkos/docs/modules/kokkos/pages/basic-concepts/memory-spaces.adoc">Edit this Page</a></div>
+    <div class="edit-this-page"><a href="https://github.com/feelpp/course-parallel-programming/edit/feature/kokkos/docs/modules/kokkos/pages/advanced-concepts/mpi-pgas.adoc">Edit this Page</a></div>
   
   <div class="page-downloads">
   <span class="label">Download as</span>
@@ -322,221 +322,179 @@ MathJax.Hub.Config({
   <div class="toc-menu"></div>
 </aside>
 <article class="doc">
-<h1 class="page">Kokkos Memory Spaces</h1>
-<div id="preamble">
-<div class="sectionbody">
-<div class="imageblock">
-<div class="content">
-<a class="image" href="#fragment101"><img src="../_images/kokkos-node-doc.png" alt="kokkos node doc" width="322" height="181"></a>
-</div>
-</div>
-</div>
-</div>
+<h1 class="page">Kokkos MPI (Message Passing Interface)  and PGAS (Partitioned Global Address Space)</h1>
 <div class="sect1">
 <h2 id="_introduction"><a class="anchor" href="#_introduction"></a>1. Introduction</h2>
 <div class="sectionbody">
 <div class="paragraph text-justify">
-<p>Kokkos, a performance portability programming model, introduces the concept of <em>Memory Spaces</em> as a fundamental abstraction to address the complexities of heterogeneous computing environments. Memory Spaces [1] in Kokkos represent distinct memory areas with specific characteristics and accessibility patterns. These abstractions enable programmers to express algorithms independently of hardware specifics while maintaining control over data placement and movement. The Kokkos machine model envisions future computing nodes as complex systems with multiple execution units and memory hierarchies.</p>
-</div>
-<div class="paragraph text-justify">
-<p>In heterogeneous nodes, Kokkos' space abstractions prove particularly valuable. Such nodes may include CPU cores, GPU accelerators, and other specialized processing units, each with access to different memory types like host memory, device memory, or high-bandwidth memory. Kokkos abstracts these hardware-specific details, allowing developers to focus on algorithm structure rather than platform intricacies [2][3].</p>
-</div>
-<div class="paragraph text-justify">
-<p>To control data residence, Kokkos provides mechanisms to specify the desired Memory Space when creating Views. A View in Kokkos is a multidimensional array abstraction encapsulating both data and layout. By specifying the appropriate Memory Space template parameter, developers can dictate where data should reside, enabling optimizations based on access patterns and hardware characteristics.</p>
-</div>
-<div class="paragraph text-justify">
-<p>Kokkos annotation macros play a vital role in achieving portability across architectures, allowing developers to provide hints and directives to the runtime. These macros are particularly important in performance-critical code sections, enabling expression of parallelism, memory access, and execution space preferences.</p>
-</div>
-<div class="paragraph text-justify">
-<p>In conclusion, Kokkos' Memory Spaces, initialization/finalization procedures, and annotation macros form a cohesive framework for developing portable, high-performance code for heterogeneous computing environments, allowing efficient utilization of diverse hardware resources while maintaining a single, portable codebase.</p>
+<p>In the realm of high-performance computing, the integration of internode communication models with intranode parallelism frameworks has become increasingly crucial. This synergy is exemplified by the combination of <strong>MPI</strong> (Message Passing Interface) and <strong>PGAS</strong> (Partitioned Global Address Space) with Kokkos, a performance portability ecosystem for manycore architectures.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_instances_of_kokkos_memory_spaces"><a class="anchor" href="#_instances_of_kokkos_memory_spaces"></a>2. Instances of Kokkos Memory Spaces</h2>
+<h2 id="_internode_communication"><a class="anchor" href="#_internode_communication"></a>2. Internode Communication</h2>
 <div class="sectionbody">
 <div class="paragraph text-justify">
-<p>Memory spaces in Kokkos are dynamic and flexible, offering programmers the ability to allocate data across various memory types, including on-package memory, DRAM, and non-volatile memories. Each memory space has specific instances that enable precise data storage allocation, with flexibility for developers to strategically choose memory locations for different data structures. As follows :</p>
+<p>The integration of MPI concept inside Kokkos represents a powerful approach to hybrid programming, leveraging the strengths of both paradigms. MPI excels in distributed memory parallelism, while Kokkos shines in shared memory parallelism and performance portability across diverse architectures [1].</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>Memory Spaces</strong> :</p>
-<div class="ulist">
-<ul>
-<li>
-<p>Memory spaces, like execution spaces, have specific instances.</p>
-</li>
-<li>
-<p>An instance of a memory space allows the programmer to request data storage allocations.</p>
-</li>
-<li>
-<p>Different types of memory are available, such as on-package memory, slower DRAM, and non-volatile memories.</p>
-</li>
-<li>
-<p>GPUs may have their own local memory space.</p>
-</li>
-</ul>
+<div class="paragraph text-justify">
+<p>When writing a hybrid MPI-Kokkos program, one of the primary considerations is data transfer between MPI ranks. Kokkos Views, the library&#8217;s multidimensional array abstraction, can be seamlessly integrated with MPI communications. To send data from a Kokkos View, one simply needs to pass the View&#8217;s data pointer and size to MPI functions [2]. For example:</p>
 </div>
-</li>
-<li>
-<p><strong>Memory Allocation</strong>:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>The programmer can choose where to allocate each data structure.</p>
-</li>
-<li>
-<p>Kokkos provides abstraction for allocation routines and memory management operations.</p>
-</li>
-</ul>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    Kokkos::View&lt;double*&gt; myView("MyView", 1000);
+    MPI_Send(myView.data(), myView.size(), MPI_DOUBLE, dest, tag, comm);</code></pre>
 </div>
-</li>
-<li>
-<p><strong>Atomic Accesses</strong>:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>Used to prevent race conditions when multiple threads access the same memory address.</p>
-</li>
-<li>
-<p>Atomic operations ensure that a read, simple computation, and write to memory are completed as a single unit.</p>
-</li>
-</ul>
 </div>
-</li>
-<li>
-<p><strong>Memory Consistency</strong>:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>Kokkos assumes a very weak memory consistency model.</p>
-</li>
-<li>
-<p>Programmers should not assume any specific ordering of memory operations within a kernel.</p>
-</li>
-<li>
-<p>Kokkos provides a fence operation to ensure completion of memory operations.</p>
-</li>
-</ul>
+<div class="paragraph text-justify">
+<p>This straightforward approach works because Kokkos ensures that View data is contiguous in memory, aligning perfectly with MPI&#8217;s expectations [2].</p>
 </div>
-</li>
-</ul>
+<div class="paragraph text-justify">
+<p>A key optimization in hybrid MPI-Kokkos programs is the overlapping of communication and computation. This can be achieved by leveraging Kokkos' execution spaces and MPI&#8217;s non-blocking communication primitives. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    auto future = Kokkos::parallel_for(policy, KOKKOS_LAMBDA(int i) {
+    // Computation kernel
+    });
+    MPI_Request request;
+    MPI_Isend(data, count, MPI_INT, dest, tag, comm, &amp;request);
+    future.wait(); // Wait for computation to complete
+    MPI_Wait(&amp;request, MPI_STATUS_IGNORE); // Wait for communication to complete</code></pre>
+</div>
+</div>
+<div class="paragraph text-justify">
+<p>This pattern allows the computation to proceed concurrently with the MPI communication, potentially masking latency and improving overall performance [1].</p>
+</div>
+<div class="paragraph text-justify">
+<p>Buffer packing strategies play a crucial role in optimizing MPI communication, especially when dealing with non-contiguous data. Kokkos provides efficient mechanisms for packing and unpacking data. One approach is to use Kokkos parallel_for to pack data into a contiguous buffer before sending:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    Kokkos::View&lt;double*&gt; sendBuffer("SendBuffer", count);
+    Kokkos::parallel_for(count, KOKKOS_LAMBDA(int i) {
+    sendBuffer(i) = computeValue(i);
+    });
+    MPI_Send(sendBuffer.data(), count, MPI_DOUBLE, dest, tag, comm);</code></pre>
+</div>
+</div>
+<div class="paragraph text-justify">
+<p>This method ensures efficient memory access patterns and can leverage the full parallelism of the underlying hardware.</p>
+</div>
+<div class="paragraph text-justify">
+<p>For sparse communication patterns, generating efficient index lists is crucial. Kokkos can assist in this process through its parallel algorithms. For instance, to create a list of indices for non-zero elements:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    Kokkos::View&lt;int*&gt; indexList("IndexList", n);
+    Kokkos::parallel_scan(n, KOKKOS_LAMBDA(int i, int&amp; update, bool final) {
+    if (data(i) != 0) {
+        if (final) indexList(update) = i;
+        ++update;
+    }
+    });</code></pre>
+</div>
+</div>
+<div class="paragraph text-justify">
+<p>This approach efficiently generates a compact list of relevant indices, which can then be used to optimize MPI communications for sparse data structures.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_illustration_of_some_memory_space_concepts"><a class="anchor" href="#_illustration_of_some_memory_space_concepts"></a>3. Illustration of some memory space concepts</h2>
+<h2 id="_kokkos_remote_spaces_pgas_support"><a class="anchor" href="#_kokkos_remote_spaces_pgas_support"></a>3. Kokkos Remote Spaces: PGAS Support</h2>
 <div class="sectionbody">
-<div class="ulist">
-<ul>
-<li>
-<p><strong>Memory Spaces and Allocation</strong></p>
-<div class="ulist">
-<ul>
-<li>
-<p>Allocating in default memory space:</p>
-</li>
-</ul>
-</div>
-</li>
-</ul>
-</div>
-<div class="listingblock">
+<div class="literalblock text-justify">
 <div class="content">
-<pre>    Kokkos::View&lt;double*&gt; defaultView("defaultView", 1000);</pre>
+<pre>*PGAS* (Partitioned Global Address Space) models are gaining traction, particularly with the advent of "super-node" architectures and evolving network infrastructures [3][4]. Kokkos Remote Spaces extends the Kokkos ecosystem to embrace this paradigm, offering a bridge between shared and distributed memory programming models.</pre>
 </div>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Allocating in CUDA memory space:</p>
-</li>
-</ul>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>    Kokkos::View&lt;double*, Kokkos::CudaSpace&gt; cudaView("cudaView", 1000);</pre>
-</div>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Allocating in host memory space:</p>
-</li>
-</ul>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>    Kokkos::View&lt;double*, Kokkos::HostSpace&gt; hostView("hostView", 1000);</pre>
-</div>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>Atomic Accesses</strong></p>
-<div class="ulist">
-<ul>
-<li>
-<p>Example of atomic addition:</p>
-</li>
-</ul>
-</div>
-</li>
-</ul>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">        KOKKOS_INLINE_FUNCTION
-        void atomicAdd(int* addr, int val) {
-            Kokkos::atomic_add(addr, val);
-        }</code></pre>
-</div>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>Memory Consistency</strong></p>
-<div class="ulist">
-<ul>
-<li>
-<p>Using fence operation:</p>
-</li>
-</ul>
-</div>
-</li>
-</ul>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>        Kokkos::fence();</pre>
-</div>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>Memory Space Instances</strong></p>
-<div class="ulist">
-<ul>
-<li>
-<p>Creating a memory pool for custom allocation:</p>
-</li>
-</ul>
-</div>
-</li>
-</ul>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>        Kokkos::MemoryPool&lt;Kokkos::CudaSpace&gt; memoryPool(cudaSpace, totalSize);
-        void* ptr = memoryPool.allocate(allocSize);</pre>
-</div>
-</div>
-<div class="paragraph text-justify">
-<p>These examples demonstrate how Kokkos allows flexible memory allocation across different memory spaces, provides atomic operations for thread-safe memory access, and offers memory consistency control through fencing. The MemoryPool example shows how specific instances of memory spaces can be used for custom allocation strategies [5].</p>
 </div>
 <div class="paragraph">
-<p>&#8230;&#8203;</p>
+<p><strong>PGAS</strong> enables Kokkos to provide a global view of data for convenient multi-GPU, multi-node, and multi-device programming. PGAS provides a high-level abstraction for remote memory accesses, simplifying distributed programming for developers using Kokkos. Kokkos Remote Spaces supports multiple PGAS backends, including SHMEM, <strong>NVSHMEM</strong>, <strong>ROCSHMEM</strong>, and <strong>MPI</strong> One-side, providing flexibility for different types of systems and architectures. PGAS implementations are optimized for high-performance communications, which is crucial for the scientific computing applications that Kokkos targets. Using PGAS allows Kokkos to maintain its philosophy of performance portability across different architectures, from CPUs to GPUs. By using PGAS, Kokkos can offer efficient and portable distributed programming, while maintaining a consistent programming interface with the rest of the Kokkos ecosystem.</p>
+</div>
+<div class="paragraph">
+<p>To write a <strong>PGAS</strong> application with Kokkos, developers can utilize the Kokkos Remote Spaces extension. This extension introduces new memory spaces that return data handles with PGAS semantics. Creating a global View in this context is straightforward:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    Kokkos::View&lt;double**, Kokkos::LayoutLeft, Kokkos::Experimental::NVShmemSpace&gt; globalView("GlobalView", N, M);</code></pre>
+</div>
+</div>
+<div class="paragraph text-justify">
+<p>This declaration creates a two-dimensional View that spans across multiple processing elements in a PGAS model.</p>
+</div>
+<div class="paragraph text-justify">
+<p>Accessing global data in a PGAS model requires careful consideration of data locality and communication costs. Kokkos Remote Spaces provides abstractions that simplify this process. For example, accessing an element of the global View might look like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    auto element = globalView(i, j);</code></pre>
+</div>
+</div>
+<div class="paragraph text-justify">
+<p>Behind the scenes, Kokkos handles the necessary communication to fetch or update the data, abstracting away the complexities of the underlying PGAS implementation.</p>
+</div>
+<div class="paragraph text-justify">
+<p>A prime example of PGAS applications is the Sparse Matrix-Vector Multiplication (SpMV) operation, a key component of the Conjugate Gradient (CG) method. In a PGAS model using Kokkos Remote Spaces, the vector becomes distributed, while the sparse matrix stores global indices. This approach allows for efficient parallel computation across multiple nodes.</p>
+</div>
+<div class="paragraph">
+<p>The implementation of SpMV in this context might involve:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Distributing the vector across processing elements.</p>
+</li>
+<li>
+<p>Storing the sparse matrix with global indices.</p>
+</li>
+<li>
+<p>Performing local computations using Kokkos parallel constructs.</p>
+</li>
+<li>
+<p>Utilizing PGAS operations for necessary remote data accesses.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>This strategy can lead to significant performance improvements, especially for large-scale problems that exceed the memory capacity of a single node.</p>
+</div>
+<div class="paragraph">
+<p><strong>Example</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    Kokkos::initialize(argc, argv);
+    {
+        using ExecSpace = Kokkos::Cuda;
+        using RemoteSpace = Kokkos::Experimental::NVShmemSpace;
+        using RemoteView = Kokkos::View&lt;double*, Kokkos::LayoutLeft, RemoteSpace&gt;;
+        const int N = 1000;
+        RemoteView remote_data("RemoteData", N);
+        Kokkos::parallel_for("InitializeData", Kokkos::RangePolicy&lt;ExecSpace&gt;(0, N),
+        KOKKOS_LAMBDA(const int i) {
+            remote_data(i) = static_cast&lt;double&gt;(i);
+        });
+
+        Kokkos::fence();
+        double sum = 0.0;
+        Kokkos::parallel_reduce("SumData", Kokkos::RangePolicy&lt;ExecSpace&gt;(0, N),
+        KOKKOS_LAMBDA(const int i, double&amp; lsum) {
+            lsum += remote_data(i);
+        }, sum);
+        Kokkos::fence();
+        printf("Sum of remote data: %f\n", sum);
+    }
+    Kokkos::finalize();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Explanations:</p>
+</div>
+<div class="paragraph">
+<p>Using Kokkos::Experimental::NVShmemSpace as a remote memory space. Creating a RemoteView using NVShmemSpace. Initializing the remote data using a parallel_for on the CUDA runspace. Computing the sum of the remote data with a parallel_reduce. Using Kokkos::fence() to ensure synchronization between remote operations.</p>
+</div>
+<div class="paragraph">
+<p>This code demonstrates how Kokkos Remote Spaces allows using NVSHMEM as a PGAS backend for simplified multi-GPU programming, providing a global view of the data while maintaining the portability of Kokkos performance</p>
 </div>
 </div>
 </div>
@@ -546,63 +504,59 @@ MathJax.Hub.Config({
 <div class="ulist">
 <ul>
 <li>
-<p>[1] <a href="https://kokkos.org/kokkos-core-wiki/API/core/memory_spaces.html" class="bare">kokkos.org/kokkos-core-wiki/API/core/memory_spaces.html</a></p>
+<p>[1] <a href="https://kokkos.org/kokkos-core-wiki/usecases/MPI-Halo-Exchange.html" class="bare">kokkos.org/kokkos-core-wiki/usecases/MPI-Halo-Exchange.html</a></p>
 </li>
 <li>
-<p>[2] <a href="https://www.epj-conferences.org/articles/epjconf/pdf/2021/05/epjconf_chep2021_03034.pdf" class="bare">www.epj-conferences.org/articles/epjconf/pdf/2021/05/epjconf_chep2021_03034.pdf</a></p>
+<p>[2] <a href="https://indico.math.cnrs.fr/event/12037/attachments/5040/8156/KokkosTutorial_07_Tools.pdf" class="bare">indico.math.cnrs.fr/event/12037/attachments/5040/8156/KokkosTutorial_07_Tools.pdf</a></p>
 </li>
 <li>
-<p>[3] <a href="https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/HierarchicalParallelism.html" class="bare">kokkos.org/kokkos-core-wiki/ProgrammingGuide/HierarchicalParallelism.html</a></p>
+<p>[3] <a href="https://extremecomputingtraining.anl.gov/wp-content/uploads/sites/96/2019/08/ATPESC_2019_Track-2_3_8-1_830am_Trott-Kokkos.pdf" class="bare">extremecomputingtraining.anl.gov/wp-content/uploads/sites/96/2019/08/ATPESC_2019_Track-2_3_8-1_830am_Trott-Kokkos.pdf</a></p>
 </li>
 <li>
-<p>[4] <a href="https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/Machine-Model.html" class="bare">kokkos.org/kokkos-core-wiki/ProgrammingGuide/Machine-Model.html</a></p>
-</li>
-<li>
-<p>[5] <a href="https://docs.trilinos.org/dev/packages/kokkos/doc/html/" class="bare">docs.trilinos.org/dev/packages/kokkos/doc/html/</a></p>
+<p>[4] <a href="https://en.wikipedia.org/wiki/Partitioned_global_address_space" class="bare">en.wikipedia.org/wiki/Partitioned_global_address_space</a></p>
 </li>
 </ul>
 </div>
 <div class="sidebarblock">
 <div class="content">
 <div class="title"><strong>Points to keep in mind</strong></div>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>Memory Spaces</strong></p>
-</li>
-</ul>
+<div class="paragraph">
+<p><strong>PGAS</strong> (Partitioned Global Address Space) is a parallel programming model where the global address space is logically partitioned, with each portion local to a process or thread.</p>
 </div>
 <div class="paragraph">
-<p>Memory Spaces represent the places where data physically resides. They specify:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>The physical location of the data (e.g., CPU memory, GPU memory).</p>
-</li>
-<li>
-<p>The access characteristics to that data.</p>
-</li>
-</ul>
+<p><strong>Kokkos Remote Spaces</strong> is an extension of Kokkos that adds support for Distributed Shared Memory (DSM) to enable a global view of data in a multi-GPU, multi-node, multi-device environment.</p>
 </div>
 <div class="paragraph">
-<p>Each execution space in Kokkos has a default Memory Space associated with it.</p>
+<p><strong>Kokkos Remote Spaces</strong> is an extension of Kokkos that adds support for Distributed Shared Memory (DSM) to enable a global view of data in a multi-GPU, multi-node, multi-device environment.</p>
 </div>
 <div class="paragraph">
-<p>The main difference between <strong>Memory Spaces</strong> and <strong>Space Accessibility</strong> is that:</p>
+<p><strong>NVShmemSpace</strong> is an NVIDIA implementation of the Partitioned Global Address Space (PGAS) model that enables low-latency access to shared memory distributed across multiple GPUs in a cluster.</p>
+</div>
+<div class="paragraph">
+<p><strong>ROC_SHMEM</strong> is an implementation of the Partitioned Global Address Space (PGAS) model for AMD GPUs, enabling GPU-initiated communication operations in a multi-GPU environment</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>Memory Spaces define <strong>where</strong> data is stored.</p>
+<p><strong>Support for PGAS in Kokkos:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Kokkos Remote Spaces extends Kokkos to support PGAS models.</p>
 </li>
 <li>
-<p>Space Accessibility determines <strong>how</strong> these spaces can interact with each other.</p>
+<p>Bridges the gap between shared and distributed memory programming.</p>
+</li>
+<li>
+<p>Particularly relevant for "super-node" architectures and evolving network infrastructures.</p>
+</li>
+</ul>
+</div>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>Space Accessibility therefore provides an additional layer of abstraction to manage the complex relationships between different spaces in a heterogeneous architecture.</p>
+<p>&#8230;&#8203;</p>
 </div>
 </div>
 </div>
