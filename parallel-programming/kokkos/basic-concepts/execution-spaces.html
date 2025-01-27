@@ -415,46 +415,6 @@ MathJax.Hub.Config({
 <div class="paragraph">
 <p>Expressing an application in these patterns allows the underlying implementation or the used compiler to reason about valid transformations.</p>
 </div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_execution_policies"><a class="anchor" href="#_execution_policies"></a>4. Execution Policies</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>In the realm of parallel computing, Execution Policies act as the conductors of a grand digital orchestra, directing how functions perform their symphonies of calculations. Among these maestros, Range Policies stand as the simplest, guiding operations through elements like a steady metronome, without concern for order or synchronization. An Execution Policy determines, together with an Execution Pattern, How a function is executed.</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>Range Policies</strong>: Simple policies for executing operations on each element in a range, without specifying order or concurrency.</p>
-</li>
-<li>
-<p><strong>Team Policies</strong> : Used for hierarchical parallelism, grouping threads into teams. Key features include:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>League size (number of teams) and team size (threads per team)</p>
-</li>
-<li>
-<p>Concurrent execution within a team</p>
-</li>
-<li>
-<p>Team synchronization via barriers</p>
-</li>
-<li>
-<p>Scratch pad memory for temporary storage</p>
-</li>
-<li>
-<p>Nested parallel operations</p>
-</li>
-</ul>
-</div>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>The model is inspired by CUDA and OpenMP, aiming to improve performance across various hardware architectures by encouraging locality-aware programming. [5]</p>
-</div>
 <div class="paragraph">
 <p><strong>Example</strong></p>
 </div>
@@ -506,6 +466,46 @@ MathJax.Hub.Config({
 </div>
 <div class="paragraph">
 <p>Explanations: This example effectively demonstrates how to utilize <strong>execution patterns</strong> in Kokkos.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_execution_policies"><a class="anchor" href="#_execution_policies"></a>4. Execution Policies</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In the realm of parallel computing, Execution Policies act as the conductors of a grand digital orchestra, directing how functions perform their symphonies of calculations. Among these maestros, Range Policies stand as the simplest, guiding operations through elements like a steady metronome, without concern for order or synchronization. An Execution Policy determines, together with an Execution Pattern, How a function is executed.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Range Policies</strong>: Simple policies for executing operations on each element in a range, without specifying order or concurrency.</p>
+</li>
+<li>
+<p><strong>Team Policies</strong> : Used for hierarchical parallelism, grouping threads into teams. Key features include:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>League size (number of teams) and team size (threads per team)</p>
+</li>
+<li>
+<p>Concurrent execution within a team</p>
+</li>
+<li>
+<p>Team synchronization via barriers</p>
+</li>
+<li>
+<p>Scratch pad memory for temporary storage</p>
+</li>
+<li>
+<p>Nested parallel operations</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The model is inspired by CUDA and OpenMP, aiming to improve performance across various hardware architectures by encouraging locality-aware programming. [5]</p>
 </div>
 </div>
 </div>
