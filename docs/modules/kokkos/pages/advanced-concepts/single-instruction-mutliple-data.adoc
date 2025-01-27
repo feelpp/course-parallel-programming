@@ -1,0 +1,181 @@
+= Kokkos Tasking Stream SIMD (Single Instruction, Multiple Data)
+
+== Introduction
+
+[.text-justify]
+
+Kokkos provides powerful tools for high-performance computing, including *SIMD (Single Instruction, Multiple Data)* operations, asynchronous execution with streams, and task parallelism. These features enable developers to write efficient, portable code that can leverage the full potential of modern hardware architectures. Let's explore each of these aspects in detail.
+
+== SIMD (Single Instruction, Multiple Data)
+
+*SIMD* operations are a crucial component of modern high-performance computing, allowing for efficient vectorization of code. Kokkos offers portable vector intrinsic types that abstract away hardware-specific details, enabling developers to write vectorized code that can run efficiently on various architectures.
+
+*Portable Vector Intrinsic Types* : Kokkos provides the `Kokkos::Experimental::simd` type, which serves as an abstraction over platform-specific vector datatypes [3]. This type is designed to work across all backends, potentially falling back to scalar operations when necessary[4]. The `simd` type supports various fundamental C++ types for which the current platform supports vector intrinsics.
+
+*Improving Vectorization with SIMD Types* : To improve vectorization using SIMD types in Kokkos, developers can follow these steps:
+
+1. Include the necessary header: `#include <Kokkos_SIMD.hpp>`
+2. Define the SIMD type: `using simd_type = Kokkos::Experimental::native_simd<double>;
+3. Use SIMD types in computations to ensure vectorization:
+
+[source, c++]
+----
+    simd_type sx(x + i, tag_type());
+    simd_type sy(y + i, tag_type());
+    simd_type sz(z + i, tag_type());
+    simd_type sr = Kokkos::sqrt(sx * sx + sy * sy + sz * sz);
+    sr.copy_to(r + i, tag_type());
+----
+
+This approach guarantees that the compiler will generate the appropriate vector instructions for the target architecture [1].
+
+*SIMD Types as an Alternative to ThreadVector Loops* : *SIMD* types can be used as an alternative to ThreadVector loops, providing more explicit control over vectorization. This approach allows developers to reason more clearly about the available parallelism in their code, often leading to better performance than relying on auto-vectorization[1].
+
+*Achieving Outer Loop Vectorization* : *SIMD* types enable outer loop vectorization by processing multiple elements simultaneously. For example, on a CPU with 256-bit vector registers, the following code can process four elements at once:
+
+[source, c++]
+----
+    constexpr int width = int(simd_type::size());
+    for (int i = 0; i < n; i += width) {
+        // SIMD operations here
+    }
+----
+
+This approach can significantly improve performance for suitable algorithms [1].
+
+*Example*
+
+[source, c++]
+----
+    #include <Kokkos_Core.hpp>
+    #include <Kokkos_SIMD.hpp>
+    #include <cstdio>
+
+    int main(int argc, char* argv[]) {
+    Kokkos::initialize(argc, argv);
+    {
+        using simd_type = Kokkos::Experimental::native_simd<double>;
+        using tag_type = Kokkos::Experimental::element_aligned_tag;
+        constexpr int width = int(simd_type::size());
+        
+        int n = 1000;
+        Kokkos::View<double*> x("x", n);
+        Kokkos::View<double*> y("y", n);
+        Kokkos::View<double*> z("z", n);
+        Kokkos::View<double*> r("r", n);
+        
+        Kokkos::parallel_for("init", n, KOKKOS_LAMBDA(const int i) {
+            x(i) = static_cast<double>(i);
+            y(i) = static_cast<double>(i * 2);
+            z(i) = static_cast<double>(i * 3);
+        });
+        
+        Kokkos::parallel_for("compute", n / width, KOKKOS_LAMBDA(const int i) {
+            int idx = i * width;
+            simd_type sx(x.data() + idx, tag_type());
+            simd_type sy(y.data() + idx, tag_type());
+            simd_type sz(z.data() + idx, tag_type());
+            simd_type sr = Kokkos::sqrt(sx * sx + sy * sy + sz * sz);
+            sr.copy_to(r.data() + idx, tag_type());
+        });
+        
+        Kokkos::fence();
+        
+        printf("First 5 results:\n");
+            for (int i = 0; i < 5; ++i) {
+            printf("r[%d] = %f\n", i, r(i));
+        }
+    }
+    Kokkos::finalize();
+    return 0;
+}
+
+----
+
+Explanations: This program uses Kokkos with SIMD to efficiently compute the square root of the sum of squares of three vectors.
+
+
+== Asynchronicity and Streams
+
+Asynchronous execution and streams are essential for maximizing hardware utilization, especially on GPUs. Kokkos provides mechanisms for managing asynchronous operations and concurrent kernel execution.
+
+*Blocking and Non-blocking Operations* : Kokkos operations can be either blocking or non-blocking:
+
+- Blocking operations: These operations wait for completion before returning control to the caller.
+- Non-blocking operations: These operations initiate work but return control immediately, allowing other computations to proceed concurrently.
+
+*Overlapping Work* : Non-blocking operations enable work overlap, which can improve overall performance. Types of work that can overlap include:
+
+1. Host-to-device data transfers
+2. Device-to-host data transfers
+3. Kernel executions
+4. Host computations
+
+*Waiting for Completion* : To ensure that all asynchronous operations have completed, Kokkos provides synchronization mechanisms:
+
+1. `Kokkos::fence()`: Waits for all outstanding asynchronous operations to complete.
+2. `Kokkos::wait()`: Can be used with specific futures or task policies to wait for particular operations.
+
+*Running Kernels Simultaneously on a GPU* : To run kernels simultaneously on a GPU, Kokkos leverages streams. While not explicitly shown in the provided search results, Kokkos supports concurrent kernel execution through its execution policies and asynchronous launch capabilities
+
+
+== Task Parallelism
+
+*Task parallelism* in Kokkos allows for fine-grained dependent execution, which is particularly useful for irregular problems and algorithms with complex dependency structures.
+
+*Basic Interface for Fine-grained Tasking* :
+
+Kokkos provides a TaskPolicy for coordinating task execution [2]. The basic interface includes:
+
+1. Creating tasks: `policy.create(Functor<exec_space>())`
+2. Adding dependencies: `policy.add_dependence(task1, task2)`
+3. Spawning tasks: `policy.spawn(task)`
+4. Waiting for completion: `Kokkos::wait(task)` or `Kokkos::wait(policy)`
+
+*Expressing Dynamic Dependency Structures* :
+
+Dynamic dependency structures can be expressed using the `add_dependence` method, allowing for the creation of complex task graphs[2]. For example:
+
+[source, c++]
+----
+    auto fx = policy.create(Functor<exec_space>(x));
+    auto fy = policy.create(Functor<exec_space>(y));
+    policy.add_dependence(fx, fy); // fx is scheduled after fy
+----
+
+*When to Use Kokkos Tasking* :
+
+Kokkos tasking is particularly useful in the following scenarios:
+
+1. Irregular problems with complex dependencies
+2. Producer-consumer patterns
+3. Recursive algorithms
+4. When fine-grained parallelism is needed within tasks
+
+Tasking in Kokkos allows for better locality exploitation by enabling nested data-parallelism within a task, which can be particularly beneficial for heterogeneous devices [2].
+
+
+== References
+
+** [1] https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/SIMD.html
+** [2] https://trilinos.github.io/pdfs/KokkosPortableAPI.pdf
+** [3] https://github.com/kokkos/kokkos-core-wiki/blob/main/docs/source/API/simd/simd.md
+** [4] https://arxiv.org/pdf/2210.06439
+
+
+.*Points to keep in mind*
+****
+
+
+*SIMD* (Single Instruction, Multiple Data) in Kokkos is a C++ representation of vector registers that allows a single instruction to be applied to multiple data simultaneously, thus improving performance by parallelizing operations at the data level.
+
+*Asynchronicity* in Kokkos means that parallel operations are executed in a non-blocking manner, possibly returning before they are fully completed, while maintaining sequential order relative to other Kokkos operations in the same execution or memory space.
+
+*Streams* are abstractions representing queues of parallel operations associated with a specific execution space instance, allowing asynchronous and ordered execution of tasks.
+
+*Task Parallelism* in Kokkos is a programming model enabling the asynchronous execution of interdependent tasks, organized in a directed acyclic graph (DAG), suitable for irregular and recursive problems, and providing a high-level abstraction for parallelization on heterogeneous architectures.
+
+
+****
+
+

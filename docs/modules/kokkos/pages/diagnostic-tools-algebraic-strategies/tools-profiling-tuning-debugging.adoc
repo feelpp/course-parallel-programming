@@ -1,0 +1,104 @@
+= Kokkos Tools: Profiling Tuning Debugging
+
+== Introduction
+
+[.text-justify]
+Kokkos Tools represent a sophisticated suite of utilities designed to enhance the development and optimization of high-performance computing applications. These tools leverage Kokkos' built-in instrumentation to provide developers with powerful capabilities for profiling, debugging, and tuning their code across diverse hardware architectures.
+
+== Kokkos Tools and Built-in Instrumentation
+
+*The Need for Kokkos-aware Tools* :
+
+** Modern heterogeneous computing environments present complex challenges for performance analysis and optimization.
+** Traditional profiling and debugging tools often lack context-specific information for Kokkos applications.
+** Kokkos-aware tools bridge this gap by interfacing directly with the Kokkos runtime, providing more meaningful insights.
+
+*How Instrumentation Helps ?* :
+
+** Kokkos' built-in instrumentation allows for non-intrusive gathering of detailed execution information.
+** It tracks critical events such as kernel launches and memory operations without requiring source code modifications.
+** This approach minimizes impact on application behavior while still offering rich performance data.
+
+*Simple Profiling Tools* :
+
+ ** KernelLogger: Helps developers localize errors and verify runtime flow by printing Kokkos operations as they occur [1].
+ ** SimpleKernelTimer: Measures time spent in kernels, identifying hotspots and aiding in performance optimization [1].
+ ** MemoryEvents: Tracks memory-related events, helping identify issues like excessive temporary allocations [1].
+
+*Simple Debugging Tools* :
+
+** KernelLogger: Acts as a debugging tool by inserting fences that check for errors and printing Kokkos operations [4].
+** These tools can help pinpoint issues in kernel execution and memory management, crucial for complex parallel applications.
+
+
+
+== Vendor and Independent Profiling GUIs
+
+*What Connectors Provide ?* :
+
+** Connectors translate Kokkos instrumentation for use with vendor-specific and independent profiling tools.
+** They bridge the gap between Kokkos' internal instrumentation and external profiling interfaces.
+** This allows developers to use familiar tools while gaining Kokkos-specific insights.
+
+*Available Tools* :
+
+** *nvtx-connector*: Interfaces with NVIDIA tools like Nsight Compute, translating KokkosP hooks into NVTX instrumentation [4].
+** *vtune-focused-connector*: Enables integration with Intel's VTune profiler for detailed performance analysis on Intel architectures.
+** *TAU (Tuning and Analysis Utilities)*: Offers built-in support for Kokkos without requiring a separate connector [2].
+
+
+== Tuning
+[.text-justify]
+As applications grow in complexity, the need for *tuning* becomes increasingly apparent. Kokkos recognizes this need and provides autotuning hooks to help developers optimize their code for different architectures and workloads.
+[.text-justify]
+The necessity for *tuning* is evident when considering the myriad of parameters that can affect performance. For instance, in a *sparse matrix-vector multiplication (SpMV)* implementation, factors such as the number of rows per team, team size, and vector length can significantly impact performance across different hardware [5]. Manually determining optimal values for these parameters across various architectures is a daunting and time-consuming task.
+
+
+== Custom Tools
+
+*The KokkosP Hooks* :
+
+** KokkosP interface exposes hooks corresponding to various Kokkos runtime events.
+** These hooks include kernel launches, memory operations, and region entries/exits.
+
+*Callback Registration Inside the Application* :
+
+** Developers implement callback functions for relevant KokkosP hooks.
+** These callbacks are registered with the Kokkos runtime to be invoked at appropriate execution points.
+
+*Throwaway Debugging Tools* :
+
+** Lightweight, purpose-built tools can be quickly implemented for specific debugging scenarios.
+** Example: A tool to log memory allocations exceeding a certain size to identify potential memory leaks.
+
+
+== References
+** [1] https://github.com/kokkos/kokkos-tools
+** [2] https://kokkos.org/blog/blog-post-09/
+** [3] https://timemory.readthedocs.io/en/develop/
+** [4] https://indico.math.cnrs.fr/event/12037/attachments/5040/8156/KokkosTutorial_07_Tools.pdf
+** [5] https://indico.math.cnrs.fr/event/12037/attachments/5040/8156/KokkosTutorial_07_Tools.pdf
+
+
+
+.*Points to keep in mind*
+****
+
+* *Kokkos Tools* 
+** Kokkos Tools provide an instrumentation interface KokkosP and Tools to leverage it.
+
+* *Kokkos Connector Tools*
+** Connectors inject Kokkos specific information into vendor and academic tools.
+** Helps readability of profiles.
+** Removes need to put vendor specific instrumentation in codes
+** Growing list of tools support Kokkos natively.
+
+* *Kokkos Tuning Hooks enable more performance portability*
+** Avoid figuring out the right heuristic for every platform. 
+** Input variables descripte the problem scope.
+** Output variables descripe the search space.
+
+****
+
+
+
