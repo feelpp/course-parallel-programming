@@ -335,66 +335,25 @@ MathJax.Hub.Config({
 <p>Let&#8217;s see more about what computing and programming parallel&#8230;&#8203;</p>
 </div>
 <div class="paragraph">
-<p><strong>What is Parallel Computing ?</strong></p>
-</div>
-<div class="paragraph">
-<p><strong>Serial Computing</strong></p>
+<p><strong>1. What is Parallel Computing ?</strong></p>
 </div>
 <div class="paragraph text-justify">
-<p>Traditionally, software has been developed with a focus on serial computation. In this conventional framework, a problem is decomposed into a discrete series of instructions that are executed sequentially, one after the other, on a single processor. This approach inherently limits the system&#8217;s efficiency, as only one instruction can be processed at any given moment.</p>
-</div>
-<div class="paragraph">
-<p><strong>Parallel Computing</strong></p>
+<p>In the field of computing, the evolution of technologies has led to significant advances in the way we approach complex problems. Among these advances, parallel computing stands out as a revolutionary approach, offering a powerful alternative to traditional serial computing. To fully understand this concept, it is essential to compare these two computing methods and explore their fundamental characteristics. So, let’s first look at serial computing and then dive into the fascinating world of parallel computing</p>
 </div>
 <div class="paragraph text-justify">
-<p>In contrast, parallel computing represents a significant advancement in computational methodology. At its core, parallel computing involves the simultaneous utilization of multiple computational resources to address complex problems. In this paradigm, a problem is divided into discrete components that can be solved concurrently. Each component is further segmented into a series of instructions, which are executed simultaneously across different processors. This necessitates the implementation of an overarching control and coordination mechanism to ensure the effective integration of results.</p>
-</div>
-<div class="paragraph">
-<p>To illustrate the capabilities of parallel computing, consider the following criteria for computational problems:</p>
-</div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>The problem must be divisible into discrete tasks that can be solved concurrently.</p>
-</li>
-<li>
-<p>It should allow for the execution of multiple program instructions simultaneously.</p>
-</li>
-<li>
-<p>The use of multiple computational resources should lead to a reduction in overall solution time compared to reliance on a single resource.</p>
-</li>
-</ol>
-</div>
-<div class="paragraph">
-<p><strong>Computational Resources</strong></p>
-</div>
-<div class="paragraph">
-<p>The resources utilized in parallel computing typically include:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>A single computer equipped with multiple processors or cores.</p>
-</li>
-<li>
-<p>An arbitrary number of interconnected computers operating within a network.</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p><strong>Parallel Computers</strong></p>
+<p><strong>Serial Computing</strong> : Traditionally, software has been developed with a focus on serial computation. In this conventional framework, a problem is decomposed into a discrete series of instructions that are executed sequentially, one after the other, on a single processor. This approach inherently limits the system&#8217;s efficiency, as only one instruction can be processed at any given moment.</p>
 </div>
 <div class="paragraph text-justify">
-<p>Today, virtually all standalone computers are designed with parallel processing capabilities at the hardware level. This includes multiple functional units such as L1 and L2 caches, branch predictors, prefetchers, decoders, floating-point units, graphics processing units (GPUs), and integer units. Additionally, these systems feature multiple execution units or cores and support multiple hardware threads.</p>
-</div>
-<div class="paragraph text-justify">
-<p>Networks facilitate the connection of these standalone computers (nodes) to form larger parallel computing clusters. For instance, a typical parallel computer cluster at institutions like LLNL consists of several compute nodes, each functioning as a multi-processor system in its own right. These nodes are interconnected via high-speed networks such as Infiniband, and specialized nodes may also be employed for specific tasks.</p>
-</div>
-<div class="paragraph text-justify">
-<p>The majority of the world’s large-scale parallel computers—commonly referred to as supercomputers—are clusters composed of hardware from a select group of well-known vendors. This evolution highlights the critical role that parallel computing plays in contemporary computational science and technology.</p>
+<p><strong>Parallel Computing</strong> : In contrast, parallel computing represents a significant advancement in computational methodology. At its core, parallel computing involves the simultaneous utilization of multiple computational resources to address complex problems. In this paradigm, a problem is divided into discrete components that can be solved concurrently. Each component is further segmented into a series of instructions, which are executed simultaneously across different processors. This necessitates the implementation of an overarching control and coordination mechanism to ensure the effective integration of results.</p>
 </div>
 <div class="paragraph">
-<p><strong>CPU, GPU, GPGPU Architecture</strong></p>
+<p><strong>2. Overview of the different hardware architectures</strong></p>
+</div>
+<div class="paragraph text-justify">
+<p>In modern computing, various hardware architectures have been developed to address specific computational needs. Each architecture is uniquely designed to optimize performance for particular tasks, ranging from general-purpose processing to specialized operations in graphics, machine learning, and natural language processing. This section explores the key architectures—CPU, GPU, GPGPU, TPU, NPU, and LPU—highlighting their distinct roles and applications in the evolving landscape of technology.</p>
+</div>
+<div class="paragraph">
+<p><strong>2. 1 CPU, GPU, GPGPU Architecture</strong></p>
 </div>
 <div class="ulist text-justify">
 <ul>
@@ -428,7 +387,7 @@ MathJax.Hub.Config({
 <p>In conclusion, the main difference between the three architectures CPU, GPU and GPGPU lies in their design and operation. While CPUs are designed for general computer processing, GPUs are designed for specialized graphics processing, and GPGPUs are a modified version of GPUs intended to be used for specialized computer processing other than graphics processing.</p>
 </div>
 <div class="paragraph">
-<p><strong>TPU, NPU, LPU Architecture</strong></p>
+<p><strong>2.2 TPU, NPU, LPU Architecture</strong></p>
 </div>
 <div class="ulist text-justify">
 <ul>
@@ -452,82 +411,13 @@ MathJax.Hub.Config({
 </ul>
 </div>
 <div class="paragraph">
-<p><strong>Why Use Parallel Computing?</strong></p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>The Complexity of the Real World</p>
-</li>
-</ul>
+<p><strong>3. Why Use Parallel Computing ?</strong></p>
 </div>
 <div class="paragraph text-justify">
-<p>The natural world is characterized by a multitude of complex, interrelated events occurring simultaneously, often within a defined temporal sequence. In this context, parallel computing offers a significant advantage over serial computing, making it far more effective for modeling, simulating, and understanding intricate real-world phenomena.</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Key Aspects of Parallel Programming</p>
-</li>
-</ul>
+<p>Parallel computing is essential for modeling complex real-world phenomena that involve multiple simultaneous events. It utilizes data and task parallelism through shared or distributed memory models. Key benefits include improved performance and scalability, allowing for faster execution times and efficient adaptation to more powerful systems. While parallel computing presents challenges in development and debugging, it remains crucial for solving complex computational problems across various scientific and technological domains. Its ability to handle intricate simulations and process large datasets makes it an indispensable tool in modern computing.</p>
 </div>
 <div class="paragraph">
-<p><strong>Types of Parallelism</strong> :</p>
-</div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p><strong>Data Parallelism</strong>: This approach involves performing the same operations on different datasets, making it particularly useful for processing large volumes of data.</p>
-</li>
-<li>
-<p><strong>Task Parallelism</strong>: In this model, independent tasks are executed concurrently, which is advantageous in applications where multiple processes can run simultaneously.</p>
-</li>
-</ol>
-</div>
-<div class="paragraph">
-<p><strong>Programming Models</strong> :</p>
-</div>
-<div class="paragraph">
-<p>Several programming models exist within parallel computing, each with distinct characteristics and applications:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>Shared Memory</strong>: In this model, threads share the same memory space, facilitating communication between them. Libraries such as OpenMP are commonly employed in this context.</p>
-</li>
-<li>
-<p><strong>Distributed Memory</strong>: Here, each computational unit possesses its own memory, and communication occurs through message passing, typically using protocols like the Message Passing Interface (MPI).</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p><strong>Benefits of Parallel Computing</strong> :</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>Improved Performance</strong>: By leveraging multiple cores or machines, programs can achieve significantly faster execution times.</p>
-</li>
-<li>
-<p><strong>Scalability</strong>: Applications can be designed to scale effectively with increasingly powerful systems by adding resources as needed.</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p><strong>Challenges of Parallel Computing</strong> :</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>Complexity</strong>: Developing parallel programs can be more intricate than writing sequential programs due to the necessity of managing synchronization and communication between threads or processes.</p>
-</li>
-<li>
-<p><strong>Debugging Difficulties</strong>: Errors in parallel programs, such as race conditions, can be challenging to detect and rectify.</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p><strong>Main Reasons for Employing Parallel Programming</strong> :</p>
+<p>Main Reasons for Employing Parallel Programming :</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
@@ -549,7 +439,32 @@ MathJax.Hub.Config({
 </ol>
 </div>
 <div class="paragraph">
-<p><strong>Who Is Using Parallel Computing?</strong></p>
+<p><strong>4. Kokkos: A Modern Solution for Portable Parallel Programming</strong></p>
+</div>
+<div class="paragraph text-justify">
+<p>Parallel programming has become essential to fully exploit the capabilities of modern hardware architectures. These architectures include different types of specialized processors, each designed for specific tasks:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>CPU (Central Processing Unit)</strong> is the traditional general-purpose processor, capable of performing a wide variety of tasks but with a limited number of cores.</p>
+</li>
+<li>
+<p><strong>GPU (Graphics Processing Unit)</strong> is optimized for massive parallel processing, particularly efficient for graphics computations and certain types of algorithms.</p>
+</li>
+<li>
+<p><strong>TPU (Tensor Processing Unit)</strong> is designed specifically for machine learning and artificial intelligence operations.</p>
+</li>
+<li>
+<p><strong>NPU (Neural Processing Unit)</strong> is similar to the TPU, but usually integrated into mobile devices for local AI tasks.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph text-justify">
+<p>In this context of hardware diversity, <strong>Kokkos</strong> emerges as a powerful solution for portable parallel programming. <strong>Kokkos</strong> is a C++ library that allows developers to write high-performance parallel code that can run efficiently on various hardware architectures, including multi-core <strong>CPUs</strong> and <strong>GPUs</strong>. This library provides a hardware abstraction that allows expressing parallel algorithms in a way that is independent of the underlying architecture, while automatically optimizing performance for each specific platform. Kokkos thus greatly simplifies the process of developing portable and high-performance parallel applications, by allowing developers to focus on the algorithm rather than on the implementation details specific to each architecture. I therefore invite you to consult the Kokkos section after studying the basics of parallel programming.</p>
+</div>
+<div class="paragraph">
+<p><strong>5. Who Is Using Parallel Computing?</strong></p>
 </div>
 <div class="ulist">
 <ul>
