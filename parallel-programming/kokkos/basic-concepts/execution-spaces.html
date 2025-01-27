@@ -327,7 +327,7 @@ MathJax.Hub.Config({
 <div class="sectionbody">
 <div class="imageblock">
 <div class="content">
-<a class="image" href="#fragment101"><img src="../_images/kokkos-core.png" alt="kokkos core" width="322" height="181"></a>
+<a class="image" href="#fragment101"><img src="../_images/kokkos-core.png" alt="kokkos core" width="400" height="200"></a>
 </div>
 </div>
 </div>
@@ -351,7 +351,7 @@ MathJax.Hub.Config({
 <div class="sectionbody">
 <div class="imageblock">
 <div class="content">
-<a class="image" href="#fragment101"><img src="../_images/kokkos-abstractions-doc.png" alt="kokkos abstractions doc" width="322" height="181"></a>
+<a class="image" href="#fragment101"><img src="../_images/kokkos-abstractions-doc.png" alt="kokkos abstractions doc" width="400" height="200"></a>
 </div>
 </div>
 <div class="ulist">
@@ -363,10 +363,10 @@ MathJax.Hub.Config({
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>parallel_for("Label", RangePolicy&lt;ExecutionSpace&gt;(0, numberOfIntervals),
-    [=] (const int64_t i) {
-        /* ... body ... */
-    });</pre>
+<pre>    parallel_for("Label", RangePolicy&lt;ExecutionSpace&gt;(0, numberOfIntervals),
+        [=] (const int64_t i) {
+            /* ... body ... */
+        });</pre>
 </div>
 </div>
 <div class="ulist">
@@ -455,6 +455,58 @@ MathJax.Hub.Config({
 <div class="paragraph">
 <p>The model is inspired by CUDA and OpenMP, aiming to improve performance across various hardware architectures by encouraging locality-aware programming. [5]</p>
 </div>
+<div class="paragraph">
+<p><strong>Example</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    struct VectorAdd {
+        // Member variables for the vectors
+        Kokkos::View&lt;double*&gt; a;
+        Kokkos::View&lt;double*&gt; b;
+        Kokkos::View&lt;double*&gt; c;
+        // Constructor to initialize the vectors
+        VectorAdd(Kokkos::View&lt;double*&gt; a_, Kokkos::View&lt;double*&gt; b_, Kokkos::View&lt;double*&gt; c_)
+            : a(a_), b(b_), c(c_) {}
+        // Functor to perform vector addition
+        KOKKOS_INLINE_FUNCTION
+        void operator()(const int i) const {
+            c(i) = a(i) + b(i); // Perform addition
+        }
+    };
+
+    int main(int argc, char* argv[]) {
+        Kokkos::initialize(argc, argv);
+        {
+            const int N = 1000; // Size of the vectors
+            // Allocate and initialize vectors on the device
+            Kokkos::View&lt;double*&gt; a("A", N);
+            Kokkos::View&lt;double*&gt; b("B", N);
+            Kokkos::View&lt;double*&gt; c("C", N);
+            // Initialize vectors a and b on the host
+            Kokkos::parallel_for("InitializeVectors", N, KOKKOS_LAMBDA(const int i) {
+                a(i) = static_cast&lt;double&gt;(i); // Fill vector A with values 0 to N-1
+                b(i) = static_cast&lt;double&gt;(N - i); // Fill vector B with values N-1 to 0
+            });
+            // Perform vector addition using Kokkos parallel_for
+            VectorAdd vectorAdd(a, b, c);
+            Kokkos::parallel_for("VectorAdd", N, vectorAdd);
+            // Synchronize to ensure all computations are complete
+            Kokkos::fence();
+            // Output the first 10 results for verification
+            std::cout &lt;&lt; "Result of vector addition (first 10 elements):" &lt;&lt; std::endl;
+            for (int i = 0; i &lt; 10; ++i) {
+                std::cout &lt;&lt; "c[" &lt;&lt; i &lt;&lt; "] = " &lt;&lt; c(i) &lt;&lt; std::endl; // Print results from vector C
+            }
+        }
+        Kokkos::finalize();
+        return 0;
+    }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Explanations: This example effectively demonstrates how to utilize <strong>execution patterns</strong> in Kokkos.</p>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -482,15 +534,14 @@ MathJax.Hub.Config({
 <div class="sidebarblock">
 <div class="content">
 <div class="title"><strong>Points to keep in mind</strong></div>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>Space Accessibility</strong></p>
-</li>
-</ul>
+<div class="paragraph">
+<p><strong>Execution Patterns</strong> : The Kokkos patterns execution designates the parallelism models which allow to express calculation operations in parallel, such as parallel loops and reductions, while allowing Kokkos to manage the distribution of these tasks on the available execution resources available.</p>
 </div>
 <div class="paragraph">
-<p>Space Accessibility is a trait that expresses the accessibility and assignability relationships between different memory and execution spaces. It allows to determine:</p>
+<p><strong>Team Policies</strong> : Kokkos' police execution define how parallel operations are carried out, specifying the type of execution, the granularity of work and the resources to be used to optimize performance on different architectures.</p>
+</div>
+<div class="paragraph">
+<p><strong>Space Accessibility</strong> : Space Accessibility is a trait that expresses the accessibility and assignability relationships between different memory and execution spaces. It allows to determine:</p>
 </div>
 <div class="ulist">
 <ul>

@@ -322,11 +322,43 @@ MathJax.Hub.Config({
 </aside>
 <article class="doc">
 <h1 class="page">Star PU</h1>
+<div class="sect1">
+<h2 id="_introduction"><a class="anchor" href="#_introduction"></a>1. Introduction</h2>
+<div class="sectionbody">
 <div class="paragraph text-justify">
-<p>StarPU is a C task scheduling library for hybrid architectures. It provides users with a means to define tasks that can run on both CPU and GPU, as well as the dependencies between these tasks, and takes care of scheduling them across all available processing units. The goal of StarPU is therefore to design systems in which applications are distributed across the entire machine, running parallel tasks on all available resources. It keeps track of the copies of each of the data in the different memories on board the accelerators and provides mechanisms such as data preloading. The calculation time has been significantly reduced, as well as the high efficiency in the use of different calculation resources, the different typical workloads, especially in the case of multi-core machines equipped with several acceleration machines. In doing so, StarPU abstracts the programmer from the underlying technical details: StarPU adapts to the available processing units and takes care of transferring data between them when necessary. StarPU effectively addresses scheduling problems, but the C language interface it offers is poor and makes programming errors easier.</p>
+<p>StarPU is a sophisticated C task scheduling library designed for hybrid architectures, enabling users to define tasks that can be executed on both CPUs and GPUs. It facilitates the specification of dependencies between these tasks and efficiently manages their scheduling across all available processing units. The primary objective of StarPU is to create systems where applications are distributed throughout the entire machine, allowing parallel tasks to run concurrently on all accessible resources.</p>
+</div>
+<div class="paragraph text-justify">
+<p>The library meticulously tracks the locations of data copies across various memory units associated with the accelerators and incorporates mechanisms such as data preloading to enhance performance. This approach has led to significant reductions in computation time and improved efficiency in utilizing diverse computational resources, particularly in multi-core environments equipped with multiple accelerators. By abstracting the underlying technical complexities, StarPU allows programmers to focus on higher-level algorithmic concerns while it autonomously adapts to the available processing units and manages necessary data transfers.</p>
+</div>
+<div class="paragraph text-justify">
+<p>StarPU provides algorithms and constraints for task implementations, supporting CPU/GPU executions through a task graph that can be constructed using its comprehensive C/C++/Fortran/Python API or OpenMP pragmas. Internally, StarPU addresses several critical aspects:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Management of task dependencies.</p>
+</li>
+<li>
+<p>Optimized heterogeneous scheduling.</p>
+</li>
+<li>
+<p>Efficient data transfers and replication between main memory and discrete memory units.</p>
+</li>
+<li>
+<p>Enhanced communication within clusters.</p>
+</li>
+<li>
+<p>Optimized data transfers and replication between main memory and
+discrete memories.</p>
+</li>
+<li>
+<p>Optimized cluster communications.</p>
+</li>
+</ul>
 </div>
 <div class="paragraph">
-<p>The app provides algorithms and constraints</p>
+<p>The app provides algorithms and constraints :</p>
 </div>
 <div class="ulist">
 <ul>
@@ -339,48 +371,36 @@ OpenMP pragmas.</p>
 </li>
 </ul>
 </div>
-<div class="paragraph">
-<p>StarPU internally deals with the following aspects:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Task dependencies</p>
-</li>
-<li>
-<p>Optimized heterogeneous scheduling</p>
-</li>
-<li>
-<p>Optimized data transfers and replication between main memory and
-discrete memories</p>
-</li>
-<li>
-<p>Optimized cluster communications</p>
-</li>
-</ul>
-</div>
 <div class="imageblock">
 <div class="content">
 <a class="image" href="#fragment19"><img src="_images/image19.png" alt="image19" width="179" height="179"></a>
 </div>
 </div>
-<div class="paragraph">
-<p>Links:</p>
 </div>
-<div class="paragraph">
-<p><a href="https://hpc2n.github.io/Task-based-parallelism/branch/master/starpu1/#hello-world" class="bare">hpc2n.github.io/Task-based-parallelism/branch/master/starpu1/#hello-world</a></p>
 </div>
-<div class="paragraph">
-<p><a href="https://github.com/alucas/StarPU/tree/master" class="bare">github.com/alucas/StarPU/tree/master</a></p>
+<div class="sect1">
+<h2 id="_references"><a class="anchor" href="#_references"></a>2. References</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>[1] <a href="https://hpc2n.github.io/Task-based-parallelism/branch/master/starpu1/#hello-world" class="bare">hpc2n.github.io/Task-based-parallelism/branch/master/starpu1/#hello-world</a></p>
+</li>
+<li>
+<p>[2] <a href="https://github.com/alucas/StarPU/tree/master" class="bare">github.com/alucas/StarPU/tree/master</a></p>
+</li>
+<li>
+<p>[3] <a href="https://hpc2n.github.io/Task-based-parallelism/branch/master/starpu1/#benefits-and-downsides" class="bare">hpc2n.github.io/Task-based-parallelism/branch/master/starpu1/#benefits-and-downsides</a></p>
+</li>
+<li>
+<p>[4] <a href="https://indico.math.cnrs.fr/event/6415/attachments/2736/3475/2021.02.24_-" class="bare">indico.math.cnrs.fr/event/6415/attachments/2736/3475/2021.02.24_-</a><em>exa2pro-eocoe_workshop</em>-<em>StarPU</em>-_S._Thibault.pdf</p>
+</li>
+<li>
+<p>[5] <a href="https://gitub.u-bordeaux.fr/starpu/starpu/-/tree/master/examples" class="bare">gitub.u-bordeaux.fr/starpu/starpu/-/tree/master/examples</a></p>
+</li>
+</ul>
 </div>
-<div class="paragraph">
-<p><a href="https://hpc2n.github.io/Task-based-parallelism/branch/master/starpu1/#benefits-and-downsides" class="bare">hpc2n.github.io/Task-based-parallelism/branch/master/starpu1/#benefits-and-downsides</a></p>
 </div>
-<div class="paragraph">
-<p><a href="https://indico.math.cnrs.fr/event/6415/attachments/2736/3475/2021.02.24_-" class="bare">indico.math.cnrs.fr/event/6415/attachments/2736/3475/2021.02.24_-</a><em>exa2pro-eocoe_workshop</em>-<em>StarPU</em>-_S._Thibault.pdf</p>
-</div>
-<div class="paragraph">
-<p><a href="https://gitub.u-bordeaux.fr/starpu/starpu/-/tree/master/examples" class="bare">gitub.u-bordeaux.fr/starpu/starpu/-/tree/master/examples</a></p>
 </div>
 </article>
   </div>

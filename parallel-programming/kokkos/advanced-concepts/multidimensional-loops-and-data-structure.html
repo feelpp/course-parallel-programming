@@ -468,6 +468,43 @@ MathJax.Hub.Config({
 Locks are not portable.
 Data replication is not thread scalable.</p>
 </div>
+<div class="paragraph">
+<p><strong>Example</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    struct AtomicCounter {
+        // Shared atomic counter
+        Kokkos::Atomic&lt;int&gt; counter;
+        // Constructor to initialize the counter
+        AtomicCounter() : counter(0) {}
+        // Function to increment the counter atomically
+        KOKKOS_INLINE_FUNCTION
+        void operator()(const int i) const {
+            counter.fetch_add(1); // Atomically increment the counter
+        }
+    };
+
+    int main(int argc, char* argv[]) {
+        Kokkos::initialize(argc, argv);
+        {
+            const int numIterations = 1234567; // Number of increments
+            AtomicCounter atomicCounter;
+            // Launch a parallel for loop to increment the counter
+            Kokkos::parallel_for("IncrementCounter", numIterations, atomicCounter);
+            // Synchronize to ensure all increments are complete
+            Kokkos::fence();
+            // Output the final value of the counter
+            std::cout &lt;&lt; "Final Counter Value: " &lt;&lt; atomicCounter.counter &lt;&lt; std::endl;
+        }
+        Kokkos::finalize();
+        return 0;
+    }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Explanations: The <code>AtomicCounter</code> structure contains an atomic integer <code>counter</code> that will be incremented by multiple threads. The <code>Kokkos::Atomic</code> type ensures that operations on the counter are thread-safe.  The <code>operator()</code> function uses <code>fetch_add(1)</code> to atomically increment the <code>counter</code>. This operation guarantees that even if multiple threads attempt to update the counter simultaneously, each update will be executed safely without race conditions. After launching the parallel loop, <code>Kokkos::fence()</code> is called to ensure that all increments are completed before accessing the final value of the counter.</p>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -499,7 +536,56 @@ Data replication is not thread scalable.</p>
 <p><strong>Kokkos</strong> offers a rich set of tools and abstractions for high-performance, portable parallel programming. By leveraging features like <strong>MDRangePolicy</strong>, <strong>subviews</strong>, <strong>unmanaged views</strong>, <strong>atomic operations</strong>, and <strong>DualView</strong>, developers can create efficient, scalable applications that perform well across a wide range of hardware architectures.</p>
 </div>
 <div class="paragraph">
-<p>&#8230;&#8203;</p>
+<p><strong>Example</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    struct DualViewExample {
+        // Define the dual view type
+        using dual_view_type = Kokkos::DualView&lt;double*, Kokkos::LayoutLeft&gt;;
+        // Function to initialize device view
+        static void initialize(dual_view_type&amp; dv) {
+            // Initialize the device view with values
+            Kokkos::parallel_for("InitializeDeviceView", dv.d_view.extent(0), KOKKOS_LAMBDA(const int i) {
+                dv.d_view(i) = static_cast&lt;double&gt;(i); // Assign values based on index
+            });
+            // Synchronize to update the host mirror
+            dv.sync&lt;Kokkos::HostSpace&gt;();
+        }
+
+        // Function to print values from both views
+        static void printValues(const dual_view_type&amp; dv) {
+            std::cout &lt;&lt; "Host View Values: ";
+            for (int i = 0; i &lt; dv.h_view.extent(0); ++i) {
+                std::cout &lt;&lt; dv.h_view(i) &lt;&lt; " "; // Access host view
+            }
+            std::cout &lt;&lt; std::endl;
+            std::cout &lt;&lt; "Device View Values: ";
+            for (int i = 0; i &lt; dv.d_view.extent(0); ++i) {
+                std::cout &lt;&lt; dv.d_view(i) &lt;&lt; " "; // Access device view
+            }
+            std::cout &lt;&lt; std::endl;
+        }
+    };
+
+    int main(int argc, char* argv[]) {
+        Kokkos::initialize(argc, argv);
+        {
+            const int N = 10; // Size of the DualView
+            // Create a DualView with N elements
+            DualViewExample::dual_view_type dv("MyDualView", N);
+            // Initialize the device view
+            DualViewExample::initialize(dv);
+            // Print values from both views
+            DualViewExample::printValues(dv);
+        }
+        Kokkos::finalize();
+        return 0;
+    }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Explanations: This example effectively demonstrates how to use <strong>DualView</strong> in Kokkos to manage data across different memory spaces while ensuring synchronization between them.  The program starts by initializing the Kokkos runtime environment.  A <code>DualView</code> is defined as <code>dual_view_type</code>, which can hold data in both host and device memory.</p>
 </div>
 </div>
 </div>
