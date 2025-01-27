@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Kokkos Advanced Reductions :: Parallel Programming</title>
-    <link rel="canonical" href="https://feelpp.github.io/parallel-programming/parallel-programming/kokkos/advanced-concepts/advanced-reductions.html">
+    <title>Kokkos Tools: Profiling Tuning Debugging :: Parallel Programming</title>
+    <link rel="canonical" href="https://feelpp.github.io/parallel-programming/parallel-programming/kokkos/diagnostic-tools-algebraic-strategies/tools-profiling-tuning-debugging.html">
     <meta name="generator" content="Antora 3.1.10">
     <link rel="stylesheet" href="../../../_/css/site.css">
 <link rel="icon" href="../../../_/img/favicon.ico" type="image/x-icon">
@@ -248,37 +248,37 @@ MathJax.Hub.Config({
   </li>
   <li class="nav-item" data-depth="2">
     <button class="nav-item-toggle"></button>
-    <a class="nav-link" href="index.html">Advanced Concepts</a>
+    <a class="nav-link" href="../advanced-concepts/index.html">Advanced Concepts</a>
 <ul class="nav-list">
-  <li class="nav-item is-current-page" data-depth="3">
-    <a class="nav-link" href="advanced-reductions.html">Advanced Reductions</a>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../advanced-concepts/advanced-reductions.html">Advanced Reductions</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="hierarchical-parallelism.html">Hierarchical Parallelism</a>
+    <a class="nav-link" href="../advanced-concepts/hierarchical-parallelism.html">Hierarchical Parallelism</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="mpi-pgas.html">MPI and PGAS</a>
+    <a class="nav-link" href="../advanced-concepts/mpi-pgas.html">MPI and PGAS</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="multidimensional-loops-and-data-structure.html">Multidimensional Loops and Data Structure</a>
+    <a class="nav-link" href="../advanced-concepts/multidimensional-loops-and-data-structure.html">Multidimensional Loops and Data Structure</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="single-instruction-mutliple-data.html">Single Instruction Multiple Data</a>
+    <a class="nav-link" href="../advanced-concepts/single-instruction-mutliple-data.html">Single Instruction Multiple Data</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="asynchronicity-and-streams.html">Asynchronicity and Stream</a>
+    <a class="nav-link" href="../advanced-concepts/asynchronicity-and-streams.html">Asynchronicity and Stream</a>
   </li>
 </ul>
   </li>
   <li class="nav-item" data-depth="2">
     <button class="nav-item-toggle"></button>
-    <a class="nav-link" href="../diagnostic-tools-algebraic-strategies/index.html">Diagnostic Tools Algebraic Strategies</a>
+    <a class="nav-link" href="index.html">Diagnostic Tools Algebraic Strategies</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="../diagnostic-tools-algebraic-strategies/kernels-math-library.html">Kernels Math library</a>
+    <a class="nav-link" href="kernels-math-library.html">Kernels Math library</a>
   </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="../diagnostic-tools-algebraic-strategies/tools-profiling-tuning-debugging.html">Tools Profing Tuning Debugging</a>
+  <li class="nav-item is-current-page" data-depth="3">
+    <a class="nav-link" href="tools-profiling-tuning-debugging.html">Tools Profing Tuning Debugging</a>
   </li>
 </ul>
   </li>
@@ -314,13 +314,13 @@ MathJax.Hub.Config({
   <ul>
     <li><a href="../../index.html">Main</a></li>
     <li><a href="../index.html">Kokkos</a></li>
-    <li><a href="index.html">Advanced Concepts</a></li>
-    <li><a href="advanced-reductions.html">Advanced Reductions</a></li>
+    <li><a href="index.html">Diagnostic Tools Algebraic Strategies</a></li>
+    <li><a href="tools-profiling-tuning-debugging.html">Tools Profing Tuning Debugging</a></li>
   </ul>
 </nav>
 
   
-    <div class="edit-this-page"><a href="https://github.com/feelpp/course-parallel-programming/edit/feature/kokkos/docs/modules/kokkos/pages/advanced-concepts/advanced-reductions.adoc">Edit this Page</a></div>
+    <div class="edit-this-page"><a href="https://github.com/feelpp/course-parallel-programming/edit/feature/kokkos/docs/modules/kokkos/pages/diagnostic-tools-algebraic-strategies/tools-profiling-tuning-debugging.adoc">Edit this Page</a></div>
   
   <div class="page-downloads">
   <span class="label">Download as</span>
@@ -340,154 +340,192 @@ MathJax.Hub.Config({
   <div class="toc-menu"></div>
 </aside>
 <article class="doc">
-<h1 class="page">Kokkos Advanced Reductions</h1>
+<h1 class="page">Kokkos Tools: Profiling Tuning Debugging</h1>
 <div class="sect1">
 <h2 id="_introduction"><a class="anchor" href="#_introduction"></a>1. Introduction</h2>
 <div class="sectionbody">
 <div class="paragraph text-justify">
-<p>In Kokkos C++, a reduction is a parallel operation that combines the results of individual calculations into a single final value. [1][2] This mechanism, primarily implemented through the Kokkos::parallel_reduce function, offers a powerful paradigm for consolidating data distributed across different processing units. The concept of a "Reducer" in Kokkos encapsulates the logic of combining intermediate values, defining not only the merging operation but also the initialization of thread-private variables and the localization of the final result.</p>
-</div>
-<div class="paragraph text-justify">
-<p>Kokkos allows for multiple reductions to be performed within a single kernel, which can significantly reduce kernel launch overhead and improve overall performance. It also offers the ability to use Views as reduction targets, enabling asynchronous reduction operations. This capability is particularly valuable in scenarios where the reduction result is needed for further computation or when overlapping computation and communication.</p>
-</div>
-<div class="paragraph text-justify">
-<p>For cases where built-in reducers do not suffice, Kokkos provides mechanisms for implementing custom reductions. This extensibility allows developers to define complex reduction operations tailored to their specific computational needs. Custom reductions can be particularly useful for domain-specific algorithms or when dealing with non-standard data types [3].</p>
+<p>Kokkos Tools represent a sophisticated suite of utilities designed to enhance the development and optimization of high-performance computing applications. These tools leverage Kokkos' built-in instrumentation to provide developers with powerful capabilities for profiling, debugging, and tuning their code across diverse hardware architectures.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_advanced_reductions"><a class="anchor" href="#_advanced_reductions"></a>2. Advanced Reductions</h2>
+<h2 id="_kokkos_tools_and_built_in_instrumentation"><a class="anchor" href="#_kokkos_tools_and_built_in_instrumentation"></a>2. Kokkos Tools and Built-in Instrumentation</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Kokkos provides powerful tools for performing reductions in parallel computations.</p>
+<p><strong>The Need for Kokkos-aware Tools</strong> :</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>Using Reducers for Different Reductions</p>
+<p>Modern heterogeneous computing environments present complex challenges for performance analysis and optimization.</p>
+</li>
+<li>
+<p>Traditional profiling and debugging tools often lack context-specific information for Kokkos applications.</p>
+</li>
+<li>
+<p>Kokkos-aware tools bridge this gap by interfacing directly with the Kokkos runtime, providing more meaningful insights.</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>Kokkos offers various built-in reducers for common operations:</p>
+<p><strong>How Instrumentation Helps ?</strong> :</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p><code>Kokkos::Sum</code> for summation</p>
+<p>Kokkos' built-in instrumentation allows for non-intrusive gathering of detailed execution information.</p>
 </li>
 <li>
-<p><code>Kokkos::Prod</code> for product</p>
+<p>It tracks critical events such as kernel launches and memory operations without requiring source code modifications.</p>
 </li>
 <li>
-<p><code>Kokkos::Min</code> and <code>Kokkos::Max</code> for minimum and maximum</p>
+<p>This approach minimizes impact on application behavior while still offering rich performance data.</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>Example:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    double result;
-    Kokkos::parallel_reduce("Sum", policy,
-    KOKKOS_LAMBDA (const int i, double&amp; lsum) {
-        lsum += data[i];
-    }, Kokkos::Sum&lt;double&gt;(result));</code></pre>
-</div>
+<p><strong>Simple Profiling Tools</strong> :</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>Multiple Reductions in One Kernel</p>
+<p>KernelLogger: Helps developers localize errors and verify runtime flow by printing Kokkos operations as they occur [1].</p>
+</li>
+<li>
+<p>SimpleKernelTimer: Measures time spent in kernels, identifying hotspots and aiding in performance optimization [1].</p>
+</li>
+<li>
+<p>MemoryEvents: Tracks memory-related events, helping identify issues like excessive temporary allocations [1].</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>Kokkos allows performing multiple reductions simultaneously:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    struct MultipleResults {
-        double sum;
-        int max;
-    };
-
-    MultipleResults results;
-    Kokkos::parallel_reduce("MultiReduce", policy,
-    KOKKOS_LAMBDA (const int i, MultipleResults&amp; lresults) {
-        lresults.sum += data[i];
-        if (data[i] &gt; lresults.max) lresults.max = data[i];
-    },
-    Kokkos::Sum&lt;MultipleResults&gt;(results));</code></pre>
-</div>
+<p><strong>Simple Debugging Tools</strong> :</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>Using Kokkos::View as Result for Asynchronicity</p>
+<p>KernelLogger: Acts as a debugging tool by inserting fences that check for errors and printing Kokkos operations [4].</p>
 </li>
-</ul>
-</div>
-<div class="paragraph">
-<p>For asynchronous operations, you can use <code>Kokkos::View</code> as the reduction target:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    Kokkos::View&lt;double*&gt; result("Result", 1);
-    Kokkos::parallel_reduce("AsyncReduce", policy,
-    KOKKOS_LAMBDA (const int i, double&amp; lsum) {
-        lsum += data[i];
-    }, Kokkos::Sum&lt;double&gt;(result(0)));</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This allows the reduction to be performed asynchronously, with the result available in the view.</p>
-</div>
-<div class="ulist">
-<ul>
 <li>
-<p>Custom Reductions</p>
+<p>These tools can help pinpoint issues in kernel execution and memory management, crucial for complex parallel applications.</p>
 </li>
 </ul>
-</div>
-<div class="paragraph">
-<p>Kokkos supports custom reduction operations:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    struct CustomReducer {
-    typedef double value_type;
-    KOKKOS_INLINE_FUNCTION void join(value_type&amp; dest, const value_type&amp; src) const {
-        dest = (dest &gt; src) ? dest : src;  // Custom max operation
-    }
-    KOKKOS_INLINE_FUNCTION void init(value_type&amp; val) const {
-        val = std::numeric_limits&lt;double&gt;::lowest();
-    }
-    };
-
-    double result;
-    Kokkos::parallel_reduce("CustomReduce", policy,
-    KOKKOS_LAMBDA (const int i, double&amp; lval) {
-        lval = (lval &gt; data[i]) ? lval : data[i];
-    }, CustomReducer());</code></pre>
-</div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_references"><a class="anchor" href="#_references"></a>3. References</h2>
+<h2 id="_vendor_and_independent_profiling_guis"><a class="anchor" href="#_vendor_and_independent_profiling_guis"></a>3. Vendor and Independent Profiling GUIs</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><strong>What Connectors Provide ?</strong> :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Connectors translate Kokkos instrumentation for use with vendor-specific and independent profiling tools.</p>
+</li>
+<li>
+<p>They bridge the gap between Kokkos' internal instrumentation and external profiling interfaces.</p>
+</li>
+<li>
+<p>This allows developers to use familiar tools while gaining Kokkos-specific insights.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Available Tools</strong> :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>nvtx-connector</strong>: Interfaces with NVIDIA tools like Nsight Compute, translating KokkosP hooks into NVTX instrumentation [4].</p>
+</li>
+<li>
+<p><strong>vtune-focused-connector</strong>: Enables integration with Intel&#8217;s VTune profiler for detailed performance analysis on Intel architectures.</p>
+</li>
+<li>
+<p><strong>TAU (Tuning and Analysis Utilities)</strong>: Offers built-in support for Kokkos without requiring a separate connector [2].</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_tuning"><a class="anchor" href="#_tuning"></a>4. Tuning</h2>
+<div class="sectionbody">
+<div class="paragraph text-justify">
+<p>As applications grow in complexity, the need for <strong>tuning</strong> becomes increasingly apparent. Kokkos recognizes this need and provides autotuning hooks to help developers optimize their code for different architectures and workloads.</p>
+</div>
+<div class="paragraph text-justify">
+<p>The necessity for <strong>tuning</strong> is evident when considering the myriad of parameters that can affect performance. For instance, in a <strong>sparse matrix-vector multiplication (SpMV)</strong> implementation, factors such as the number of rows per team, team size, and vector length can significantly impact performance across different hardware [5]. Manually determining optimal values for these parameters across various architectures is a daunting and time-consuming task.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_custom_tools"><a class="anchor" href="#_custom_tools"></a>5. Custom Tools</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><strong>The KokkosP Hooks</strong> :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>KokkosP interface exposes hooks corresponding to various Kokkos runtime events.</p>
+</li>
+<li>
+<p>These hooks include kernel launches, memory operations, and region entries/exits.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Callback Registration Inside the Application</strong> :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Developers implement callback functions for relevant KokkosP hooks.</p>
+</li>
+<li>
+<p>These callbacks are registered with the Kokkos runtime to be invoked at appropriate execution points.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Throwaway Debugging Tools</strong> :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Lightweight, purpose-built tools can be quickly implemented for specific debugging scenarios.</p>
+</li>
+<li>
+<p>Example: A tool to log memory allocations exceeding a certain size to identify potential memory leaks.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_references"><a class="anchor" href="#_references"></a>6. References</h2>
 <div class="sectionbody">
 <div class="ulist">
 <ul>
 <li>
-<p>[1] <a href="https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/Custom-Reductions.html" class="bare">kokkos.org/kokkos-core-wiki/ProgrammingGuide/Custom-Reductions.html</a></p>
+<p>[1] <a href="https://github.com/kokkos/kokkos-tools" class="bare">github.com/kokkos/kokkos-tools</a></p>
 </li>
 <li>
-<p>[2] <a href="https://kokkos.org/kokkos-core-wiki/API/core/builtinreducers/ReducerConcept.html" class="bare">kokkos.org/kokkos-core-wiki/API/core/builtinreducers/ReducerConcept.html</a></p>
+<p>[2] <a href="https://kokkos.org/blog/blog-post-09/" class="bare">kokkos.org/blog/blog-post-09/</a></p>
 </li>
 <li>
-<p>[3] <a href="https://www.nersc.gov/assets/Uploads/Kokkos-training-Day1-NewUsers-Bruno-v2.pdf" class="bare">www.nersc.gov/assets/Uploads/Kokkos-training-Day1-NewUsers-Bruno-v2.pdf</a></p>
+<p>[3] <a href="https://timemory.readthedocs.io/en/develop/" class="bare">timemory.readthedocs.io/en/develop/</a></p>
+</li>
+<li>
+<p>[4] <a href="https://indico.math.cnrs.fr/event/12037/attachments/5040/8156/KokkosTutorial_07_Tools.pdf" class="bare">indico.math.cnrs.fr/event/12037/attachments/5040/8156/KokkosTutorial_07_Tools.pdf</a></p>
+</li>
+<li>
+<p>[5] <a href="https://indico.math.cnrs.fr/event/12037/attachments/5040/8156/KokkosTutorial_07_Tools.pdf" class="bare">indico.math.cnrs.fr/event/12037/attachments/5040/8156/KokkosTutorial_07_Tools.pdf</a></p>
 </li>
 </ul>
 </div>
@@ -497,76 +535,46 @@ MathJax.Hub.Config({
 <div class="ulist">
 <ul>
 <li>
-<p><strong>Reduction</strong> aggregates values computed by different threads or computing units in parallel.</p>
-</li>
-<li>
-<p><strong>Types of reductions</strong>:</p>
+<p><strong>Kokkos Tools</strong></p>
 <div class="ulist">
 <ul>
 <li>
-<p>By default, Kokkos performs a "sum" reduction.</p>
-</li>
-<li>
-<p>Custom reductions are possible for more complex operations.</p>
+<p>Kokkos Tools provide an instrumentation interface KokkosP and Tools to leverage it.</p>
 </li>
 </ul>
 </div>
 </li>
 <li>
-<p><strong>Reducer concept</strong>:</p>
+<p><strong>Kokkos Connector Tools</strong></p>
 <div class="ulist">
 <ul>
 <li>
-<p>A Reducer is a class that defines how to join (reduce) two values.</p>
+<p>Connectors inject Kokkos specific information into vendor and academic tools.</p>
 </li>
 <li>
-<p>It also specifies the initialization of thread-private variables and the location of the final result.</p>
+<p>Helps readability of profiles.</p>
+</li>
+<li>
+<p>Removes need to put vendor specific instrumentation in codes</p>
+</li>
+<li>
+<p>Growing list of tools support Kokkos natively.</p>
 </li>
 </ul>
 </div>
 </li>
 <li>
-<p><strong>Usage</strong>:</p>
+<p><strong>Kokkos Tuning Hooks enable more performance portability</strong></p>
 <div class="ulist">
 <ul>
 <li>
-<p>Reduction is usually done with the <code>Kokkos::parallel_reduce</code> function.</p>
+<p>Avoid figuring out the right heuristic for every platform.</p>
 </li>
 <li>
-<p>It can be used with lambdas or CPP functors.</p>
-</li>
-</ul>
-</div>
+<p>Input variables descripte the problem scope.</p>
 </li>
 <li>
-<p><strong>Data types</strong>:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>Built-in reductions work with CPP intrinsic and <code>Kokkos::complex</code> types.</p>
-</li>
-<li>
-<p>For custom types, a specialization of <code>Kokkos::reduction_identity</code> is required.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Flexibility</strong>:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>Kokkos allows reductions on scalars, but also on more complex structures like matrices.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Performance</strong>:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>Reductions are optimized for different hardware architectures, ensuring performance portability.</p>
+<p>Output variables descripe the search space.</p>
 </li>
 </ul>
 </div>

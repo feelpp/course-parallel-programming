@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Kokkos Advanced Reductions :: Parallel Programming</title>
-    <link rel="canonical" href="https://feelpp.github.io/parallel-programming/parallel-programming/kokkos/advanced-concepts/advanced-reductions.html">
+    <title>Basic concepts :: Parallel Programming</title>
+    <link rel="canonical" href="https://feelpp.github.io/parallel-programming/parallel-programming/kokkos/diagnostic-tools-algebraic-strategies/index.html">
     <meta name="generator" content="Antora 3.1.10">
     <link rel="stylesheet" href="../../../_/css/site.css">
 <link rel="icon" href="../../../_/img/favicon.ico" type="image/x-icon">
@@ -248,37 +248,37 @@ MathJax.Hub.Config({
   </li>
   <li class="nav-item" data-depth="2">
     <button class="nav-item-toggle"></button>
-    <a class="nav-link" href="index.html">Advanced Concepts</a>
+    <a class="nav-link" href="../advanced-concepts/index.html">Advanced Concepts</a>
 <ul class="nav-list">
-  <li class="nav-item is-current-page" data-depth="3">
-    <a class="nav-link" href="advanced-reductions.html">Advanced Reductions</a>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../advanced-concepts/advanced-reductions.html">Advanced Reductions</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="hierarchical-parallelism.html">Hierarchical Parallelism</a>
+    <a class="nav-link" href="../advanced-concepts/hierarchical-parallelism.html">Hierarchical Parallelism</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="mpi-pgas.html">MPI and PGAS</a>
+    <a class="nav-link" href="../advanced-concepts/mpi-pgas.html">MPI and PGAS</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="multidimensional-loops-and-data-structure.html">Multidimensional Loops and Data Structure</a>
+    <a class="nav-link" href="../advanced-concepts/multidimensional-loops-and-data-structure.html">Multidimensional Loops and Data Structure</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="single-instruction-mutliple-data.html">Single Instruction Multiple Data</a>
+    <a class="nav-link" href="../advanced-concepts/single-instruction-mutliple-data.html">Single Instruction Multiple Data</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="asynchronicity-and-streams.html">Asynchronicity and Stream</a>
+    <a class="nav-link" href="../advanced-concepts/asynchronicity-and-streams.html">Asynchronicity and Stream</a>
   </li>
 </ul>
   </li>
-  <li class="nav-item" data-depth="2">
+  <li class="nav-item is-current-page" data-depth="2">
     <button class="nav-item-toggle"></button>
-    <a class="nav-link" href="../diagnostic-tools-algebraic-strategies/index.html">Diagnostic Tools Algebraic Strategies</a>
+    <a class="nav-link" href="index.html">Diagnostic Tools Algebraic Strategies</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="../diagnostic-tools-algebraic-strategies/kernels-math-library.html">Kernels Math library</a>
+    <a class="nav-link" href="kernels-math-library.html">Kernels Math library</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="../diagnostic-tools-algebraic-strategies/tools-profiling-tuning-debugging.html">Tools Profing Tuning Debugging</a>
+    <a class="nav-link" href="tools-profiling-tuning-debugging.html">Tools Profing Tuning Debugging</a>
   </li>
 </ul>
   </li>
@@ -314,13 +314,12 @@ MathJax.Hub.Config({
   <ul>
     <li><a href="../../index.html">Main</a></li>
     <li><a href="../index.html">Kokkos</a></li>
-    <li><a href="index.html">Advanced Concepts</a></li>
-    <li><a href="advanced-reductions.html">Advanced Reductions</a></li>
+    <li><a href="index.html">Diagnostic Tools Algebraic Strategies</a></li>
   </ul>
 </nav>
 
   
-    <div class="edit-this-page"><a href="https://github.com/feelpp/course-parallel-programming/edit/feature/kokkos/docs/modules/kokkos/pages/advanced-concepts/advanced-reductions.adoc">Edit this Page</a></div>
+    <div class="edit-this-page"><a href="https://github.com/feelpp/course-parallel-programming/edit/feature/kokkos/docs/modules/kokkos/pages/diagnostic-tools-algebraic-strategies/index.adoc">Edit this Page</a></div>
   
   <div class="page-downloads">
   <span class="label">Download as</span>
@@ -340,240 +339,47 @@ MathJax.Hub.Config({
   <div class="toc-menu"></div>
 </aside>
 <article class="doc">
-<h1 class="page">Kokkos Advanced Reductions</h1>
-<div class="sect1">
-<h2 id="_introduction"><a class="anchor" href="#_introduction"></a>1. Introduction</h2>
+<h1 class="page">Basic concepts</h1>
+<div id="preamble">
 <div class="sectionbody">
-<div class="paragraph text-justify">
-<p>In Kokkos C++, a reduction is a parallel operation that combines the results of individual calculations into a single final value. [1][2] This mechanism, primarily implemented through the Kokkos::parallel_reduce function, offers a powerful paradigm for consolidating data distributed across different processing units. The concept of a "Reducer" in Kokkos encapsulates the logic of combining intermediate values, defining not only the merging operation but also the initialization of thread-private variables and the localization of the final result.</p>
-</div>
-<div class="paragraph text-justify">
-<p>Kokkos allows for multiple reductions to be performed within a single kernel, which can significantly reduce kernel launch overhead and improve overall performance. It also offers the ability to use Views as reduction targets, enabling asynchronous reduction operations. This capability is particularly valuable in scenarios where the reduction result is needed for further computation or when overlapping computation and communication.</p>
-</div>
-<div class="paragraph text-justify">
-<p>For cases where built-in reducers do not suffice, Kokkos provides mechanisms for implementing custom reductions. This extensibility allows developers to define complex reduction operations tailored to their specific computational needs. Custom reductions can be particularly useful for domain-specific algorithms or when dealing with non-standard data types [3].</p>
+<div class="paragraph">
+<p>The content of this part has ben  constructed from the slides from the <a href="https://indico.math.cnrs.fr/event/12037/">Kokkos training days</a> held in 2024.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_advanced_reductions"><a class="anchor" href="#_advanced_reductions"></a>2. Advanced Reductions</h2>
+<h2 id="_other_ressources"><a class="anchor" href="#_other_ressources"></a>1. Other ressources</h2>
 <div class="sectionbody">
-<div class="paragraph">
-<p>Kokkos provides powerful tools for performing reductions in parallel computations.</p>
-</div>
 <div class="ulist">
 <ul>
 <li>
-<p>Using Reducers for Different Reductions</p>
+<p>Organization Kokkos on GitHub: <a href="https://github.com/kokkos">github.com/kokkos</a>,</p>
+</li>
+<li>
+<p>Slides, recording and Q&amp;A for the Lectures: <a href="https://github.com/kokkos/kokkos-tutorials/wiki/Kokkos-Lecture-Series">github.com/kokkos/kokkos-tutorials/wiki</a>,</p>
+</li>
+<li>
+<p>Kokkos Core Wiki, with API documentation: <a href="https://kokkos.github.io/kokkos-core-wiki">kokkos.github.io/kokkos-core-wiki</a>,</p>
+</li>
+<li>
+<p>Slack channel for Kokkos: <a href="https://kokkos.slack.com">kokkosteam.slack.com</a>.</p>
 </li>
 </ul>
-</div>
-<div class="paragraph">
-<p>Kokkos offers various built-in reducers for common operations:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><code>Kokkos::Sum</code> for summation</p>
-</li>
-<li>
-<p><code>Kokkos::Prod</code> for product</p>
-</li>
-<li>
-<p><code>Kokkos::Min</code> and <code>Kokkos::Max</code> for minimum and maximum</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>Example:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    double result;
-    Kokkos::parallel_reduce("Sum", policy,
-    KOKKOS_LAMBDA (const int i, double&amp; lsum) {
-        lsum += data[i];
-    }, Kokkos::Sum&lt;double&gt;(result));</code></pre>
-</div>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Multiple Reductions in One Kernel</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>Kokkos allows performing multiple reductions simultaneously:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    struct MultipleResults {
-        double sum;
-        int max;
-    };
-
-    MultipleResults results;
-    Kokkos::parallel_reduce("MultiReduce", policy,
-    KOKKOS_LAMBDA (const int i, MultipleResults&amp; lresults) {
-        lresults.sum += data[i];
-        if (data[i] &gt; lresults.max) lresults.max = data[i];
-    },
-    Kokkos::Sum&lt;MultipleResults&gt;(results));</code></pre>
-</div>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Using Kokkos::View as Result for Asynchronicity</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>For asynchronous operations, you can use <code>Kokkos::View</code> as the reduction target:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    Kokkos::View&lt;double*&gt; result("Result", 1);
-    Kokkos::parallel_reduce("AsyncReduce", policy,
-    KOKKOS_LAMBDA (const int i, double&amp; lsum) {
-        lsum += data[i];
-    }, Kokkos::Sum&lt;double&gt;(result(0)));</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This allows the reduction to be performed asynchronously, with the result available in the view.</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Custom Reductions</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>Kokkos supports custom reduction operations:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    struct CustomReducer {
-    typedef double value_type;
-    KOKKOS_INLINE_FUNCTION void join(value_type&amp; dest, const value_type&amp; src) const {
-        dest = (dest &gt; src) ? dest : src;  // Custom max operation
-    }
-    KOKKOS_INLINE_FUNCTION void init(value_type&amp; val) const {
-        val = std::numeric_limits&lt;double&gt;::lowest();
-    }
-    };
-
-    double result;
-    Kokkos::parallel_reduce("CustomReduce", policy,
-    KOKKOS_LAMBDA (const int i, double&amp; lval) {
-        lval = (lval &gt; data[i]) ? lval : data[i];
-    }, CustomReducer());</code></pre>
-</div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_references"><a class="anchor" href="#_references"></a>3. References</h2>
+<h2 id="_contents"><a class="anchor" href="#_contents"></a>2. Contents</h2>
 <div class="sectionbody">
 <div class="ulist">
 <ul>
 <li>
-<p>[1] <a href="https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/Custom-Reductions.html" class="bare">kokkos.org/kokkos-core-wiki/ProgrammingGuide/Custom-Reductions.html</a></p>
+<p><a href="kernels-math-library.html" class="xref page">Kernels Math library</a></p>
 </li>
 <li>
-<p>[2] <a href="https://kokkos.org/kokkos-core-wiki/API/core/builtinreducers/ReducerConcept.html" class="bare">kokkos.org/kokkos-core-wiki/API/core/builtinreducers/ReducerConcept.html</a></p>
-</li>
-<li>
-<p>[3] <a href="https://www.nersc.gov/assets/Uploads/Kokkos-training-Day1-NewUsers-Bruno-v2.pdf" class="bare">www.nersc.gov/assets/Uploads/Kokkos-training-Day1-NewUsers-Bruno-v2.pdf</a></p>
+<p><a href="tools-profiling-tuning-debugging.html" class="xref page">Tools Profing Tuning Debugging</a></p>
 </li>
 </ul>
-</div>
-<div class="sidebarblock">
-<div class="content">
-<div class="title"><strong>Points to keep in mind</strong></div>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>Reduction</strong> aggregates values computed by different threads or computing units in parallel.</p>
-</li>
-<li>
-<p><strong>Types of reductions</strong>:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>By default, Kokkos performs a "sum" reduction.</p>
-</li>
-<li>
-<p>Custom reductions are possible for more complex operations.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Reducer concept</strong>:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>A Reducer is a class that defines how to join (reduce) two values.</p>
-</li>
-<li>
-<p>It also specifies the initialization of thread-private variables and the location of the final result.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Usage</strong>:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>Reduction is usually done with the <code>Kokkos::parallel_reduce</code> function.</p>
-</li>
-<li>
-<p>It can be used with lambdas or CPP functors.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Data types</strong>:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>Built-in reductions work with CPP intrinsic and <code>Kokkos::complex</code> types.</p>
-</li>
-<li>
-<p>For custom types, a specialization of <code>Kokkos::reduction_identity</code> is required.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Flexibility</strong>:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>Kokkos allows reductions on scalars, but also on more complex structures like matrices.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Performance</strong>:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>Reductions are optimized for different hardware architectures, ensuring performance portability.</p>
-</li>
-</ul>
-</div>
-</li>
-</ul>
-</div>
-</div>
 </div>
 </div>
 </div>

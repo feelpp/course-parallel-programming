@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Kokkos Advanced Reductions :: Parallel Programming</title>
-    <link rel="canonical" href="https://feelpp.github.io/parallel-programming/parallel-programming/kokkos/advanced-concepts/advanced-reductions.html">
+    <title>Kokkos Kernels Math Library :: Parallel Programming</title>
+    <link rel="canonical" href="https://feelpp.github.io/parallel-programming/parallel-programming/kokkos/diagnostic-tools-algebraic-strategies/kernels-math-library.html">
     <meta name="generator" content="Antora 3.1.10">
     <link rel="stylesheet" href="../../../_/css/site.css">
 <link rel="icon" href="../../../_/img/favicon.ico" type="image/x-icon">
@@ -248,37 +248,37 @@ MathJax.Hub.Config({
   </li>
   <li class="nav-item" data-depth="2">
     <button class="nav-item-toggle"></button>
-    <a class="nav-link" href="index.html">Advanced Concepts</a>
+    <a class="nav-link" href="../advanced-concepts/index.html">Advanced Concepts</a>
 <ul class="nav-list">
-  <li class="nav-item is-current-page" data-depth="3">
-    <a class="nav-link" href="advanced-reductions.html">Advanced Reductions</a>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../advanced-concepts/advanced-reductions.html">Advanced Reductions</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="hierarchical-parallelism.html">Hierarchical Parallelism</a>
+    <a class="nav-link" href="../advanced-concepts/hierarchical-parallelism.html">Hierarchical Parallelism</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="mpi-pgas.html">MPI and PGAS</a>
+    <a class="nav-link" href="../advanced-concepts/mpi-pgas.html">MPI and PGAS</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="multidimensional-loops-and-data-structure.html">Multidimensional Loops and Data Structure</a>
+    <a class="nav-link" href="../advanced-concepts/multidimensional-loops-and-data-structure.html">Multidimensional Loops and Data Structure</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="single-instruction-mutliple-data.html">Single Instruction Multiple Data</a>
+    <a class="nav-link" href="../advanced-concepts/single-instruction-mutliple-data.html">Single Instruction Multiple Data</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="asynchronicity-and-streams.html">Asynchronicity and Stream</a>
+    <a class="nav-link" href="../advanced-concepts/asynchronicity-and-streams.html">Asynchronicity and Stream</a>
   </li>
 </ul>
   </li>
   <li class="nav-item" data-depth="2">
     <button class="nav-item-toggle"></button>
-    <a class="nav-link" href="../diagnostic-tools-algebraic-strategies/index.html">Diagnostic Tools Algebraic Strategies</a>
+    <a class="nav-link" href="index.html">Diagnostic Tools Algebraic Strategies</a>
 <ul class="nav-list">
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="../diagnostic-tools-algebraic-strategies/kernels-math-library.html">Kernels Math library</a>
+  <li class="nav-item is-current-page" data-depth="3">
+    <a class="nav-link" href="kernels-math-library.html">Kernels Math library</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="../diagnostic-tools-algebraic-strategies/tools-profiling-tuning-debugging.html">Tools Profing Tuning Debugging</a>
+    <a class="nav-link" href="tools-profiling-tuning-debugging.html">Tools Profing Tuning Debugging</a>
   </li>
 </ul>
   </li>
@@ -314,13 +314,13 @@ MathJax.Hub.Config({
   <ul>
     <li><a href="../../index.html">Main</a></li>
     <li><a href="../index.html">Kokkos</a></li>
-    <li><a href="index.html">Advanced Concepts</a></li>
-    <li><a href="advanced-reductions.html">Advanced Reductions</a></li>
+    <li><a href="index.html">Diagnostic Tools Algebraic Strategies</a></li>
+    <li><a href="kernels-math-library.html">Kernels Math library</a></li>
   </ul>
 </nav>
 
   
-    <div class="edit-this-page"><a href="https://github.com/feelpp/course-parallel-programming/edit/feature/kokkos/docs/modules/kokkos/pages/advanced-concepts/advanced-reductions.adoc">Edit this Page</a></div>
+    <div class="edit-this-page"><a href="https://github.com/feelpp/course-parallel-programming/edit/feature/kokkos/docs/modules/kokkos/pages/diagnostic-tools-algebraic-strategies/kernels-math-library.adoc">Edit this Page</a></div>
   
   <div class="page-downloads">
   <span class="label">Download as</span>
@@ -340,240 +340,153 @@ MathJax.Hub.Config({
   <div class="toc-menu"></div>
 </aside>
 <article class="doc">
-<h1 class="page">Kokkos Advanced Reductions</h1>
+<h1 class="page">Kokkos Kernels Math Library</h1>
 <div class="sect1">
 <h2 id="_introduction"><a class="anchor" href="#_introduction"></a>1. Introduction</h2>
 <div class="sectionbody">
 <div class="paragraph text-justify">
-<p>In Kokkos C++, a reduction is a parallel operation that combines the results of individual calculations into a single final value. [1][2] This mechanism, primarily implemented through the Kokkos::parallel_reduce function, offers a powerful paradigm for consolidating data distributed across different processing units. The concept of a "Reducer" in Kokkos encapsulates the logic of combining intermediate values, defining not only the merging operation but also the initialization of thread-private variables and the localization of the final result.</p>
-</div>
-<div class="paragraph text-justify">
-<p>Kokkos allows for multiple reductions to be performed within a single kernel, which can significantly reduce kernel launch overhead and improve overall performance. It also offers the ability to use Views as reduction targets, enabling asynchronous reduction operations. This capability is particularly valuable in scenarios where the reduction result is needed for further computation or when overlapping computation and communication.</p>
-</div>
-<div class="paragraph text-justify">
-<p>For cases where built-in reducers do not suffice, Kokkos provides mechanisms for implementing custom reductions. This extensibility allows developers to define complex reduction operations tailored to their specific computational needs. Custom reductions can be particularly useful for domain-specific algorithms or when dealing with non-standard data types [3].</p>
+<p>The <strong>Kokkos Kernels Math Library</strong> is a high-performance library specifically designed to provide computational kernels for linear algebra and graph operations. Built on top of the Kokkos programming model, it ensures performance portability across diverse hardware architectures, including CPUs, GPUs, and other accelerators. The library supports dense and sparse linear algebra operations, graph computations, and machine learning kernels. It can be used as a standalone library or integrated into larger frameworks like Tpetra for distributed parallelism.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_advanced_reductions"><a class="anchor" href="#_advanced_reductions"></a>2. Advanced Reductions</h2>
+<h2 id="_kokkos_ecosystem_for_performance_portability"><a class="anchor" href="#_kokkos_ecosystem_for_performance_portability"></a>2. Kokkos Ecosystem for Performance Portability</h2>
 <div class="sectionbody">
-<div class="paragraph">
-<p>Kokkos provides powerful tools for performing reductions in parallel computations.</p>
+<div class="paragraph text-justify">
+<p>The <strong>Kokkos Ecosystem</strong> is a comprehensive framework aimed at achieving performance portability for high-performance computing (HPC) applications. It includes:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>Using Reducers for Different Reductions</p>
+<p><strong>Kokkos Core</strong>, which provides abstractions for parallel execution and memory management.</p>
+</li>
+<li>
+<p><strong>Kokkos Kernels</strong>, offering dense and sparse linear algebra kernels as well as graph algorithms.</p>
+</li>
+<li>
+<p><strong>Profiling and Debugging Tools</strong>, enabling developers to analyze and optimize their applications.
+This ecosystem allows developers to write architecture-agnostic code that performs efficiently on both current and future HPC platforms. By leveraging hierarchical parallelism (team-level, thread-level, and vector-level), Kokkos ensures scalability across heterogeneous architectures.</p>
 </li>
 </ul>
-</div>
-<div class="paragraph">
-<p>Kokkos offers various built-in reducers for common operations:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><code>Kokkos::Sum</code> for summation</p>
-</li>
-<li>
-<p><code>Kokkos::Prod</code> for product</p>
-</li>
-<li>
-<p><code>Kokkos::Min</code> and <code>Kokkos::Max</code> for minimum and maximum</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>Example:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    double result;
-    Kokkos::parallel_reduce("Sum", policy,
-    KOKKOS_LAMBDA (const int i, double&amp; lsum) {
-        lsum += data[i];
-    }, Kokkos::Sum&lt;double&gt;(result));</code></pre>
-</div>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Multiple Reductions in One Kernel</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>Kokkos allows performing multiple reductions simultaneously:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    struct MultipleResults {
-        double sum;
-        int max;
-    };
-
-    MultipleResults results;
-    Kokkos::parallel_reduce("MultiReduce", policy,
-    KOKKOS_LAMBDA (const int i, MultipleResults&amp; lresults) {
-        lresults.sum += data[i];
-        if (data[i] &gt; lresults.max) lresults.max = data[i];
-    },
-    Kokkos::Sum&lt;MultipleResults&gt;(results));</code></pre>
-</div>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Using Kokkos::View as Result for Asynchronicity</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>For asynchronous operations, you can use <code>Kokkos::View</code> as the reduction target:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    Kokkos::View&lt;double*&gt; result("Result", 1);
-    Kokkos::parallel_reduce("AsyncReduce", policy,
-    KOKKOS_LAMBDA (const int i, double&amp; lsum) {
-        lsum += data[i];
-    }, Kokkos::Sum&lt;double&gt;(result(0)));</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This allows the reduction to be performed asynchronously, with the result available in the view.</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Custom Reductions</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>Kokkos supports custom reduction operations:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    struct CustomReducer {
-    typedef double value_type;
-    KOKKOS_INLINE_FUNCTION void join(value_type&amp; dest, const value_type&amp; src) const {
-        dest = (dest &gt; src) ? dest : src;  // Custom max operation
-    }
-    KOKKOS_INLINE_FUNCTION void init(value_type&amp; val) const {
-        val = std::numeric_limits&lt;double&gt;::lowest();
-    }
-    };
-
-    double result;
-    Kokkos::parallel_reduce("CustomReduce", policy,
-    KOKKOS_LAMBDA (const int i, double&amp; lval) {
-        lval = (lval &gt; data[i]) ? lval : data[i];
-    }, CustomReducer());</code></pre>
-</div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_references"><a class="anchor" href="#_references"></a>3. References</h2>
+<h2 id="_blas_and_lapack"><a class="anchor" href="#_blas_and_lapack"></a>3. BLAS and LAPACK</h2>
+<div class="sectionbody">
+<div class="paragraph text-justify">
+<p><strong>Motivation for BLAS/LAPACK Functions</strong> : BLAS (Basic Linear Algebra Subprograms) and LAPACK (Linear Algebra Package) are foundational libraries for numerical computing. They provide highly optimized routines for vector and matrix operations, such as matrix multiplication, eigenvalue computations, and solving linear systems. Their inclusion in Kokkos Kernels ensures that scientific applications can leverage these standard interfaces while benefiting from performance portability.</p>
+</div>
+<div class="paragraph text-justify">
+<p><strong>Algorithm Specialization for Applications</strong> : Kokkos Kernels supports algorithm specialization to optimize performance on different architectures. For example, it provides multiple implementations of key BLAS/LAPACK routines tailored to specific hardware backends like CUDA or OpenMP.</p>
+</div>
+<div class="paragraph text-justify">
+<p><strong>Calling BLAS/LAPACK Functions</strong> : Developers can call BLAS/LAPACK functions using Kokkos' abstractions. These calls are typically embedded within team-level or serial execution contexts to ensure efficient resource utilization.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_batched_blas_and_lapack"><a class="anchor" href="#_batched_blas_and_lapack"></a>4. Batched BLAS and LAPACK</h2>
+<div class="sectionbody">
+<div class="paragraph text-justify">
+<p><strong>Motivation for Batched Functions</strong> : Batched BLAS/LAPACK functions address scenarios where many small independent linear algebra problems need to be solved simultaneously. This approach minimizes synchronization overhead and improves cache efficiency, making it ideal for applications like finite element methods or particle simulations.</p>
+</div>
+<div class="paragraph text-justify">
+<p><strong>Two Namespaces with BLAS and LAPACK Functions</strong> : Kokkos Kernels provides two namespaces for batched operations:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Standard Batched BLAS Interfaces</strong>, which mimic traditional BLAS routines.</p>
+</li>
+<li>
+<p><strong>Team-Level Batched Interfaces</strong>, optimized for use within hierarchical parallelism contexts.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph text-justify">
+<p><strong>Calling Batched Functions</strong> : Batched functions are invoked using Kokkos' execution policies, enabling parallel processing of multiple small problems in a single call.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_sparse_linear_algebra"><a class="anchor" href="#_sparse_linear_algebra"></a>5. Sparse Linear Algebra</h2>
+<div class="sectionbody">
+<div class="paragraph text-justify">
+<p>Sparse linear algebra is a critical component of scientific computing, especially in simulations involving large but sparsely populated matrices.</p>
+</div>
+<div class="paragraph text-justify">
+<p><strong>Key Characteristics of Algorithms</strong> : Sparse algorithms in Kokkos Kernels focus on reducing memory usage and optimizing data access patterns. They leverage compressed storage formats to minimize the footprint of sparse matrices.</p>
+</div>
+<div class="paragraph">
+<p><strong>Containers</strong>: CrsMatrix, StaticCrsGraph, Vector</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>CrsMatrix</strong>: A compressed row storage matrix format.</p>
+</li>
+<li>
+<p><strong>StaticCrsGraph</strong>: Represents the sparsity pattern of a matrix.</p>
+</li>
+<li>
+<p><strong>Vector</strong>: A container optimized for sparse vector operations.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Key Operations</strong> :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>SpMV (Sparse Matrix-Vector Multiplication)</strong>: Efficiently multiplies a sparse matrix with a dense vector.</p>
+</li>
+<li>
+<p><strong>SpADD (Sparse Matrix Addition)</strong>: Combines two sparse matrices.</p>
+</li>
+<li>
+<p><strong>SpGEMM (Sparse General Matrix-Matrix Multiplication)</strong>: Multiplies two sparse matrices.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_graph_kernels"><a class="anchor" href="#_graph_kernels"></a>6. Graph Kernels</h2>
+<div class="sectionbody">
+<div class="paragraph text-justify">
+<p>Kokkos Kernels includes graph algorithms essential for tasks like coloring and partitioning.</p>
+</div>
+<div class="paragraph text-justify">
+<p><strong>Distance-1 Graph Coloring</strong> : Assigns colors to vertices such that no two adjacent vertices share the same color. This is useful in scheduling problems or parallel preconditioners.</p>
+</div>
+<div class="paragraph text-justify">
+<p><strong>Distance-2 Graph Coloring</strong> : Ensures that vertices up to two edges apart have distinct colors. This is particularly relevant in higher-order finite element methods.</p>
+</div>
+<div class="paragraph text-justify">
+<p><strong>Bipartite Graph Partial Coloring</strong> : Focuses on bipartite graphs, assigning colors to one set of vertices while considering constraints from the other set.</p>
+</div>
+<div class="paragraph">
+<p>&#8230;&#8203;</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_references"><a class="anchor" href="#_references"></a>7. References</h2>
 <div class="sectionbody">
 <div class="ulist">
 <ul>
 <li>
-<p>[1] <a href="https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/Custom-Reductions.html" class="bare">kokkos.org/kokkos-core-wiki/ProgrammingGuide/Custom-Reductions.html</a></p>
+<p>[1] <a href="https://github.com/kokkos/kokkos-kernels" class="bare">github.com/kokkos/kokkos-kernels</a></p>
 </li>
 <li>
-<p>[2] <a href="https://kokkos.org/kokkos-core-wiki/API/core/builtinreducers/ReducerConcept.html" class="bare">kokkos.org/kokkos-core-wiki/API/core/builtinreducers/ReducerConcept.html</a></p>
+<p>[2] <a href="https://kokkos.org/kokkos-core-wiki/" class="bare">kokkos.org/kokkos-core-wiki/</a></p>
 </li>
 <li>
-<p>[3] <a href="https://www.nersc.gov/assets/Uploads/Kokkos-training-Day1-NewUsers-Bruno-v2.pdf" class="bare">www.nersc.gov/assets/Uploads/Kokkos-training-Day1-NewUsers-Bruno-v2.pdf</a></p>
+<p>[3] <a href="https://community.intel.com/t5/Intel-oneAPI-Math-Kernel-Library/link-with-blas-and-lapack-in-Intel-MKL-kit/m-p/1262137?profile.language=fr" class="bare">community.intel.com/t5/Intel-oneAPI-Math-Kernel-Library/link-with-blas-and-lapack-in-Intel-MKL-kit/m-p/1262137?profile.language=fr</a></p>
 </li>
 </ul>
-</div>
-<div class="sidebarblock">
-<div class="content">
-<div class="title"><strong>Points to keep in mind</strong></div>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>Reduction</strong> aggregates values computed by different threads or computing units in parallel.</p>
-</li>
-<li>
-<p><strong>Types of reductions</strong>:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>By default, Kokkos performs a "sum" reduction.</p>
-</li>
-<li>
-<p>Custom reductions are possible for more complex operations.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Reducer concept</strong>:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>A Reducer is a class that defines how to join (reduce) two values.</p>
-</li>
-<li>
-<p>It also specifies the initialization of thread-private variables and the location of the final result.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Usage</strong>:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>Reduction is usually done with the <code>Kokkos::parallel_reduce</code> function.</p>
-</li>
-<li>
-<p>It can be used with lambdas or CPP functors.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Data types</strong>:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>Built-in reductions work with CPP intrinsic and <code>Kokkos::complex</code> types.</p>
-</li>
-<li>
-<p>For custom types, a specialization of <code>Kokkos::reduction_identity</code> is required.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Flexibility</strong>:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>Kokkos allows reductions on scalars, but also on more complex structures like matrices.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Performance</strong>:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>Reductions are optimized for different hardware architectures, ensuring performance portability.</p>
-</li>
-</ul>
-</div>
-</li>
-</ul>
-</div>
-</div>
 </div>
 </div>
 </div>

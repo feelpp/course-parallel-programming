@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Kokkos Advanced Reductions :: Parallel Programming</title>
-    <link rel="canonical" href="https://feelpp.github.io/parallel-programming/parallel-programming/kokkos/advanced-concepts/advanced-reductions.html">
+    <title>Kokkos Asynchronicity, Streams, and Task Parallelism :: Parallel Programming</title>
+    <link rel="canonical" href="https://feelpp.github.io/parallel-programming/parallel-programming/kokkos/advanced-concepts/asynchronicity-and-streams.html">
     <meta name="generator" content="Antora 3.1.10">
     <link rel="stylesheet" href="../../../_/css/site.css">
 <link rel="icon" href="../../../_/img/favicon.ico" type="image/x-icon">
@@ -250,7 +250,7 @@ MathJax.Hub.Config({
     <button class="nav-item-toggle"></button>
     <a class="nav-link" href="index.html">Advanced Concepts</a>
 <ul class="nav-list">
-  <li class="nav-item is-current-page" data-depth="3">
+  <li class="nav-item" data-depth="3">
     <a class="nav-link" href="advanced-reductions.html">Advanced Reductions</a>
   </li>
   <li class="nav-item" data-depth="3">
@@ -265,7 +265,7 @@ MathJax.Hub.Config({
   <li class="nav-item" data-depth="3">
     <a class="nav-link" href="single-instruction-mutliple-data.html">Single Instruction Multiple Data</a>
   </li>
-  <li class="nav-item" data-depth="3">
+  <li class="nav-item is-current-page" data-depth="3">
     <a class="nav-link" href="asynchronicity-and-streams.html">Asynchronicity and Stream</a>
   </li>
 </ul>
@@ -315,12 +315,12 @@ MathJax.Hub.Config({
     <li><a href="../../index.html">Main</a></li>
     <li><a href="../index.html">Kokkos</a></li>
     <li><a href="index.html">Advanced Concepts</a></li>
-    <li><a href="advanced-reductions.html">Advanced Reductions</a></li>
+    <li><a href="asynchronicity-and-streams.html">Asynchronicity and Stream</a></li>
   </ul>
 </nav>
 
   
-    <div class="edit-this-page"><a href="https://github.com/feelpp/course-parallel-programming/edit/feature/kokkos/docs/modules/kokkos/pages/advanced-concepts/advanced-reductions.adoc">Edit this Page</a></div>
+    <div class="edit-this-page"><a href="https://github.com/feelpp/course-parallel-programming/edit/feature/kokkos/docs/modules/kokkos/pages/advanced-concepts/asynchronicity-and-streams.adoc">Edit this Page</a></div>
   
   <div class="page-downloads">
   <span class="label">Download as</span>
@@ -340,238 +340,175 @@ MathJax.Hub.Config({
   <div class="toc-menu"></div>
 </aside>
 <article class="doc">
-<h1 class="page">Kokkos Advanced Reductions</h1>
+<h1 class="page">Kokkos Asynchronicity, Streams, and Task Parallelism</h1>
 <div class="sect1">
 <h2 id="_introduction"><a class="anchor" href="#_introduction"></a>1. Introduction</h2>
 <div class="sectionbody">
-<div class="paragraph text-justify">
-<p>In Kokkos C++, a reduction is a parallel operation that combines the results of individual calculations into a single final value. [1][2] This mechanism, primarily implemented through the Kokkos::parallel_reduce function, offers a powerful paradigm for consolidating data distributed across different processing units. The concept of a "Reducer" in Kokkos encapsulates the logic of combining intermediate values, defining not only the merging operation but also the initialization of thread-private variables and the localization of the final result.</p>
+<div class="paragraph">
+<p>[.text-justify]s</p>
 </div>
-<div class="paragraph text-justify">
-<p>Kokkos allows for multiple reductions to be performed within a single kernel, which can significantly reduce kernel launch overhead and improve overall performance. It also offers the ability to use Views as reduction targets, enabling asynchronous reduction operations. This capability is particularly valuable in scenarios where the reduction result is needed for further computation or when overlapping computation and communication.</p>
-</div>
-<div class="paragraph text-justify">
-<p>For cases where built-in reducers do not suffice, Kokkos provides mechanisms for implementing custom reductions. This extensibility allows developers to define complex reduction operations tailored to their specific computational needs. Custom reductions can be particularly useful for domain-specific algorithms or when dealing with non-standard data types [3].</p>
+<div class="paragraph">
+<p>Kokkos C++ supports <strong>asynchronous</strong> execution through its parallel dispatch operations, which may return before completion while executing in sequence with other Kokkos operations [1][2]. Streams in Kokkos, particularly for CUDA, allow for overlapping kernels and can be used to create CUDA instances, enabling concurrent execution of multiple kernels.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_advanced_reductions"><a class="anchor" href="#_advanced_reductions"></a>2. Advanced Reductions</h2>
+<h2 id="_asynchronicity_and_streams"><a class="anchor" href="#_asynchronicity_and_streams"></a>2. Asynchronicity and Streams</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Kokkos provides powerful tools for performing reductions in parallel computations.</p>
+<p>Asynchronous execution and streams are essential for maximizing hardware utilization, especially on GPUs. Kokkos provides mechanisms for managing asynchronous operations and concurrent kernel execution.</p>
+</div>
+<div class="paragraph">
+<p><strong>Blocking and Non-blocking Operations</strong> : Kokkos operations can be either blocking or non-blocking:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>Using Reducers for Different Reductions</p>
+<p>Blocking operations: These operations wait for completion before returning control to the caller.</p>
+</li>
+<li>
+<p>Non-blocking operations: These operations initiate work but return control immediately, allowing other computations to proceed concurrently.</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>Kokkos offers various built-in reducers for common operations:</p>
+<p><strong>Overlapping Work</strong> : Non-blocking operations enable work overlap, which can improve overall performance. Types of work that can overlap include:</p>
 </div>
-<div class="ulist">
-<ul>
+<div class="olist arabic">
+<ol class="arabic">
 <li>
-<p><code>Kokkos::Sum</code> for summation</p>
+<p>Host-to-device data transfers</p>
 </li>
 <li>
-<p><code>Kokkos::Prod</code> for product</p>
+<p>Device-to-host data transfers</p>
 </li>
 <li>
-<p><code>Kokkos::Min</code> and <code>Kokkos::Max</code> for minimum and maximum</p>
+<p>Kernel executions</p>
 </li>
-</ul>
+<li>
+<p>Host computations</p>
+</li>
+</ol>
 </div>
 <div class="paragraph">
-<p>Example:</p>
+<p><strong>Waiting for Completion</strong> : To ensure that all asynchronous operations have completed, Kokkos provides synchronization mechanisms:</p>
 </div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    double result;
-    Kokkos::parallel_reduce("Sum", policy,
-    KOKKOS_LAMBDA (const int i, double&amp; lsum) {
-        lsum += data[i];
-    }, Kokkos::Sum&lt;double&gt;(result));</code></pre>
-</div>
-</div>
-<div class="ulist">
-<ul>
+<div class="olist arabic">
+<ol class="arabic">
 <li>
-<p>Multiple Reductions in One Kernel</p>
+<p><code>Kokkos::fence()</code>: Waits for all outstanding asynchronous operations to complete.</p>
 </li>
-</ul>
-</div>
-<div class="paragraph">
-<p>Kokkos allows performing multiple reductions simultaneously:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    struct MultipleResults {
-        double sum;
-        int max;
-    };
-
-    MultipleResults results;
-    Kokkos::parallel_reduce("MultiReduce", policy,
-    KOKKOS_LAMBDA (const int i, MultipleResults&amp; lresults) {
-        lresults.sum += data[i];
-        if (data[i] &gt; lresults.max) lresults.max = data[i];
-    },
-    Kokkos::Sum&lt;MultipleResults&gt;(results));</code></pre>
-</div>
-</div>
-<div class="ulist">
-<ul>
 <li>
-<p>Using Kokkos::View as Result for Asynchronicity</p>
+<p><code>Kokkos::wait()</code>: Can be used with specific futures or task policies to wait for particular operations.</p>
 </li>
-</ul>
+</ol>
 </div>
 <div class="paragraph">
-<p>For asynchronous operations, you can use <code>Kokkos::View</code> as the reduction target:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    Kokkos::View&lt;double*&gt; result("Result", 1);
-    Kokkos::parallel_reduce("AsyncReduce", policy,
-    KOKKOS_LAMBDA (const int i, double&amp; lsum) {
-        lsum += data[i];
-    }, Kokkos::Sum&lt;double&gt;(result(0)));</code></pre>
-</div>
+<p><strong>Running Kernels Simultaneously on a GPU</strong> : To run kernels simultaneously on a GPU, Kokkos leverages streams. While not explicitly shown in the provided search results, Kokkos supports concurrent kernel execution through its execution policies and asynchronous launch capabilities</p>
 </div>
 <div class="paragraph">
-<p>This allows the reduction to be performed asynchronously, with the result available in the view.</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Custom Reductions</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>Kokkos supports custom reduction operations:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    struct CustomReducer {
-    typedef double value_type;
-    KOKKOS_INLINE_FUNCTION void join(value_type&amp; dest, const value_type&amp; src) const {
-        dest = (dest &gt; src) ? dest : src;  // Custom max operation
-    }
-    KOKKOS_INLINE_FUNCTION void init(value_type&amp; val) const {
-        val = std::numeric_limits&lt;double&gt;::lowest();
-    }
-    };
-
-    double result;
-    Kokkos::parallel_reduce("CustomReduce", policy,
-    KOKKOS_LAMBDA (const int i, double&amp; lval) {
-        lval = (lval &gt; data[i]) ? lval : data[i];
-    }, CustomReducer());</code></pre>
-</div>
+<p>&#8230;&#8203;</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_references"><a class="anchor" href="#_references"></a>3. References</h2>
+<h2 id="_task_parallelism"><a class="anchor" href="#_task_parallelism"></a>3. Task Parallelism</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><strong>Task parallelism</strong> in Kokkos allows for fine-grained dependent execution, which is particularly useful for irregular problems and algorithms with complex dependency structures.</p>
+</div>
+<div class="paragraph">
+<p><strong>Basic Interface for Fine-grained Tasking</strong> :</p>
+</div>
+<div class="paragraph">
+<p>Kokkos provides a TaskPolicy for coordinating task execution [2]. The basic interface includes:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Creating tasks: <code>policy.create(Functor&lt;exec_space&gt;())</code></p>
+</li>
+<li>
+<p>Adding dependencies: <code>policy.add_dependence(task1, task2)</code></p>
+</li>
+<li>
+<p>Spawning tasks: <code>policy.spawn(task)</code></p>
+</li>
+<li>
+<p>Waiting for completion: <code>Kokkos::wait(task)</code> or <code>Kokkos::wait(policy)</code></p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p><strong>Expressing Dynamic Dependency Structures</strong> :</p>
+</div>
+<div class="paragraph">
+<p>Dynamic dependency structures can be expressed using the <code>add_dependence</code> method, allowing for the creation of complex task graphs[2]. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    auto fx = policy.create(Functor&lt;exec_space&gt;(x));
+    auto fy = policy.create(Functor&lt;exec_space&gt;(y));
+    policy.add_dependence(fx, fy); // fx is scheduled after fy</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>When to Use Kokkos Tasking</strong> :</p>
+</div>
+<div class="paragraph">
+<p>Kokkos tasking is particularly useful in the following scenarios:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Irregular problems with complex dependencies</p>
+</li>
+<li>
+<p>Producer-consumer patterns</p>
+</li>
+<li>
+<p>Recursive algorithms</p>
+</li>
+<li>
+<p>When fine-grained parallelism is needed within tasks</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Tasking in Kokkos allows for better locality exploitation by enabling nested data-parallelism within a task, which can be particularly beneficial for heterogeneous devices [2].</p>
+</div>
+<div class="paragraph">
+<p>&#8230;&#8203;</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_references"><a class="anchor" href="#_references"></a>4. References</h2>
 <div class="sectionbody">
 <div class="ulist">
 <ul>
 <li>
-<p>[1] <a href="https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/Custom-Reductions.html" class="bare">kokkos.org/kokkos-core-wiki/ProgrammingGuide/Custom-Reductions.html</a></p>
+<p>[1] <a href="https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/SIMD.html" class="bare">kokkos.org/kokkos-core-wiki/ProgrammingGuide/SIMD.html</a></p>
 </li>
 <li>
-<p>[2] <a href="https://kokkos.org/kokkos-core-wiki/API/core/builtinreducers/ReducerConcept.html" class="bare">kokkos.org/kokkos-core-wiki/API/core/builtinreducers/ReducerConcept.html</a></p>
+<p>[2] <a href="https://trilinos.github.io/pdfs/KokkosPortableAPI.pdf" class="bare">trilinos.github.io/pdfs/KokkosPortableAPI.pdf</a></p>
 </li>
 <li>
-<p>[3] <a href="https://www.nersc.gov/assets/Uploads/Kokkos-training-Day1-NewUsers-Bruno-v2.pdf" class="bare">www.nersc.gov/assets/Uploads/Kokkos-training-Day1-NewUsers-Bruno-v2.pdf</a></p>
+<p>[3] <a href="https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/Machine-Model.html" class="bare">kokkos.org/kokkos-core-wiki/ProgrammingGuide/Machine-Model.html</a></p>
 </li>
 </ul>
 </div>
 <div class="sidebarblock">
 <div class="content">
 <div class="title"><strong>Points to keep in mind</strong></div>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>Reduction</strong> aggregates values computed by different threads or computing units in parallel.</p>
-</li>
-<li>
-<p><strong>Types of reductions</strong>:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>By default, Kokkos performs a "sum" reduction.</p>
-</li>
-<li>
-<p>Custom reductions are possible for more complex operations.</p>
-</li>
-</ul>
+<div class="paragraph">
+<p><strong>Asynchronicity</strong> in Kokkos means that parallel operations are executed in a non-blocking manner, possibly returning before they are fully completed, while maintaining sequential order relative to other Kokkos operations in the same execution or memory space.</p>
 </div>
-</li>
-<li>
-<p><strong>Reducer concept</strong>:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>A Reducer is a class that defines how to join (reduce) two values.</p>
-</li>
-<li>
-<p>It also specifies the initialization of thread-private variables and the location of the final result.</p>
-</li>
-</ul>
+<div class="paragraph">
+<p><strong>Streams</strong> are abstractions representing queues of parallel operations associated with a specific execution space instance, allowing asynchronous and ordered execution of tasks.</p>
 </div>
-</li>
-<li>
-<p><strong>Usage</strong>:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>Reduction is usually done with the <code>Kokkos::parallel_reduce</code> function.</p>
-</li>
-<li>
-<p>It can be used with lambdas or CPP functors.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Data types</strong>:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>Built-in reductions work with CPP intrinsic and <code>Kokkos::complex</code> types.</p>
-</li>
-<li>
-<p>For custom types, a specialization of <code>Kokkos::reduction_identity</code> is required.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Flexibility</strong>:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>Kokkos allows reductions on scalars, but also on more complex structures like matrices.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Performance</strong>:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>Reductions are optimized for different hardware architectures, ensuring performance portability.</p>
-</li>
-</ul>
-</div>
-</li>
-</ul>
+<div class="paragraph">
+<p><strong>Task Parallelism</strong> in Kokkos is a programming model enabling the asynchronous execution of interdependent tasks, organized in a directed acyclic graph (DAG), suitable for irregular and recursive problems, and providing a high-level abstraction for parallelization on heterogeneous architectures.</p>
 </div>
 </div>
 </div>

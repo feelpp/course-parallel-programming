@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Kokkos Advanced Reductions :: Parallel Programming</title>
-    <link rel="canonical" href="https://feelpp.github.io/parallel-programming/parallel-programming/kokkos/advanced-concepts/advanced-reductions.html">
+    <title>Kokkos Tasking Stream SIMD (Single Instruction Multiple Data) :: Parallel Programming</title>
+    <link rel="canonical" href="https://feelpp.github.io/parallel-programming/parallel-programming/kokkos/advanced-concepts/single-instruction-mutliple-data.html">
     <meta name="generator" content="Antora 3.1.10">
     <link rel="stylesheet" href="../../../_/css/site.css">
 <link rel="icon" href="../../../_/img/favicon.ico" type="image/x-icon">
@@ -250,7 +250,7 @@ MathJax.Hub.Config({
     <button class="nav-item-toggle"></button>
     <a class="nav-link" href="index.html">Advanced Concepts</a>
 <ul class="nav-list">
-  <li class="nav-item is-current-page" data-depth="3">
+  <li class="nav-item" data-depth="3">
     <a class="nav-link" href="advanced-reductions.html">Advanced Reductions</a>
   </li>
   <li class="nav-item" data-depth="3">
@@ -262,7 +262,7 @@ MathJax.Hub.Config({
   <li class="nav-item" data-depth="3">
     <a class="nav-link" href="multidimensional-loops-and-data-structure.html">Multidimensional Loops and Data Structure</a>
   </li>
-  <li class="nav-item" data-depth="3">
+  <li class="nav-item is-current-page" data-depth="3">
     <a class="nav-link" href="single-instruction-mutliple-data.html">Single Instruction Multiple Data</a>
   </li>
   <li class="nav-item" data-depth="3">
@@ -315,12 +315,12 @@ MathJax.Hub.Config({
     <li><a href="../../index.html">Main</a></li>
     <li><a href="../index.html">Kokkos</a></li>
     <li><a href="index.html">Advanced Concepts</a></li>
-    <li><a href="advanced-reductions.html">Advanced Reductions</a></li>
+    <li><a href="single-instruction-mutliple-data.html">Single Instruction Multiple Data</a></li>
   </ul>
 </nav>
 
   
-    <div class="edit-this-page"><a href="https://github.com/feelpp/course-parallel-programming/edit/feature/kokkos/docs/modules/kokkos/pages/advanced-concepts/advanced-reductions.adoc">Edit this Page</a></div>
+    <div class="edit-this-page"><a href="https://github.com/feelpp/course-parallel-programming/edit/feature/kokkos/docs/modules/kokkos/pages/advanced-concepts/single-instruction-mutliple-data.adoc">Edit this Page</a></div>
   
   <div class="page-downloads">
   <span class="label">Download as</span>
@@ -340,138 +340,120 @@ MathJax.Hub.Config({
   <div class="toc-menu"></div>
 </aside>
 <article class="doc">
-<h1 class="page">Kokkos Advanced Reductions</h1>
+<h1 class="page">Kokkos Tasking Stream SIMD (Single Instruction Multiple Data)</h1>
 <div class="sect1">
 <h2 id="_introduction"><a class="anchor" href="#_introduction"></a>1. Introduction</h2>
 <div class="sectionbody">
 <div class="paragraph text-justify">
-<p>In Kokkos C++, a reduction is a parallel operation that combines the results of individual calculations into a single final value. [1][2] This mechanism, primarily implemented through the Kokkos::parallel_reduce function, offers a powerful paradigm for consolidating data distributed across different processing units. The concept of a "Reducer" in Kokkos encapsulates the logic of combining intermediate values, defining not only the merging operation but also the initialization of thread-private variables and the localization of the final result.</p>
-</div>
-<div class="paragraph text-justify">
-<p>Kokkos allows for multiple reductions to be performed within a single kernel, which can significantly reduce kernel launch overhead and improve overall performance. It also offers the ability to use Views as reduction targets, enabling asynchronous reduction operations. This capability is particularly valuable in scenarios where the reduction result is needed for further computation or when overlapping computation and communication.</p>
-</div>
-<div class="paragraph text-justify">
-<p>For cases where built-in reducers do not suffice, Kokkos provides mechanisms for implementing custom reductions. This extensibility allows developers to define complex reduction operations tailored to their specific computational needs. Custom reductions can be particularly useful for domain-specific algorithms or when dealing with non-standard data types [3].</p>
+<p>Kokkos provides powerful tools for high-performance computing, including <strong>SIMD (Single Instruction, Multiple Data)</strong> operations, asynchronous execution with streams, and task parallelism. These features enable developers to write efficient, portable code that can leverage the full potential of modern hardware architectures. Let&#8217;s explore each of these aspects in detail.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_advanced_reductions"><a class="anchor" href="#_advanced_reductions"></a>2. Advanced Reductions</h2>
+<h2 id="_simd_single_instruction_multiple_data"><a class="anchor" href="#_simd_single_instruction_multiple_data"></a>2. SIMD (Single Instruction, Multiple Data)</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Kokkos provides powerful tools for performing reductions in parallel computations.</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Using Reducers for Different Reductions</p>
-</li>
-</ul>
+<p><strong>SIMD</strong> operations are a crucial component of modern high-performance computing, allowing for efficient vectorization of code. Kokkos offers portable vector intrinsic types that abstract away hardware-specific details, enabling developers to write vectorized code that can run efficiently on various architectures.</p>
 </div>
 <div class="paragraph">
-<p>Kokkos offers various built-in reducers for common operations:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><code>Kokkos::Sum</code> for summation</p>
-</li>
-<li>
-<p><code>Kokkos::Prod</code> for product</p>
-</li>
-<li>
-<p><code>Kokkos::Min</code> and <code>Kokkos::Max</code> for minimum and maximum</p>
-</li>
-</ul>
+<p><strong>Portable Vector Intrinsic Types</strong> : Kokkos provides the <code>Kokkos::Experimental::simd</code> type, which serves as an abstraction over platform-specific vector datatypes [3]. This type is designed to work across all backends, potentially falling back to scalar operations when necessary[4]. The <code>simd</code> type supports various fundamental C++ types for which the current platform supports vector intrinsics.</p>
 </div>
 <div class="paragraph">
-<p>Example:</p>
+<p><strong>Improving Vectorization with SIMD Types</strong> : To improve vectorization using SIMD types in Kokkos, developers can follow these steps:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Include the necessary header: <code>#include &lt;Kokkos_SIMD.hpp&gt;</code></p>
+</li>
+<li>
+<p>Define the SIMD type: `using simd_type = Kokkos::Experimental::native_simd&lt;double&gt;;</p>
+</li>
+<li>
+<p>Use SIMD types in computations to ensure vectorization:</p>
+</li>
+</ol>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    double result;
-    Kokkos::parallel_reduce("Sum", policy,
-    KOKKOS_LAMBDA (const int i, double&amp; lsum) {
-        lsum += data[i];
-    }, Kokkos::Sum&lt;double&gt;(result));</code></pre>
+<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    simd_type sx(x + i, tag_type());
+    simd_type sy(y + i, tag_type());
+    simd_type sz(z + i, tag_type());
+    simd_type sr = Kokkos::sqrt(sx * sx + sy * sy + sz * sz);
+    sr.copy_to(r + i, tag_type());</code></pre>
 </div>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Multiple Reductions in One Kernel</p>
-</li>
-</ul>
 </div>
 <div class="paragraph">
-<p>Kokkos allows performing multiple reductions simultaneously:</p>
+<p>This approach guarantees that the compiler will generate the appropriate vector instructions for the target architecture [1].</p>
+</div>
+<div class="paragraph">
+<p><strong>SIMD Types as an Alternative to ThreadVector Loops</strong> : <strong>SIMD</strong> types can be used as an alternative to ThreadVector loops, providing more explicit control over vectorization. This approach allows developers to reason more clearly about the available parallelism in their code, often leading to better performance than relying on auto-vectorization[1].</p>
+</div>
+<div class="paragraph">
+<p><strong>Achieving Outer Loop Vectorization</strong> : <strong>SIMD</strong> types enable outer loop vectorization by processing multiple elements simultaneously. For example, on a CPU with 256-bit vector registers, the following code can process four elements at once:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    struct MultipleResults {
-        double sum;
-        int max;
-    };
+<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    constexpr int width = int(simd_type::size());
+    for (int i = 0; i &lt; n; i += width) {
+        // SIMD operations here
+    }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This approach can significantly improve performance for suitable algorithms [1].</p>
+</div>
+<div class="paragraph">
+<p><strong>Example</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    #include &lt;Kokkos_Core.hpp&gt;
+    #include &lt;Kokkos_SIMD.hpp&gt;
+    #include &lt;cstdio&gt;
 
-    MultipleResults results;
-    Kokkos::parallel_reduce("MultiReduce", policy,
-    KOKKOS_LAMBDA (const int i, MultipleResults&amp; lresults) {
-        lresults.sum += data[i];
-        if (data[i] &gt; lresults.max) lresults.max = data[i];
-    },
-    Kokkos::Sum&lt;MultipleResults&gt;(results));</code></pre>
-</div>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Using Kokkos::View as Result for Asynchronicity</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>For asynchronous operations, you can use <code>Kokkos::View</code> as the reduction target:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    Kokkos::View&lt;double*&gt; result("Result", 1);
-    Kokkos::parallel_reduce("AsyncReduce", policy,
-    KOKKOS_LAMBDA (const int i, double&amp; lsum) {
-        lsum += data[i];
-    }, Kokkos::Sum&lt;double&gt;(result(0)));</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This allows the reduction to be performed asynchronously, with the result available in the view.</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Custom Reductions</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>Kokkos supports custom reduction operations:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    struct CustomReducer {
-    typedef double value_type;
-    KOKKOS_INLINE_FUNCTION void join(value_type&amp; dest, const value_type&amp; src) const {
-        dest = (dest &gt; src) ? dest : src;  // Custom max operation
-    }
-    KOKKOS_INLINE_FUNCTION void init(value_type&amp; val) const {
-        val = std::numeric_limits&lt;double&gt;::lowest();
-    }
-    };
+    int main(int argc, char* argv[]) {
+    Kokkos::initialize(argc, argv);
+    {
+        using simd_type = Kokkos::Experimental::native_simd&lt;double&gt;;
+        using tag_type = Kokkos::Experimental::element_aligned_tag;
+        constexpr int width = int(simd_type::size());
 
-    double result;
-    Kokkos::parallel_reduce("CustomReduce", policy,
-    KOKKOS_LAMBDA (const int i, double&amp; lval) {
-        lval = (lval &gt; data[i]) ? lval : data[i];
-    }, CustomReducer());</code></pre>
+        int n = 1000;
+        Kokkos::View&lt;double*&gt; x("x", n);
+        Kokkos::View&lt;double*&gt; y("y", n);
+        Kokkos::View&lt;double*&gt; z("z", n);
+        Kokkos::View&lt;double*&gt; r("r", n);
+
+        Kokkos::parallel_for("init", n, KOKKOS_LAMBDA(const int i) {
+            x(i) = static_cast&lt;double&gt;(i);
+            y(i) = static_cast&lt;double&gt;(i * 2);
+            z(i) = static_cast&lt;double&gt;(i * 3);
+        });
+
+        Kokkos::parallel_for("compute", n / width, KOKKOS_LAMBDA(const int i) {
+            int idx = i * width;
+            simd_type sx(x.data() + idx, tag_type());
+            simd_type sy(y.data() + idx, tag_type());
+            simd_type sz(z.data() + idx, tag_type());
+            simd_type sr = Kokkos::sqrt(sx * sx + sy * sy + sz * sz);
+            sr.copy_to(r.data() + idx, tag_type());
+        });
+
+        Kokkos::fence();
+
+        printf("First 5 results:\n");
+            for (int i = 0; i &lt; 5; ++i) {
+            printf("r[%d] = %f\n", i, r(i));
+        }
+    }
+    Kokkos::finalize();
+    return 0;
+}</code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p>Explanations: This program uses Kokkos with SIMD to efficiently compute the square root of the sum of squares of three vectors.</p>
 </div>
 </div>
 </div>
@@ -481,97 +463,24 @@ MathJax.Hub.Config({
 <div class="ulist">
 <ul>
 <li>
-<p>[1] <a href="https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/Custom-Reductions.html" class="bare">kokkos.org/kokkos-core-wiki/ProgrammingGuide/Custom-Reductions.html</a></p>
+<p>[1] <a href="https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/SIMD.html" class="bare">kokkos.org/kokkos-core-wiki/ProgrammingGuide/SIMD.html</a></p>
 </li>
 <li>
-<p>[2] <a href="https://kokkos.org/kokkos-core-wiki/API/core/builtinreducers/ReducerConcept.html" class="bare">kokkos.org/kokkos-core-wiki/API/core/builtinreducers/ReducerConcept.html</a></p>
+<p>[2] <a href="https://trilinos.github.io/pdfs/KokkosPortableAPI.pdf" class="bare">trilinos.github.io/pdfs/KokkosPortableAPI.pdf</a></p>
 </li>
 <li>
-<p>[3] <a href="https://www.nersc.gov/assets/Uploads/Kokkos-training-Day1-NewUsers-Bruno-v2.pdf" class="bare">www.nersc.gov/assets/Uploads/Kokkos-training-Day1-NewUsers-Bruno-v2.pdf</a></p>
+<p>[3] <a href="https://github.com/kokkos/kokkos-core-wiki/blob/main/docs/source/API/simd/simd.md" class="bare">github.com/kokkos/kokkos-core-wiki/blob/main/docs/source/API/simd/simd.md</a></p>
+</li>
+<li>
+<p>[4] <a href="https://arxiv.org/pdf/2210.06439" class="bare">arxiv.org/pdf/2210.06439</a></p>
 </li>
 </ul>
 </div>
 <div class="sidebarblock">
 <div class="content">
 <div class="title"><strong>Points to keep in mind</strong></div>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>Reduction</strong> aggregates values computed by different threads or computing units in parallel.</p>
-</li>
-<li>
-<p><strong>Types of reductions</strong>:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>By default, Kokkos performs a "sum" reduction.</p>
-</li>
-<li>
-<p>Custom reductions are possible for more complex operations.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Reducer concept</strong>:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>A Reducer is a class that defines how to join (reduce) two values.</p>
-</li>
-<li>
-<p>It also specifies the initialization of thread-private variables and the location of the final result.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Usage</strong>:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>Reduction is usually done with the <code>Kokkos::parallel_reduce</code> function.</p>
-</li>
-<li>
-<p>It can be used with lambdas or CPP functors.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Data types</strong>:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>Built-in reductions work with CPP intrinsic and <code>Kokkos::complex</code> types.</p>
-</li>
-<li>
-<p>For custom types, a specialization of <code>Kokkos::reduction_identity</code> is required.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Flexibility</strong>:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>Kokkos allows reductions on scalars, but also on more complex structures like matrices.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>Performance</strong>:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>Reductions are optimized for different hardware architectures, ensuring performance portability.</p>
-</li>
-</ul>
-</div>
-</li>
-</ul>
+<div class="paragraph">
+<p><strong>SIMD</strong> (Single Instruction, Multiple Data) in Kokkos is a C++ representation of vector registers that allows a single instruction to be applied to multiple data simultaneously, thus improving performance by parallelizing operations at the data level.</p>
 </div>
 </div>
 </div>
