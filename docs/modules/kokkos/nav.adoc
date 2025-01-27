@@ -19,6 +19,8 @@
 *** xref:advanced-concepts/mpi-pgas.adoc[MPI and PGAS]
 *** xref:advanced-concepts/multidimensional-loops-and-data-structure.adoc[Multidimensional Loops and Data Structure]
 *** xref:advanced-concepts/single-instruction-mutliple-data.adoc[Single Instruction Multiple Data]
+*** xref:advanced-concepts/asynchronicity-and-streams.adoc[Asynchronicity and Stream]
+
 
 ** xref:diagnostic-tools-algebraic-strategies/index.adoc[Diagnostic Tools Algebraic Strategies]
 *** xref:diagnostic-tools-algebraic-strategies/kernels-math-library.adoc[Kernels Math library]
