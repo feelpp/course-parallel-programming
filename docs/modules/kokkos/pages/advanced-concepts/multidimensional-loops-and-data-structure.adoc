@@ -115,6 +115,42 @@ Atomics are the only scalable solution to thread safety.
 Locks are not portable.
 Data replication is not thread scalable.
 
+*Example*
+
+[source, c++]
+----
+    struct AtomicCounter {
+        // Shared atomic counter
+        Kokkos::Atomic<int> counter;
+        // Constructor to initialize the counter
+        AtomicCounter() : counter(0) {}
+        // Function to increment the counter atomically
+        KOKKOS_INLINE_FUNCTION
+        void operator()(const int i) const {
+            counter.fetch_add(1); // Atomically increment the counter
+        }
+    };
+    
+    int main(int argc, char* argv[]) {
+        Kokkos::initialize(argc, argv);
+        {
+            const int numIterations = 1234567; // Number of increments
+            AtomicCounter atomicCounter;
+            // Launch a parallel for loop to increment the counter
+            Kokkos::parallel_for("IncrementCounter", numIterations, atomicCounter);
+            // Synchronize to ensure all increments are complete
+            Kokkos::fence();
+            // Output the final value of the counter
+            std::cout << "Final Counter Value: " << atomicCounter.counter << std::endl;
+        }
+        Kokkos::finalize();
+        return 0;
+    }
+----
+
+Explanations: The `AtomicCounter` structure contains an atomic integer `counter` that will be incremented by multiple threads. The `Kokkos::Atomic` type ensures that operations on the counter are thread-safe.  The `operator()` function uses `fetch_add(1)` to atomically increment the `counter`. This operation guarantees that even if multiple threads attempt to update the counter simultaneously, each update will be executed safely without race conditions. After launching the parallel loop, `Kokkos::fence()` is called to ensure that all increments are completed before accessing the final value of the counter.
+
+
 == DualView with Kokkos
 
 [.text-justify]
@@ -136,7 +172,56 @@ To create a DualView, you can use the following syntax:
 
 *Kokkos* offers a rich set of tools and abstractions for high-performance, portable parallel programming. By leveraging features like *MDRangePolicy*, *subviews*, *unmanaged views*, *atomic operations*, and *DualView*, developers can create efficient, scalable applications that perform well across a wide range of hardware architectures.
 
-... 
+*Example*
+
+[source, c++]
+----
+    struct DualViewExample {
+        // Define the dual view type
+        using dual_view_type = Kokkos::DualView<double*, Kokkos::LayoutLeft>;
+        // Function to initialize device view
+        static void initialize(dual_view_type& dv) {
+            // Initialize the device view with values
+            Kokkos::parallel_for("InitializeDeviceView", dv.d_view.extent(0), KOKKOS_LAMBDA(const int i) {
+                dv.d_view(i) = static_cast<double>(i); // Assign values based on index
+            });
+            // Synchronize to update the host mirror
+            dv.sync<Kokkos::HostSpace>();
+        }
+    
+        // Function to print values from both views
+        static void printValues(const dual_view_type& dv) {
+            std::cout << "Host View Values: ";
+            for (int i = 0; i < dv.h_view.extent(0); ++i) {
+                std::cout << dv.h_view(i) << " "; // Access host view
+            }
+            std::cout << std::endl;
+            std::cout << "Device View Values: ";
+            for (int i = 0; i < dv.d_view.extent(0); ++i) {
+                std::cout << dv.d_view(i) << " "; // Access device view
+            }
+            std::cout << std::endl;
+        }
+    };
+    
+    int main(int argc, char* argv[]) {
+        Kokkos::initialize(argc, argv);
+        {
+            const int N = 10; // Size of the DualView
+            // Create a DualView with N elements
+            DualViewExample::dual_view_type dv("MyDualView", N);
+            // Initialize the device view
+            DualViewExample::initialize(dv);
+            // Print values from both views
+            DualViewExample::printValues(dv);
+        }
+        Kokkos::finalize();
+        return 0;
+    }
+----
+
+Explanations: This example effectively demonstrates how to use *DualView* in Kokkos to manage data across different memory spaces while ensuring synchronization between them.  The program starts by initializing the Kokkos runtime environment.  A `DualView` is defined as `dual_view_type`, which can hold data in both host and device memory. 
+
 
 == References
 ** [1] https://indico.math.cnrs.fr/event/12037/attachments/5040/8130/KokkosTutorial_03_MDRangeMoreViews.pdf

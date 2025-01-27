@@ -1,6 +1,6 @@
 = Kokkos Execution Spaces
 
-image::kokkos-core.png[xref=#fragment101,width=322,height=181]
+image::kokkos-core.png[xref=#fragment101,width=400,height=200]
 
 == Introduction
 
@@ -16,15 +16,15 @@ Another point, controlling the execution location of parallel bodies in Kokkos i
 
 == Methods for Controlling Execution Spaces
 
-image::kokkos-abstractions-doc.png[xref=#fragment101,width=322,height=181]
+image::kokkos-abstractions-doc.png[xref=#fragment101,width=400,height=200]
 
 * *Specifying Execution Spaces* : One approach to control the Execution Space is by explicitly defining it in the parallel dispatch call. This can be achieved by using the RangePolicy template argument [3]. For example, In this code, *ExecutionSpace* is replaced with the desired Execution Space, such as *Kokkos::Cuda* for NVIDIA GPUs or *Kokkos::HIP* for AMD GPUs  or *Kokkos::OpenMP* for multi-core CPUs. Also it is quite simple !
 [source,c++]
 ----
-parallel_for("Label", RangePolicy<ExecutionSpace>(0, numberOfIntervals),
-    [=] (const int64_t i) {
-        /* ... body ... */
-    });
+    parallel_for("Label", RangePolicy<ExecutionSpace>(0, numberOfIntervals),
+        [=] (const int64_t i) {
+            /* ... body ... */
+        });
 ----
 * *Changing the Default Execution Space* : Another method involves changing the default Execution Space at compilation time. This approach affects all parallel operations that do not explicitly specify an Execution Space. While this method provides a global solution, it may limit flexibility in scenarios where different parts of the application benefit from distinct Execution Spaces.
 
@@ -63,6 +63,56 @@ In the realm of parallel computing, Execution Policies act as the conductors of 
 
 The model is inspired by CUDA and OpenMP, aiming to improve performance across various hardware architectures by encouraging locality-aware programming. [5]
 
+*Example*
+
+[source, c++]
+----
+    struct VectorAdd {
+        // Member variables for the vectors
+        Kokkos::View<double*> a;
+        Kokkos::View<double*> b;
+        Kokkos::View<double*> c;
+        // Constructor to initialize the vectors
+        VectorAdd(Kokkos::View<double*> a_, Kokkos::View<double*> b_, Kokkos::View<double*> c_)
+            : a(a_), b(b_), c(c_) {}
+        // Functor to perform vector addition
+        KOKKOS_INLINE_FUNCTION
+        void operator()(const int i) const {
+            c(i) = a(i) + b(i); // Perform addition
+        }
+    };
+    
+    int main(int argc, char* argv[]) {
+        Kokkos::initialize(argc, argv);
+        {
+            const int N = 1000; // Size of the vectors
+            // Allocate and initialize vectors on the device
+            Kokkos::View<double*> a("A", N);
+            Kokkos::View<double*> b("B", N);
+            Kokkos::View<double*> c("C", N);
+            // Initialize vectors a and b on the host
+            Kokkos::parallel_for("InitializeVectors", N, KOKKOS_LAMBDA(const int i) {
+                a(i) = static_cast<double>(i); // Fill vector A with values 0 to N-1
+                b(i) = static_cast<double>(N - i); // Fill vector B with values N-1 to 0
+            });
+            // Perform vector addition using Kokkos parallel_for
+            VectorAdd vectorAdd(a, b, c);
+            Kokkos::parallel_for("VectorAdd", N, vectorAdd);
+            // Synchronize to ensure all computations are complete
+            Kokkos::fence();
+            // Output the first 10 results for verification
+            std::cout << "Result of vector addition (first 10 elements):" << std::endl;
+            for (int i = 0; i < 10; ++i) {
+                std::cout << "c[" << i << "] = " << c(i) << std::endl; // Print results from vector C
+            }
+        }
+        Kokkos::finalize();
+        return 0;
+    }
+----
+
+Explanations: This example effectively demonstrates how to utilize *execution patterns* in Kokkos.
+
 
 
 == References
@@ -78,9 +128,11 @@ The model is inspired by CUDA and OpenMP, aiming to improve performance across v
 .*Points to keep in mind*
 ****
 
-* *Space Accessibility*
+*Execution Patterns* : The Kokkos patterns execution designates the parallelism models which allow to express calculation operations in parallel, such as parallel loops and reductions, while allowing Kokkos to manage the distribution of these tasks on the available execution resources available.
 
-Space Accessibility is a trait that expresses the accessibility and assignability relationships between different memory and execution spaces. It allows to determine:
+*Team Policies* : Kokkos' police execution define how parallel operations are carried out, specifying the type of execution, the granularity of work and the resources to be used to optimize performance on different architectures.
+
+*Space Accessibility* : Space Accessibility is a trait that expresses the accessibility and assignability relationships between different memory and execution spaces. It allows to determine:
 
 *** Whether an execution space can access a given memory space.
 *** Whether data can be assigned or copied between different memory spaces.

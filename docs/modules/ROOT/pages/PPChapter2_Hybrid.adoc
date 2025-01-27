@@ -3,9 +3,9 @@
 [.text-justify]
 == MPI, OpenMP two complementary parallelization models.
 
-* MPI is a multi-process model whose mode of communication between the processes is *explicit* (communication management is the responsibility of the user). MPI is generally used on multiprocessor machines with distributed memory. MPI is a library for passing messages between processes without sharing.
+* *MPI* is a multi-process model whose mode of communication between the processes is *explicit* (communication management is the responsibility of the user). MPI is generally used on multiprocessor machines with distributed memory. MPI is a library for passing messages between processes without sharing.
 
-* OpenMP is a multitasking model whose mode of communication between tasks is *implicit* (the management of communications is the responsibility of the compiler). OpenMP is used on shared-memory multiprocessor machines. It focuses on shared memory paradigms. It is a language extension for expressing data-parallel operations (usually parallelized arrays over loops).
+* *OpenMP* is a multitasking model whose mode of communication between tasks is *implicit* (the management of communications is the responsibility of the compiler). OpenMP is used on shared-memory multiprocessor machines. It focuses on shared memory paradigms. It is a language extension for expressing data-parallel operations (usually parallelized arrays over loops).
 
 Note: on a cluster of independent shared-memory multiprocessor machines (nodes), the implementation of a two-level parallelization (MPI, OpenMP) in the same program can be a major advantage for the parallel performance of the code.
 
