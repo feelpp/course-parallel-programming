@@ -3,15 +3,15 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>What is Kokkos ? :: Parallel Programming</title>
-    <link rel="canonical" href="https://feelpp.github.io/parallel-programming/parallel-programming/kokkos/introduction/why-kokkos.html">
+    <title>Compile on Gaya :: Parallel Programming</title>
+    <link rel="canonical" href="https://feelpp.github.io/parallel-programming/parallel-programming/kokkos/gaya.html">
     <meta name="generator" content="Antora 3.1.10">
-    <link rel="stylesheet" href="../../../_/css/site.css">
-<link rel="icon" href="../../../_/img/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="../../_/css/site.css">
+<link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">
 <script>!function(l,p){if(l.protocol!==p&&l.host=="docs.antora.org"){l.protocol=p}else if(/\.gitlab\.io$/.test(l.host)){l.replace(p+"//docs.antora.org"+l.pathname.substr(l.pathname.indexOf("/",1))+l.search+l.hash)}}(location,"https:")</script>
 
-<script src="../../../_/js/vendor/tabs-block-extension.js"></script>
-<script src="../../../_/js/vendor/tabs-block-behavior.js"></script>
+<script src="../../_/js/vendor/tabs-block-extension.js"></script>
+<script src="../../_/js/vendor/tabs-block-behavior.js"></script>
 
 
 
@@ -91,7 +91,7 @@ MathJax.Hub.Config({
 
 <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0/katex.min.css" integrity="sha384-TEMocfGvRuD1rIAacqrknm5BQZ7W7uWitoih+jMNFXQIbNl16bO8OZmylH/Vi/Ei" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0/katex.min.js" integrity="sha384-jmxIlussZWB7qCuB+PgKG1uLjjxbVVIayPJwi6cG6Zb4YKq0JIw+OMnkkEC7kYCq" crossorigin="anonymous"></script>-->
-<script>var uiRootPath = '../../../_'</script>
+<script>var uiRootPath = '../../_'</script>
 
   </head>
   <body class="article">
@@ -118,7 +118,7 @@ MathJax.Hub.Config({
                 </div>
                 <div class="navbar-item">
                     <a class="navbar-brand"  href="https://www.cemosis.fr">
-                        <img class="cemosis-logo"  src="../../../_/img/cemosis-logo.svg" alt="Cemosis logo"/>
+                        <img class="cemosis-logo"  src="../../_/img/cemosis-logo.svg" alt="Cemosis logo"/>
                     </a>
                 </div>
             </div>
@@ -132,43 +132,43 @@ MathJax.Hub.Config({
     <div class="panels">
 <div class="nav-panel-menu is-active" data-panel="menu">
   <nav class="nav-menu">
-    <h3 class="title"><a href="../../index.html">Main</a></h3>
+    <h3 class="title"><a href="../index.html">Main</a></h3>
 <ul class="nav-list">
   <li class="nav-item" data-depth="0">
 <ul class="nav-list">
   <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="../../index.html">Introduction</a>
+    <a class="nav-link" href="../index.html">Introduction</a>
   </li>
   <li class="nav-item" data-depth="1">
     <button class="nav-item-toggle"></button>
     <span class="nav-text">Architectures</span>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="../../architectures/PPChapter1_CPU.html">CPU Architecture</a>
+    <a class="nav-link" href="../architectures/PPChapter1_CPU.html">CPU Architecture</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="../../architectures/PPChapter1_GPU.html">GPU Architecture</a>
+    <a class="nav-link" href="../architectures/PPChapter1_GPU.html">GPU Architecture</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="../../architectures/PPChapter1_GPGPU.html">GPGPU Architecture</a>
+    <a class="nav-link" href="../architectures/PPChapter1_GPGPU.html">GPGPU Architecture</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="../../architectures/PPChapter1_TPU.html">TPU Architecture</a>
+    <a class="nav-link" href="../architectures/PPChapter1_TPU.html">TPU Architecture</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="../../architectures/PPChapter1_NPU.html">NPU Architecture</a>
+    <a class="nav-link" href="../architectures/PPChapter1_NPU.html">NPU Architecture</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="../../architectures/PPChapter1_LPU.html">LPU Architecture</a>
+    <a class="nav-link" href="../architectures/PPChapter1_LPU.html">LPU Architecture</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="../../architectures/PPChapter1_DPU.html">DPU Architecture</a>
+    <a class="nav-link" href="../architectures/PPChapter1_DPU.html">DPU Architecture</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="../../architectures/PPChapter1_SIMD.html">SIMD Architecture</a>
+    <a class="nav-link" href="../architectures/PPChapter1_SIMD.html">SIMD Architecture</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="../../architectures/PPChapter1_AMD_CUDA.html">AMD CUDA Architecture</a>
+    <a class="nav-link" href="../architectures/PPChapter1_AMD_CUDA.html">AMD CUDA Architecture</a>
   </li>
 </ul>
   </li>
@@ -177,19 +177,19 @@ MathJax.Hub.Config({
     <span class="nav-text">MPI/OpenMP/Hybrid</span>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="../../PPChapter2_MPI.html">MPI (Message Passing Interface)</a>
+    <a class="nav-link" href="../PPChapter2_MPI.html">MPI (Message Passing Interface)</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="../../PPChapter2_MPI_Boost.html">MPI Boost</a>
+    <a class="nav-link" href="../PPChapter2_MPI_Boost.html">MPI Boost</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="../../PPChapter2_OpenMP.html">OpenMP (Open Multi-Processing)</a>
+    <a class="nav-link" href="../PPChapter2_OpenMP.html">OpenMP (Open Multi-Processing)</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="../../PPChapter2_OpenMP2.html">OpenMP more information</a>
+    <a class="nav-link" href="../PPChapter2_OpenMP2.html">OpenMP more information</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="../../PPChapter2_Hybrid.html">Hybrid MPI with OpenMP</a>
+    <a class="nav-link" href="../PPChapter2_Hybrid.html">Hybrid MPI with OpenMP</a>
   </li>
 </ul>
   </li>
@@ -198,10 +198,10 @@ MathJax.Hub.Config({
     <span class="nav-text">Runtime Systems</span>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="../../PPChapter3.html">StarPU</a>
+    <a class="nav-link" href="../PPChapter3.html">StarPU</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="../../PPChapter4.html">Specx</a>
+    <a class="nav-link" href="../PPChapter4.html">Specx</a>
   </li>
 </ul>
   </li>
@@ -211,79 +211,79 @@ MathJax.Hub.Config({
 <ul class="nav-list">
   <li class="nav-item" data-depth="1">
     <button class="nav-item-toggle"></button>
-    <a class="nav-link" href="../index.html">Kokkos</a>
+    <a class="nav-link" href="index.html">Kokkos</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
     <button class="nav-item-toggle"></button>
     <span class="nav-text">Introduction</span>
 <ul class="nav-list">
-  <li class="nav-item is-current-page" data-depth="3">
-    <a class="nav-link" href="why-kokkos.html">Why Kokkos?</a>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="introduction/why-kokkos.html">Why Kokkos?</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="installation.html">Installation &amp; Setup</a>
+    <a class="nav-link" href="introduction/installation.html">Installation &amp; Setup</a>
   </li>
 </ul>
   </li>
   <li class="nav-item" data-depth="2">
     <button class="nav-item-toggle"></button>
-    <a class="nav-link" href="../basic-concepts/index.html">Basic Concepts</a>
+    <a class="nav-link" href="basic-concepts/index.html">Basic Concepts</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="../basic-concepts/views.html">Views</a>
+    <a class="nav-link" href="basic-concepts/views.html">Views</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="../basic-concepts/execution-spaces.html">Execution Spaces</a>
+    <a class="nav-link" href="basic-concepts/execution-spaces.html">Execution Spaces</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="../basic-concepts/memory-spaces.html">Memory Spaces</a>
+    <a class="nav-link" href="basic-concepts/memory-spaces.html">Memory Spaces</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="../basic-concepts/mirrors.html">Mirrors</a>
+    <a class="nav-link" href="basic-concepts/mirrors.html">Mirrors</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="../basic-concepts/memory-access-patterns.html">Memory Access Patterns</a>
+    <a class="nav-link" href="basic-concepts/memory-access-patterns.html">Memory Access Patterns</a>
   </li>
 </ul>
   </li>
   <li class="nav-item" data-depth="2">
     <button class="nav-item-toggle"></button>
-    <a class="nav-link" href="../advanced-concepts/index.html">Advanced Concepts</a>
+    <a class="nav-link" href="advanced-concepts/index.html">Advanced Concepts</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="../advanced-concepts/advanced-reductions.html">Advanced Reductions</a>
+    <a class="nav-link" href="advanced-concepts/advanced-reductions.html">Advanced Reductions</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="../advanced-concepts/hierarchical-parallelism.html">Hierarchical Parallelism</a>
+    <a class="nav-link" href="advanced-concepts/hierarchical-parallelism.html">Hierarchical Parallelism</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="../advanced-concepts/mpi-pgas.html">MPI and PGAS</a>
+    <a class="nav-link" href="advanced-concepts/mpi-pgas.html">MPI and PGAS</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="../advanced-concepts/multidimensional-loops-and-data-structure.html">Multidimensional Loops and Data Structure</a>
+    <a class="nav-link" href="advanced-concepts/multidimensional-loops-and-data-structure.html">Multidimensional Loops and Data Structure</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="../advanced-concepts/single-instruction-mutliple-data.html">Single Instruction Multiple Data</a>
+    <a class="nav-link" href="advanced-concepts/single-instruction-mutliple-data.html">Single Instruction Multiple Data</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="../advanced-concepts/asynchronicity-and-streams.html">Asynchronicity and Stream</a>
+    <a class="nav-link" href="advanced-concepts/asynchronicity-and-streams.html">Asynchronicity and Stream</a>
   </li>
 </ul>
   </li>
   <li class="nav-item" data-depth="2">
     <button class="nav-item-toggle"></button>
-    <a class="nav-link" href="../diagnostic-tools-algebraic-strategies/index.html">Diagnostic Tools Algebraic Strategies</a>
+    <a class="nav-link" href="diagnostic-tools-algebraic-strategies/index.html">Diagnostic Tools Algebraic Strategies</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="../diagnostic-tools-algebraic-strategies/kernels-math-library.html">Kernels Math library</a>
+    <a class="nav-link" href="diagnostic-tools-algebraic-strategies/kernels-math-library.html">Kernels Math library</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="../diagnostic-tools-algebraic-strategies/tools-profiling-tuning-debugging.html">Tools Profing Tuning Debugging</a>
+    <a class="nav-link" href="diagnostic-tools-algebraic-strategies/tools-profiling-tuning-debugging.html">Tools Profing Tuning Debugging</a>
   </li>
 </ul>
   </li>
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="../gaya.html">Compile on Gaya</a>
+  <li class="nav-item is-current-page" data-depth="2">
+    <a class="nav-link" href="gaya.html">Compile on Gaya</a>
   </li>
 </ul>
   </li>
@@ -299,10 +299,10 @@ MathJax.Hub.Config({
   </div>
   <ul class="components">
       <li class="component">
-        <a class="title" href="../../../feelpp-antora-ui/index.html">Antora Feel++ UI</a>
+        <a class="title" href="../../feelpp-antora-ui/index.html">Antora Feel++ UI</a>
       </li>
       <li class="component is-current">
-        <a class="title" href="../../index.html">Main</a>
+        <a class="title" href="../index.html">Main</a>
       </li>
   </ul>
 </div>
@@ -312,18 +312,17 @@ MathJax.Hub.Config({
 <main class="article">
 <div class="toolbar" role="navigation">
   <button class="nav-toggle"></button>
-    <a href="../../index.html" class="home-link"></a>
+    <a href="../index.html" class="home-link"></a>
   <nav class="breadcrumbs" aria-label="breadcrumbs">
   <ul>
-    <li><a href="../../index.html">Main</a></li>
-    <li><a href="../index.html">Kokkos</a></li>
-    <li>Introduction</li>
-    <li><a href="why-kokkos.html">Why Kokkos?</a></li>
+    <li><a href="../index.html">Main</a></li>
+    <li><a href="index.html">Kokkos</a></li>
+    <li><a href="gaya.html">Compile on Gaya</a></li>
   </ul>
 </nav>
 
   
-    <div class="edit-this-page"><a href="https://github.com/feelpp/course-parallel-programming/edit/feature/kokkos/docs/modules/kokkos/pages/introduction/why-kokkos.adoc">Edit this Page</a></div>
+    <div class="edit-this-page"><a href="https://github.com/feelpp/course-parallel-programming/edit/feature/kokkos/docs/modules/kokkos/pages/gaya.adoc">Edit this Page</a></div>
   
   <div class="page-downloads">
   <span class="label">Download as</span>
@@ -331,7 +330,7 @@ MathJax.Hub.Config({
     <li>
       <a onclick="print(this)" href="#" data-toggle="tooltip" data-placement="left" title="Print to PDF"
          class="pdf-download">
-        <img class="pdf-file-icon icon" src="../../../_/img/pdf.svg"/> .pdf
+        <img class="pdf-file-icon icon" src="../../_/img/pdf.svg"/> .pdf
       </a>
     </li>
   </ul>
@@ -343,40 +342,88 @@ MathJax.Hub.Config({
   <div class="toc-menu"></div>
 </aside>
 <article class="doc">
-<h1 class="page">What is Kokkos ?</h1>
-<div class="imageblock">
-<div class="content">
-<a class="image" href="#fragment100"><img src="../_images/kokkos1.jpg" alt="kokkos1" width="322" height="181"></a>
-</div>
-</div>
-<div class="paragraph text-justify">
-<p>We have previously explored various hardware architectures, specialized languages, and advanced parallel programming techniques. At the heart of this technological complexity emerges Kokkos, a framework that, like a conductor, harmonizes and simplifies these diverse concepts. Kokkos offers a unified approach, allowing developers to efficiently navigate this complex ecosystem of parallel programming.</p>
-</div>
-<div class="paragraph text-justify">
-<p>The main appeal of Kokkos lies in its ability to abstract hardware-specific details, allowing programmers to write code once and deploy it across diverse architectures. This "write once, run anywhere" approach is particularly valuable in today&#8217;s context where supercomputers and high-performance computing clusters often integrate heterogeneous accelerators. Kokkos offers powerful abstractions such as execution spaces, execution policies, and data containers like Kokkos::View, which automatically adapt to the underlying architecture.</p>
-</div>
-<div class="paragraph text-justify">
-<p>Another major advantage of Kokkos is its rich ecosystem, which we will see in more detail later, including profiling tools like Kokkos::Tools, which allow developers to fine-tune their applications. Moreover, Kokkos integrates well with other essential technologies of high-performance computing, such as MPI for inter-node communication, thus offering a complete solution for the development of large-scale parallel applications.</p>
-</div>
-<div class="imageblock">
-<div class="content">
-<a class="image" href="#fragment102"><img src="../_images/kokkos-EcoSystem.png" alt="kokkos EcoSystem" width="442" height="237"></a>
-</div>
-</div>
-<div class="paragraph text-justify">
-<p>Kokkos is thus a (C++) library designed to address the growing challenges of parallel programming and performance portability in the field of high-performance computing (HPC). Its unified approach to target both CPUs and GPUs from different manufacturers (NVIDIA, AMD, Intel) makes it particularly attractive in a constantly evolving technology landscape.</p>
-</div>
-<div class="paragraph text-justify">
-<p>Its major advantage is the <strong>simplification of parallel programming</strong> and its ability to offer <strong>performance portability</strong>. It provides a programming model based on clear and scalable parallel patterns, such as <code>parallel_for</code> and <code>parallel_reduce</code>, which allow developers to efficiently exploit hardware resources without having to directly manage underlying complexities such as threads or CUDA/AMD blocks. Kokkos allows writing a single code that can be efficiently executed on different platforms. This approach significantly reduces the learning curve compared to other models such as CUDA, AMD or OpenMP while providing comparable flexibility.</p>
-</div>
-<div class="paragraph text-justify">
-<p>In addition, Kokkos promotes <strong>increased productivity</strong> thanks to its seamless integration with the (C++) language. It is not a new language or extension, but a library that leverages modern CPP features, such as lambda functions, to write compact and high-performance computing kernels. This allows developers to focus on the algorithmic logic while letting Kokkos handle the architecture-specific details</p>
-</div>
-<div class="paragraph text-justify">
-<p>In conclusion, using Kokkos effectively addresses the challenges related to performance portability, simplifying parallel programming, and code sustainability. Its combination of advanced abstractions, a robust ecosystem, and cross-platform compatibility makes it a strategic choice for developers working in the field of scientific and technical computing. <strong>Therefore, I invite you to use Kokkos!</strong></p>
+<h1 class="page">Compile on Gaya</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>This page gathers the steps to compile a program with Kokkos and Feel++ on the cluster <a href="https://intranet.math.unistra.fr/intra/ressources_num%C3%A9riques/calcul/gaya/">Gaya</a>.</p>
 </div>
 <div class="paragraph">
-<p>For more information please visit the official webpage (See: <a href="https://kokkos.org/" class="bare">kokkos.org/</a>)</p>
+<p>The code can be compiled either with the ROCM support (to run on the GPU) or without it.
+On this page, we present the two methods.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_load_the_spack_environment"><a class="anchor" href="#_load_the_spack_environment"></a>1. Load the spack environment</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To compile a program with Kokkos and Feel++ on Gaya, you need to load the spack environment.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">spacktivate feelpp-openmpi4-rocm-kokkos <i class="conum" data-value="1"></i><b>(1)</b>
+spacktivate feelpp-openmpi4-kokkos <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Load the environment with ROCM support.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Load the environment without ROCM support.</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_set_up_cmake"><a class="anchor" href="#_set_up_cmake"></a>2. Set-up CMake</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cmake --preset feelpp-clang-cpp20-spack-rocm-kokkos-none-release <i class="conum" data-value="1"></i><b>(1)</b>
+cmake --preset feelpp-clang-cpp20-spack-kokkos-none-release <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Set-up the CMake configuration with ROCM support.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Set-up the CMake configuration without ROCM support.</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_compile_the_code"><a class="anchor" href="#_compile_the_code"></a>3. Compile the code</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cmake --build --preset feelpp-clang-cpp20-spack-rocm-kokkos-none-release [-t &lt;TARGET_NAME&gt;]
+cmake --build --preset feelpp-clang-cpp20-spack-kokkos-none-release [-t &lt;TARGET_NAME&gt;]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>(or <code>make</code> indie the corresponding build directory)</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_execute_the_code"><a class="anchor" href="#_execute_the_code"></a>4. Execute the code</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>If you compiled the code with ROCM support, you need to execute it on a GPU node, namely <code>gaya-gpu</code>.</p>
+</div>
+</div>
 </div>
 </article>
   </div>
@@ -386,18 +433,18 @@ MathJax.Hub.Config({
     <div class="container" style="display: flex; flex-direction: column; align-items: center; gap: 0.5em;">
         <div>
             <a href="https://www.cemosis.fr">
-                <img src="../../../_/img/cemosis-logo.svg" alt="Cemosis logo" height="50">
+                <img src="../../_/img/cemosis-logo.svg" alt="Cemosis logo" height="50">
             </a>
         </div>
         <span style="font-size: 0.8rem; color: #9e9e9e">© 2025 <a href="https://www.cemosis.fr" style="text-decoration: underline;">Cemosis</a>, Université de Strasbourg</span>
     </div>
 </footer>
-<script id="site-script" src="../../../_/js/site.js" data-ui-root-path="../../../_"></script>
+<script id="site-script" src="../../_/js/site.js" data-ui-root-path="../../_"></script>
 
 
-<script async src="../../../_/js/vendor/fontawesome-icon-defs.js"></script>
-<script async src="../../../_/js/vendor/fontawesome.js"></script>
-<script async src="../../../_/js/vendor/highlight.js"></script>
+<script async src="../../_/js/vendor/fontawesome-icon-defs.js"></script>
+<script async src="../../_/js/vendor/fontawesome.js"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
 
 
 <script type="text/javascript">
