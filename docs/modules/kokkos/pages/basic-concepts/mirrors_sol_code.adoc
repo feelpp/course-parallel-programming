@@ -1,0 +1,6 @@
+xref:basic-concepts/mirrors.adoc#Example[Back].
+
+[source, cpp]
+----
+include::example$src/05_kokkos_mirrors.cpp[]
+----
