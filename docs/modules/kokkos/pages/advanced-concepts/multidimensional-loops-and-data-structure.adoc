@@ -38,10 +38,10 @@ A more elaborate example demonstrating the use of *MDRangePolicy* in the context
         auto left = Kokkos::subview(inputData, c, p, Kokkos::ALL, Kokkos::ALL);
         auto right = Kokkos::subview(inputField, c, f, p, Kokkos::ALL);
         for (int i=0; i<D; ++i) {
-        double tmp(0);
-        for (int j=0; j<D; ++j)
-            tmp += left(i, j)*right(j);
-        result(i) = tmp;
+            double tmp(0);
+            for (int j=0; j<D; ++j)
+                tmp += left(i, j)*right(j);
+            result(i) = tmp;
         }
     }
     );

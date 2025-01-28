@@ -46,7 +46,7 @@ Buffer packing strategies play a crucial role in optimizing MPI communication, e
 ----
     Kokkos::View<double*> sendBuffer("SendBuffer", count);
     Kokkos::parallel_for(count, KOKKOS_LAMBDA(int i) {
-    sendBuffer(i) = computeValue(i);
+        sendBuffer(i) = computeValue(i);
     });
     MPI_Send(sendBuffer.data(), count, MPI_DOUBLE, dest, tag, comm);
 ----
