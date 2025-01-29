@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Mirrors :: Parallel Programming</title>
-    <link rel="canonical" href="https://feelpp.github.io/parallel-programming/parallel-programming/kokkos/basic-concepts/mirrors.html">
+    <title>Untitled :: Parallel Programming</title>
+    <link rel="canonical" href="https://feelpp.github.io/parallel-programming/parallel-programming/kokkos/basic-concepts/mirrors_sol_code.html">
     <meta name="generator" content="Antora 3.1.10">
     <link rel="stylesheet" href="../../../_/css/site.css">
 <link rel="icon" href="../../../_/img/favicon.ico" type="image/x-icon">
@@ -238,7 +238,7 @@ MathJax.Hub.Config({
   <li class="nav-item" data-depth="3">
     <a class="nav-link" href="memory-spaces.html">Memory Spaces</a>
   </li>
-  <li class="nav-item is-current-page" data-depth="3">
+  <li class="nav-item" data-depth="3">
     <a class="nav-link" href="mirrors.html">Mirrors</a>
   </li>
   <li class="nav-item" data-depth="3">
@@ -314,16 +314,10 @@ MathJax.Hub.Config({
   <button class="nav-toggle"></button>
     <a href="../../index.html" class="home-link"></a>
   <nav class="breadcrumbs" aria-label="breadcrumbs">
-  <ul>
-    <li><a href="../../index.html">Main</a></li>
-    <li><a href="../index.html">Kokkos</a></li>
-    <li><a href="index.html">Basic Concepts</a></li>
-    <li><a href="mirrors.html">Mirrors</a></li>
-  </ul>
 </nav>
 
   
-    <div class="edit-this-page"><a href="https://github.com/feelpp/course-parallel-programming/edit/feature/kokkos/docs/modules/kokkos/pages/basic-concepts/mirrors.adoc">Edit this Page</a></div>
+    <div class="edit-this-page"><a href="https://github.com/feelpp/course-parallel-programming/edit/feature/kokkos/docs/modules/kokkos/pages/basic-concepts/mirrors_sol_code.adoc">Edit this Page</a></div>
   
   <div class="page-downloads">
   <span class="label">Download as</span>
@@ -343,170 +337,228 @@ MathJax.Hub.Config({
   <div class="toc-menu"></div>
 </aside>
 <article class="doc">
-<h1 class="page">Mirrors</h1>
-<div class="sect1">
-<h2 id="_overview"><a class="anchor" href="#_overview"></a>1. Overview</h2>
-<div class="sectionbody">
 <div class="paragraph">
-<p><em>Mirrors</em> are views that reference data in a possibly different memory space.
-They are used to access data in a different memory space without copying it.</p>
-</div>
-<div class="listingblock">
-<div class="title">Mirroring schematic</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">Kokkos::View&lt;double**, Space&gt; view(...);
-auto host_mirror = Kokkos::create_mirror_view(view);</code></pre>
-</div>
-</div>
-<div class="imageblock">
-<div class="content">
-<img src="../_images/kokkos-mirrors-schematic.png" alt="kokkos mirrors schematic">
-</div>
-</div>
-<div class="paragraph">
-<p>Two views are created: <code>view</code> in the memory space <code>Space</code> and <code>host_mirror</code> in the host memory space.
-The data are copied back and forth between the two views using the <code>Kokkos::deep_copy</code> function.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_mirroring_pattern"><a class="anchor" href="#_mirroring_pattern"></a>2. Mirroring pattern</h2>
-<div class="sectionbody">
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p><strong>Create</strong> a <code>view</code> in a specific memory space.</p>
-</li>
-</ol>
+<p><a href="mirrors.html#Example" class="xref page">Back</a>.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">Kokkos::View&lt;double**, Space&gt; view(...);</code></pre>
-</div>
-</div>
-<div class="olist arabic">
-<ol class="arabic" start="2">
-<li>
-<p><strong>Create</strong> a mirror view in the host memory space, <code>host_mirror</code>.</p>
-</li>
-</ol>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">auto host_mirror = Kokkos::create_mirror_view(view);</code></pre>
-</div>
-</div>
-<div class="olist arabic">
-<ol class="arabic" start="3">
-<li>
-<p><strong>Populate</strong> <code>host_mirror</code> with data (from file, user input, etc.).</p>
-</li>
-<li>
-<p><strong>Copy</strong> data from <code>host_mirror</code> to <code>view</code> using <code>Kokkos::deep_copy</code>.</p>
-</li>
-<li>
-<p><strong>Perform</strong> computations on <code>view</code>:</p>
-</li>
-</ol>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">Kokkos::parallel_for("Operation",
-    RangePolicy&lt;Space&gt;(0, view.extent(0)),
-    KOKKOS_LAMBDA(...) { /* use and change view */ }
-);</code></pre>
-</div>
-</div>
-<div class="olist arabic">
-<ol class="arabic" start="6">
-<li>
-<p>If nedded, <strong>copy</strong> data back to <code>host_mirror</code> using <code>Kokkos::deep_copy</code>.</p>
-</li>
-</ol>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">Kokkos::deep_copy(host_mirror, view);</code></pre>
-</div>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-<code>create_mirror_view</code> allocates data only if the host process cannon access <code>view</code> 's data.
-Otherwise, it returns a view that references the same data as <code>view</code>.
-The command <code>create_mirror</code> makes always make data allocation.
-</td>
-</tr>
-</table>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_example"><a class="anchor" href="#_example"></a>3. Example</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>We present the <a href="https://github.com/kokkos/kokkos-tutorials/tree/main/Exercises/04">example <code>04</code></a> from the tutorial of Kokkos.</p>
-</div>
-<div class="listingblock">
-<div class="title">Allocate the matrices and vectors on the device</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-cpp hljs" data-lang="cpp">typedef Kokkos::View&lt;double*, Kokkos::LayoutLeft, MemSpace&gt;   ViewVectorType;
-typedef Kokkos::View&lt;double**, Kokkos::LayoutLeft, MemSpace&gt;  ViewMatrixType;
-ViewVectorType y( "y", N );
-ViewVectorType x( "x", M );
-ViewMatrixType A( "A", N, M );
+<pre class="highlightjs highlight"><code class="language-cpp hljs" data-lang="cpp">//@HEADER
+// ************************************************************************
+//
+//                        Kokkos v. 4.0
+//       Copyright (2022) National Technology &amp; Engineering
+//               Solutions of Sandia, LLC (NTESS).
+//
+// Under the terms of Contract DE-NA0003525 with NTESS,
+// the U.S. Government retains certain rights in this software.
+//
+// Part of Kokkos, under the Apache License v2.0 with LLVM Exceptions.
+// See https://kokkos.org/LICENSE for license information.
+// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+//
+//@HEADER
 
-// Create host mirrors of device views.
-ViewVectorType::HostMirror h_y = Kokkos::create_mirror_view( y );
-ViewVectorType::HostMirror h_x = Kokkos::create_mirror_view( x );
-ViewMatrixType::HostMirror h_A = Kokkos::create_mirror_view( A );</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Deep copy host views to device views.</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-cpp hljs" data-lang="cpp">Kokkos::deep_copy( y, h_y );
-Kokkos::deep_copy( x, h_x );
-Kokkos::deep_copy( A, h_A );</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Then the code computes the quantity \(\left&lt;y, Ax\right&gt;\).</p>
-</div>
-<div class="paragraph">
-<p>The full code is present in <a href="mirrors_sol_code.html" class="xref page">the file <code>05_kokkos_mirrors.cpp</code></a>.</p>
-</div>
-<div class="sect2">
-<h3 id="_performance_comparisons"><a class="anchor" href="#_performance_comparisons"></a>3.1. Performance comparisons</h3>
-<div class="paragraph">
-<p>On <code>gaya</code>:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./kokkos_mirros -nrepeat 1000
-  Total size S = 4194304 N = 4096 M = 1024
-Kokkos::HostSpace
-  Computed result for 4096 x 1024 is 4194304.000000
-  N( 4096 ) M( 1024 ) nrepeat ( 1000 ) problem( 33.5954 MB ) time( 0.323193 s ) bandwidth( 103.949 GB/s )</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>On <code>gaya-gpu</code>:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./kokkos_mirros -nrepeat 1000
-  Total size S = 4194304 N = 4096 M = 1024
-Kokkos::HIPSpace
-  Computed result for 4096 x 1024 is 4194304.000000
-  N( 4096 ) M( 1024 ) nrepeat ( 1000 ) problem( 33.5954 MB ) time( 0.485132 s ) bandwidth( 69.25 GB/s )</code></pre>
-</div>
-</div>
-</div>
+#include &lt;limits&gt;
+#include &lt;cmath&gt;
+#include &lt;cstdio&gt;
+#include &lt;cstdlib&gt;
+#include &lt;cstring&gt;
+#include &lt;iostream&gt;
+
+
+#include &lt;Kokkos_Core.hpp&gt;
+
+void checkSizes( int &amp;N, int &amp;M, int &amp;S, int &amp;nrepeat );
+
+int main( int argc, char* argv[] )
+{
+  int N = -1;         // number of rows 2^12
+  int M = -1;         // number of columns 2^10
+  int S = -1;         // total size 2^22
+  int nrepeat = 100;  // number of repeats of the test
+
+  // Read command line arguments.
+  for ( int i = 0; i &lt; argc; i++ ) {
+    if ( ( strcmp( argv[ i ], "-N" ) == 0 ) || ( strcmp( argv[ i ], "-Rows" ) == 0 ) ) {
+      N = pow( 2, atoi( argv[ ++i ] ) );
+      printf( "  User N is %d\n", N );
+    }
+    else if ( ( strcmp( argv[ i ], "-M" ) == 0 ) || ( strcmp( argv[ i ], "-Columns" ) == 0 ) ) {
+      M = pow( 2, atof( argv[ ++i ] ) );
+      printf( "  User M is %d\n", M );
+    }
+    else if ( ( strcmp( argv[ i ], "-S" ) == 0 ) || ( strcmp( argv[ i ], "-Size" ) == 0 ) ) {
+      S = pow( 2, atof( argv[ ++i ] ) );
+      printf( "  User S is %d\n", S );
+    }
+    else if ( strcmp( argv[ i ], "-nrepeat" ) == 0 ) {
+      nrepeat = atoi( argv[ ++i ] );
+    }
+    else if ( ( strcmp( argv[ i ], "-h" ) == 0 ) || ( strcmp( argv[ i ], "-help" ) == 0 ) ) {
+      printf( "  y^T*A*x Options:\n" );
+      printf( "  -Rows (-N) &lt;int&gt;:      exponent num, determines number of rows 2^num (default: 2^12 = 4096)\n" );
+      printf( "  -Columns (-M) &lt;int&gt;:   exponent num, determines number of columns 2^num (default: 2^10 = 1024)\n" );
+      printf( "  -Size (-S) &lt;int&gt;:      exponent num, determines total matrix size 2^num (default: 2^22 = 4096*1024 )\n" );
+      printf( "  -nrepeat &lt;int&gt;:        number of repetitions (default: 100)\n" );
+      printf( "  -help (-h):            print this message\n\n" );
+      exit( 1 );
+    }
+  }
+
+  // Check sizes.
+  checkSizes( N, M, S, nrepeat );
+
+  Kokkos::initialize( argc, argv );
+  {
+
+  #ifdef KOKKOS_ENABLE_CUDA
+  std::cout &lt;&lt; "Kokkos::CudaSpace" &lt;&lt; std::endl;
+  #define MemSpace Kokkos::CudaSpace
+  #endif
+  #ifdef KOKKOS_ENABLE_HIP
+  std::cout &lt;&lt; "Kokkos::HIPSpace" &lt;&lt; std::endl;
+  #define MemSpace Kokkos::Experimental::HIPSpace
+  #endif
+  #ifdef KOKKOS_ENABLE_OPENMPTARGET
+  std::cout &lt;&lt; "Kokkos::OpenMPTargetSpace" &lt;&lt; std::endl;
+  #define MemSpace Kokkos::OpenMPTargetSpace
+  #endif
+
+  #ifndef MemSpace
+  std::cout &lt;&lt; "Kokkos::HostSpace" &lt;&lt; std::endl;
+  #define MemSpace Kokkos::HostSpace
+  #endif
+
+  using ExecSpace = MemSpace::execution_space;
+  using range_policy = Kokkos::RangePolicy&lt;ExecSpace&gt;;
+
+  using Layout = Kokkos::LayoutLeft;
+  // using Layout = Kokkos::LayoutRight;
+
+
+  // Allocate y, x vectors and Matrix A on device.
+  typedef Kokkos::View&lt;double* , Layout, MemSpace&gt;  ViewVectorType;
+  typedef Kokkos::View&lt;double**, Layout, MemSpace&gt;  ViewMatrixType;
+  ViewVectorType y( "y", N );
+  ViewVectorType x( "x", M );
+  ViewMatrixType A( "A", N, M );
+
+  // Create host mirrors of device views.
+  ViewVectorType::HostMirror h_y = Kokkos:: ( y );
+  ViewVectorType::HostMirror h_x = Kokkos::create_mirror_view( x );
+  ViewMatrixType::HostMirror h_A = Kokkos::create_mirror_view( A );
+
+  // Initialize y vector on host.
+  for ( int i = 0; i &lt; N; ++i ) {
+    h_y( i ) = 1;
+  }
+
+  // Initialize x vector on host.
+  for ( int i = 0; i &lt; M; ++i ) {
+    h_x( i ) = 1;
+  }
+
+  // Initialize A matrix on host.
+  for ( int j = 0; j &lt; N; ++j ) {
+    for ( int i = 0; i &lt; M; ++i ) {
+      h_A( j, i ) = 1;
+    }
+  }
+
+  // Deep copy host views to device views.
+  Kokkos::deep_copy( y, h_y );
+  Kokkos::deep_copy( x, h_x );
+  Kokkos::deep_copy( A, h_A );
+
+  // Timer products.
+  Kokkos::Timer timer;
+
+  for ( int repeat = 0; repeat &lt; nrepeat; repeat++ ) {
+    // Application: &lt;y,Ax&gt; = y^T*A*x
+    double result = 0;
+
+    Kokkos::parallel_reduce( "yAx", range_policy( 0, N ), KOKKOS_LAMBDA ( int j, double &amp;update ) {
+      double temp2 = 0;
+
+      for ( int i = 0; i &lt; M; ++i ) {
+        temp2 += A( j, i ) * x( i );
+      }
+
+      update += y( j ) * temp2;
+    }, result );
+
+    // Output result.
+    if ( repeat == ( nrepeat - 1 ) ) {
+      printf( "  Computed result for %d x %d is %lf\n", N, M, result );
+    }
+
+    const double solution = (double) N * (double) M;
+
+    if ( result != solution ) {
+      printf( "  Error: result( %lf ) != solution( %lf )\n", result, solution );
+    }
+  }
+
+  // Calculate time.
+  double time = timer.seconds();
+
+  // Calculate bandwidth.
+  // Each matrix A row (each of length M) is read once.
+  // The x vector (of length M) is read N times.
+  // The y vector (of length N) is read once.
+  // double Gbytes = 1.0e-9 * double( sizeof(double) * ( 2 * M * N + N ) );
+  double Gbytes = 1.0e-9 * double( sizeof(double) * ( M + M * N + N ) );
+
+  // Print results (problem size, time and bandwidth in GB/s).
+  printf( "  N( %d ) M( %d ) nrepeat ( %d ) problem( %g MB ) time( %g s ) bandwidth( %g GB/s )\n",
+          N, M, nrepeat, Gbytes * 1000, time, Gbytes * nrepeat / time );
+
+  }
+  Kokkos::finalize();
+
+  return 0;
+}
+
+void checkSizes( int &amp;N, int &amp;M, int &amp;S, int &amp;nrepeat ) {
+  // If S is undefined and N or M is undefined, set S to 2^22 or the bigger of N and M.
+  if ( S == -1 &amp;&amp; ( N == -1 || M == -1 ) ) {
+    S = pow( 2, 22 );
+    if ( S &lt; N ) S = N;
+    if ( S &lt; M ) S = M;
+  }
+
+  // If S is undefined and both N and M are defined, set S = N * M.
+  if ( S == -1 ) S = N * M;
+
+  // If both N and M are undefined, fix row length to the smaller of S and 2^10 = 1024.
+  if ( N == -1 &amp;&amp; M == -1 ) {
+    if ( S &gt; 1024 ) {
+      M = 1024;
+    }
+    else {
+      M = S;
+    }
+  }
+
+  // If only M is undefined, set it.
+  if ( M == -1 ) M = S / N;
+
+  // If N is undefined, set it.
+  if ( N == -1 ) N = S / M;
+
+  printf( "  Total size S = %d N = %d M = %d\n", S, N, M );
+
+  // Check sizes.
+  if ( ( S &lt; 0 ) || ( N &lt; 0 ) || ( M &lt; 0 ) || ( nrepeat &lt; 0 ) ) {
+    printf( "  Sizes must be greater than 0.\n" );
+    exit( 1 );
+  }
+
+  if ( ( N * M ) != S ) {
+    printf( "  N * M != S\n" );
+    exit( 1 );
+  }
+}</code></pre>
 </div>
 </div>
 </article>
