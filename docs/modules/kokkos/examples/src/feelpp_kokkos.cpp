@@ -11,6 +11,9 @@ int main(int argc, char**argv )
                      _about=about(_name="mylaplacian",
                                   _author="Feel++ Consortium",
                                   _email="feelpp-devel at feelpp.org"));
+
+
+    Kokkos::initialize(argc, argv);
     // create mesh
     auto mesh = unitSquare();
 
@@ -32,4 +35,6 @@ int main(int argc, char**argv )
 
     // solve the equation a(u,v) = l(v)
     a.solve(_rhs=l,_solution=u);
+
+    Kokkos::finalize();
 }
