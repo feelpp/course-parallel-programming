@@ -37,6 +37,7 @@ if (FEELPP_ENABLE_KOKKOS)
     add_executable(10_kokkos_cholesky 10_kokkos_cholesky.cpp)
     add_executable(11_kokkos_memspace 11_kokkos_memspace.cpp)
     #add_executable(12_kokkos_simple_multi_gpus 12_kokkos_simple_multi_gpus.cpp)
+    #add_executable(13_kokkos_execution_patterns 13_kokkos_execution_patterns.cpp)
 
     # feelpp_add_application(kokkos SRCS feelpp_kokkos.cpp)
 
@@ -51,6 +52,6 @@ if (FEELPP_ENABLE_KOKKOS)
     target_link_libraries(10_kokkos_cholesky Kokkos::kokkos)
     target_link_libraries(11_kokkos_memspace Kokkos::kokkos)
     #target_link_libraries(12_kokkos_simple_multi_gpus  Kokkos::kokkos)
-
+    #target_link_libraries(13_kokkos_execution_patterns Kokkos::kokkos)
 
 endif()
