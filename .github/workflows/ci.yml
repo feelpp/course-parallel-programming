@@ -16,7 +16,7 @@ jobs:
     name: Build, Install, Package documentation
     if: "!contains(github.event.head_commit.message, 'docs skip')"
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Install credentials
       run: echo https://$GITHUB_OAUTH:@github.com > $HOME/.git-credentials
       env:
@@ -40,7 +40,7 @@ jobs:
     if: "!contains(github.event.head_commit.message, 'code skip')"
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         lfs: true
         recursive: true
@@ -63,7 +63,7 @@ jobs:
       run: |
         cmake --build --preset default -t package
     - name: Upload Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         # Artifact name
         name: parallel-programming-artifacts
@@ -91,7 +91,7 @@ jobs:
         lfs: true
         submodules: 'recursive'
     - name: Download
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         # Artifact name
         name: parallel-programming-artifacts
