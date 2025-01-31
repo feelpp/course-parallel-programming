@@ -2,7 +2,7 @@
 
 == Introduction
 
-[.text-justify]s
+[.text-justify]
 
 Kokkos C++ supports *asynchronous* execution through its parallel dispatch operations, which may return before completion while executing in sequence with other Kokkos operations [1][2]. Streams in Kokkos, particularly for CUDA, allow for overlapping kernels and can be used to create CUDA instances, enabling concurrent execution of multiple kernels.
 
