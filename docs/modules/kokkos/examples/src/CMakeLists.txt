@@ -41,6 +41,7 @@ if (FEELPP_ENABLE_KOKKOS)
     #add_executable(14_kokkos_execution_patterns_policies 14_kokkos_execution_patterns_policies.cpp)
     #add_executable(15_kokkos_dual_view 15_kokkos_dual_view.cpp)
     #add_executable(16_kokkos_simd 16_kokkos_simd.cpp)
+    #add_executable(17_kokkos_polynom_jacobi_1 17_kokkos_polynom_jacobi_1.cpp)
 
     # feelpp_add_application(kokkos SRCS feelpp_kokkos.cpp)
 
@@ -59,6 +60,7 @@ if (FEELPP_ENABLE_KOKKOS)
     #target_link_libraries(14_kokkos_execution_patterns_policies Kokkos::kokkos)
     #target_link_libraries(15_kokkos_dual_view Kokkos::kokkos)
     #target_link_libraries(16_kokkos_simd Kokkos::kokkos)
+    #target_link_libraries(17_kokkos_polynom_jacobi_1 Kokkos::kokkos);
 
 
 endif()
