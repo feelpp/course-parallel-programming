@@ -76,7 +76,8 @@ This approach efficiently generates a compact list of relevant indices, which ca
 == Kokkos Remote Spaces: PGAS Support
 
 [.text-justify]
- *PGAS* (Partitioned Global Address Space) models are gaining traction, particularly with the advent of "super-node" architectures and evolving network infrastructures [3][4]. Kokkos Remote Spaces extends the Kokkos ecosystem to embrace this paradigm, offering a bridge between shared and distributed memory programming models.
+
+*PGAS (Partitioned Global Address Space)* models are gaining traction, particularly with the advent of "super-node" architectures and evolving network infrastructures [3][4]. Kokkos Remote Spaces extends the Kokkos ecosystem to embrace this paradigm, offering a bridge between shared and distributed memory programming models.
 
 *PGAS* enables Kokkos to provide a global view of data for convenient multi-GPU, multi-node, and multi-device programming. PGAS provides a high-level abstraction for remote memory accesses, simplifying distributed programming for developers using Kokkos. Kokkos Remote Spaces supports multiple PGAS backends, including SHMEM, *NVSHMEM*, *ROCSHMEM*, and *MPI* One-side, providing flexibility for different types of systems and architectures. PGAS implementations are optimized for high-performance communications, which is crucial for the scientific computing applications that Kokkos targets. Using PGAS allows Kokkos to maintain its philosophy of performance portability across different architectures, from CPUs to GPUs. By using PGAS, Kokkos can offer efficient and portable distributed programming, while maintaining a consistent programming interface with the rest of the Kokkos ecosystem.
 
