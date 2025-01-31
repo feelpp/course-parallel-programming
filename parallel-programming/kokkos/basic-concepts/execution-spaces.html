@@ -528,6 +528,71 @@ MathJax.Hub.Config({
 <div class="paragraph">
 <p>The model is inspired by CUDA and OpenMP, aiming to improve performance across various hardware architectures by encouraging locality-aware programming. [5]</p>
 </div>
+<div class="paragraph">
+<p><strong>Example</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    struct VectorAdd {
+        Kokkos::View&lt;double*&gt; a;
+        Kokkos::View&lt;double*&gt; b;
+        Kokkos::View&lt;double*&gt; c;
+        VectorAdd(Kokkos::View&lt;double*&gt; a_, Kokkos::View&lt;double*&gt; b_, Kokkos::View&lt;double*&gt; c_)
+            : a(a_), b(b_), c(c_) {}
+        KOKKOS_INLINE_FUNCTION
+        void operator()(const int i) const {
+            c(i) = a(i) + b(i); // Perform addition
+        }
+    };
+
+    int main(int argc, char* argv[]) {
+        Kokkos::initialize(argc, argv);
+        {
+            const int N = 1000; // Size of the vectors
+            // Allocate vectors on the device
+            Kokkos::View&lt;double*&gt; a("A", N);
+            Kokkos::View&lt;double*&gt; b("B", N);
+            Kokkos::View&lt;double*&gt; c("C", N);
+            // Initialize vectors a and b on the host
+            Kokkos::parallel_for("InitializeVectors", N, KOKKOS_LAMBDA(const int i) {
+                a(i) = static_cast&lt;double&gt;(i); // Fill vector A with values 0 to N-1
+                b(i) = static_cast&lt;double&gt;(N - i); // Fill vector B with values N-1 to 0
+            });
+            // Perform vector addition using default execution policy
+            Kokkos::parallel_for("VectorAdd", N, VectorAdd(a, b, c));
+            // Synchronize to ensure all computations are complete
+            Kokkos::fence();
+            // Output the first 10 results for verification
+            std::cout &lt;&lt; "Result of vector addition (first 10 elements):" &lt;&lt; std::endl;
+            for (int i = 0; i &lt; 10; ++i) {
+                std::cout &lt;&lt; "c[" &lt;&lt; i &lt;&lt; "] = " &lt;&lt; c(i) &lt;&lt; std::endl; // Print results from vector C
+            }
+            // Perform vector addition using a different execution policy (Dynamic Scheduling)
+            Kokkos::TeamPolicy&lt;&gt; teamPolicy(N, 32); // League size: N, Team size: 32
+            Kokkos::parallel_for(teamPolicy, KOKKOS_LAMBDA(const Kokkos::TeamPolicy&lt;&gt;::member_type&amp; teamMember) {
+                const int teamSize = teamMember.team_size();
+                const int i = teamMember.league_rank() * teamSize + teamMember.team_rank();
+                if (i &lt; N) {
+                    c(i) = a(i) + b(i); // Perform addition within the team
+                }
+            });
+
+            // Synchronize again after using the team policy
+            Kokkos::fence();
+            // Output the results after using the team policy
+            std::cout &lt;&lt; "Result of vector addition using Team Policy (first 10 elements):" &lt;&lt; std::endl;
+            for (int i = 0; i &lt; 10; ++i) {
+                std::cout &lt;&lt; "c[" &lt;&lt; i &lt;&lt; "] = " &lt;&lt; c(i) &lt;&lt; std::endl; // Print results from vector C
+            }
+        }
+        Kokkos::finalize();
+        return 0;
+    }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Explanations: This example effectively demonstrates how to use different execution <strong>policies</strong> to perform computations efficiently in a parallel computing environment.</p>
+</div>
 </div>
 </div>
 <div class="sect1">
