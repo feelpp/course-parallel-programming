@@ -43,7 +43,7 @@ if (FEELPP_ENABLE_KOKKOS)
     #add_executable(16_kokkos_simd 16_kokkos_simd.cpp)
     #add_executable(17_kokkos_polynom_jacobi_1 17_kokkos_polynom_jacobi_1.cpp)
 
-    feelpp_add_application(kokkos SRCS feelpp_kokkos.cpp)
+    #feelpp_add_application(kokkos SRCS feelpp_kokkos.cpp)
 
     # Link Kokkos to the executable
     target_link_libraries(00_views Kokkos::kokkos)

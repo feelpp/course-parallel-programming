@@ -33,6 +33,7 @@ jobs:
           BRANCH: gh-pages # The branch the action should deploy to.
           FOLDER: public # The folder the action should deploy.
 
+
   build_code:
     runs-on: self-ubuntu-22.04
     name: Build, Install, Package code
@@ -43,40 +44,22 @@ jobs:
       with:
         lfs: true
         recursive: true
-    - name: Install PETSc and SLEPc
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y build-essential cmake wget
-        wget http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-3.22.tar.gz
-        tar -xzf petsc-3.22.tar.gz
-        cd petsc-3.22
-        ./configure --with-debugging=0 --download-f2cblaslapack=1 --download-mpich=1
-        make all test
-        export PETSC_DIR=$PWD
-        export PETSC_ARCH=arch-linux-c-opt
-        cd ..
-        wget https://slepc.upv.es/download/distrib/slepc-3.22.2.tar.gz
-        tar -xzf slepc-3.22.2.tar.gz
-        cd slepc-3.22.2
-        export SLEPC_DIR=$PWD
-        ./configure
-        make
-    - name: Build
+    -
+      name: Build
       run: |
         spack env activate feelpp-openmpi4-kokkos
-        export PETSC_DIR=$HOME/petsc-3.22
-        export PETSC_ARCH=arch-linux-c-opt
-        export SLEPC_DIR=$HOME/slepc-3.22.2
         cmake --preset default
         cmake --build --preset default
-    - name: Check
+    -
+      name: Check
       run: |
          echo "not yet enabled, need to add tests"
 #        ctest --preset default
       env:
         OMPI_ALLOW_RUN_AS_ROOT: 1
         OMPI_ALLOW_RUN_AS_ROOT_CONFIRM: 1
-    - name: Package
+    -
+      name: Package
       run: |
         cmake --build --preset default -t package
     - name: Upload Artifact
@@ -97,7 +80,6 @@ jobs:
         generate_release_notes: true
         tag_name: ${{ github.ref }}
         token: ${{ secrets.GITHUB_TOKEN }}
-
   deliver:
     runs-on: self-ubuntu-22.04
     needs: build_code
@@ -114,28 +96,33 @@ jobs:
         # Artifact name
         name: parallel-programming-artifacts
         path: artifacts/
-    - name: Docker meta
-      id: meta
-      uses: docker/metadata-action@v4
-      with:
-        images: |
-          ghcr.io/feelpp/parallel-programming
-        tags: |
-          type=ref,event=branch
-          type=ref,event=pr
-          type=semver,pattern={{version}}
-          type=semver,pattern={{major}}.{{minor}}
-    - name: Set up QEMU
+    -
+        name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            ghcr.io/feelpp/parallel-programming
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+    -
+      name: Set up QEMU
       uses: docker/setup-qemu-action@v2
-    - name: Set up Docker Buildx
+    -
+      name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
-    - name: Login to GitHub Container Registry
+    -
+      name: Login to GitHub Container Registry
       uses: docker/login-action@v2
       with:
         registry: ghcr.io
         username: ${{ github.repository_owner }}
         password: ${{ secrets.CR_PAT }}
-    - name: Build container image
+    -
+      name: Build container image
       uses: docker/build-push-action@v4
       with:
         context: artifacts
@@ -143,3 +130,4 @@ jobs:
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
         file: ./Dockerfile
+
