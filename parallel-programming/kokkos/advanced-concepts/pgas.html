@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Views :: Parallel Programming</title>
-    <link rel="canonical" href="https://feelpp.github.io/parallel-programming/parallel-programming/kokkos/basic-concepts/views.html">
+    <title>Kokkos PGAS (Partitioned Global Address Space) :: Parallel Programming</title>
+    <link rel="canonical" href="https://feelpp.github.io/parallel-programming/parallel-programming/kokkos/advanced-concepts/pgas.html">
     <meta name="generator" content="Antora 3.1.10">
     <link rel="stylesheet" href="../../../_/css/site.css">
 <link rel="icon" href="../../../_/img/favicon.ico" type="image/x-icon">
@@ -227,49 +227,49 @@ MathJax.Hub.Config({
   </li>
   <li class="nav-item" data-depth="2">
     <button class="nav-item-toggle"></button>
-    <a class="nav-link" href="index.html">Basic Concepts</a>
+    <a class="nav-link" href="../basic-concepts/index.html">Basic Concepts</a>
 <ul class="nav-list">
-  <li class="nav-item is-current-page" data-depth="3">
-    <a class="nav-link" href="views.html">Views</a>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../basic-concepts/views.html">Views</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="execution-spaces.html">Execution Spaces</a>
+    <a class="nav-link" href="../basic-concepts/execution-spaces.html">Execution Spaces</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="memory-spaces.html">Memory Spaces</a>
+    <a class="nav-link" href="../basic-concepts/memory-spaces.html">Memory Spaces</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="mirrors.html">Mirrors</a>
+    <a class="nav-link" href="../basic-concepts/mirrors.html">Mirrors</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="memory-access-patterns.html">Memory Access Patterns</a>
+    <a class="nav-link" href="../basic-concepts/memory-access-patterns.html">Memory Access Patterns</a>
   </li>
 </ul>
   </li>
   <li class="nav-item" data-depth="2">
     <button class="nav-item-toggle"></button>
-    <a class="nav-link" href="../advanced-concepts/index.html">Advanced Concepts</a>
+    <a class="nav-link" href="index.html">Advanced Concepts</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="../advanced-concepts/advanced-reductions.html">Advanced Reductions</a>
+    <a class="nav-link" href="advanced-reductions.html">Advanced Reductions</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="../advanced-concepts/hierarchical-parallelism.html">Hierarchical Parallelism</a>
+    <a class="nav-link" href="hierarchical-parallelism.html">Hierarchical Parallelism</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="../advanced-concepts/mpi.html">MPI</a>
+    <a class="nav-link" href="mpi.html">MPI</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="3">
+    <a class="nav-link" href="pgas.html">PGAS</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="../advanced-concepts/pgas.html">PGAS</a>
+    <a class="nav-link" href="multidimensional-loops-and-data-structure.html">Multidimensional Loops and Data Structure</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="../advanced-concepts/multidimensional-loops-and-data-structure.html">Multidimensional Loops and Data Structure</a>
+    <a class="nav-link" href="single-instruction-mutliple-data.html">Single Instruction Multiple Data</a>
   </li>
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="../advanced-concepts/single-instruction-mutliple-data.html">Single Instruction Multiple Data</a>
-  </li>
-  <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="../advanced-concepts/asynchronicity-and-streams.html">Asynchronicity and Stream</a>
+    <a class="nav-link" href="asynchronicity-and-streams.html">Asynchronicity and Stream</a>
   </li>
 </ul>
   </li>
@@ -320,13 +320,13 @@ MathJax.Hub.Config({
   <ul>
     <li><a href="../../index.html">Main</a></li>
     <li><a href="../index.html">Kokkos</a></li>
-    <li><a href="index.html">Basic Concepts</a></li>
-    <li><a href="views.html">Views</a></li>
+    <li><a href="index.html">Advanced Concepts</a></li>
+    <li><a href="pgas.html">PGAS</a></li>
   </ul>
 </nav>
 
   
-    <div class="edit-this-page"><a href="https://github.com/feelpp/course-parallel-programming/edit/feature/kokkos/docs/modules/kokkos/pages/basic-concepts/views.adoc">Edit this Page</a></div>
+    <div class="edit-this-page"><a href="https://github.com/feelpp/course-parallel-programming/edit/feature/kokkos/docs/modules/kokkos/pages/advanced-concepts/pgas.adoc">Edit this Page</a></div>
   
   <div class="page-downloads">
   <span class="label">Download as</span>
@@ -346,244 +346,166 @@ MathJax.Hub.Config({
   <div class="toc-menu"></div>
 </aside>
 <article class="doc">
-<h1 class="page">Views</h1>
+<h1 class="page">Kokkos PGAS (Partitioned Global Address Space)</h1>
 <div class="sect1">
-<h2 id="_what_is_kokkos_view"><a class="anchor" href="#_what_is_kokkos_view"></a>1. What is Kokkos View ?</h2>
+<h2 id="_introduction"><a class="anchor" href="#_introduction"></a>1. Introduction</h2>
 <div class="sectionbody">
 <div class="paragraph text-justify">
-<p>Kokkos Views are a fundamental abstraction in the Kokkos programming model, designed to provide a portable and efficient way to manage multidimensional arrays across diverse computing architectures. These Views serve as the primary data structure in Kokkos, offering a powerful mechanism for handling data in high-performance computing applications.</p>
+<p>In the realm of high-performance computing, the integration of internode communication models with intranode parallelism frameworks has become increasingly crucial. This synergy is exemplified by the combination of <strong>MPI</strong> (Message Passing Interface) and <strong>PGAS</strong> (Partitioned Global Address Space) with Kokkos, a performance portability ecosystem for manycore architectures.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_kokkos_remote_spaces_pgas_support"><a class="anchor" href="#_kokkos_remote_spaces_pgas_support"></a>2. Kokkos Remote Spaces: PGAS Support</h2>
+<div class="sectionbody">
+<div class="paragraph text-justify">
+<p><strong>PGAS (Partitioned Global Address Space)</strong> models are gaining traction, particularly with the advent of "super-node" architectures and evolving network infrastructures [1][2]. Kokkos Remote Spaces extends the Kokkos ecosystem to embrace this paradigm, offering a bridge between shared and distributed memory programming models.</p>
+</div>
+<div class="paragraph">
+<p><strong>PGAS</strong> enables Kokkos to provide a global view of data for convenient multi-GPU, multi-node, and multi-device programming. PGAS provides a high-level abstraction for remote memory accesses, simplifying distributed programming for developers using Kokkos. Kokkos Remote Spaces supports multiple PGAS backends, including SHMEM, <strong>NVSHMEM</strong>, <strong>ROCSHMEM</strong>, and <strong>MPI</strong> One-side, providing flexibility for different types of systems and architectures. PGAS implementations are optimized for high-performance communications, which is crucial for the scientific computing applications that Kokkos targets. Using PGAS allows Kokkos to maintain its philosophy of performance portability across different architectures, from CPUs to GPUs. By using PGAS, Kokkos can offer efficient and portable distributed programming, while maintaining a consistent programming interface with the rest of the Kokkos ecosystem.</p>
+</div>
+<div class="paragraph">
+<p>To write a <strong>PGAS</strong> application with Kokkos, developers can utilize the Kokkos Remote Spaces extension. This extension introduces new memory spaces that return data handles with PGAS semantics. Creating a global View in this context is straightforward:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    Kokkos::View&lt;double**, Kokkos::LayoutLeft, Kokkos::Experimental::NVShmemSpace&gt; globalView("GlobalView", N, M);</code></pre>
+</div>
 </div>
 <div class="paragraph text-justify">
-<p>Views can have up to eight dimensions, and these dimensions can be specified at either compile-time or run-time. The flexibility in dimension specification allows for efficient memory management and optimization across different hardware architectures.</p>
+<p>This declaration creates a two-dimensional View that spans across multiple processing elements in a PGAS model.</p>
 </div>
 <div class="paragraph text-justify">
-<p>The motivation behind the View abstraction stems from the evolving landscape of high-performance computing. The memory space, which can be explicitly specified as an additional template parameter, determines where the data resides and which execution units can access it.</p>
+<p>Accessing global data in a PGAS model requires careful consideration of data locality and communication costs. Kokkos Remote Spaces provides abstractions that simplify this process. For example, accessing an element of the global View might look like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    auto element = globalView(i, j);</code></pre>
+</div>
 </div>
 <div class="paragraph text-justify">
-<p>The View life cycle is an essential aspect of using Kokkos effectively. When a View is constructed, it allocates memory in the specified memory space. Kokkos employs a reference-counting mechanism to manage the lifetime of this allocation. As Views are copied or assigned, the reference count is adjusted accordingly. The View abstraction is part of Kokkos' broader machine model, which assumes a hierarchy of execution spaces and memory spaces. This model anticipates future shared-memory computing architectures, where nodes might contain multiple types of compute engines and memory systems. By abstracting these details through Views, Kokkos allows developers to write code that can adapt to evolving hardware landscapes without significant rewrites.</p>
+<p>Behind the scenes, Kokkos handles the necessary communication to fetch or update the data, abstracting away the complexities of the underlying PGAS implementation.</p>
 </div>
 <div class="paragraph text-justify">
-<p>In the context of high-performance computing, Kokkos Views shine in their ability to handle large, multidimensional data structures efficiently. They are particularly useful in scientific simulations, linear algebra operations, and other computationally intensive tasks.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_view_key_concepts_and_template_parameters"><a class="anchor" href="#_view_key_concepts_and_template_parameters"></a>2. View key concepts and template parameters</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>A <em>view</em> is a lightweight object that provides a way to access data in a multi-dimensional array.
-They behave like pointers, so they can be used in the same way as pointers in (C++).</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">View&lt;double*, ...&gt; x(...), y(...);
-...
-
-parallel_for("DAXPY", N, [=] const int64_t i {
-    // Views x and y are captured by value (copy)
-  y(i) = a * x(i) + y(i);
-});</code></pre>
-</div>
+<p>A prime example of PGAS applications is the Sparse Matrix-Vector Multiplication (SpMV) operation, a key component of the Conjugate Gradient (CG) method. In a PGAS model using Kokkos Remote Spaces, the vector becomes distributed, while the sparse matrix stores global indices. This approach allows for efficient parallel computation across multiple nodes.</p>
 </div>
 <div class="paragraph">
-<p>Some general aspects of views:</p>
+<p>The implementation of SpMV in this context might involve:</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>They are <strong>multi-diemensional arrays</strong> of dimension 0 (scalar), 1 (vector), 2 (matrix), etc (to 8). Their number of dimension (named <em>rank</em>) is fixed at compilation.</p>
-</li>
-<li>
-<p>They are <strong>rectangular</strong> arrays, i.e., all dimensions are fixed at construction, and</p>
-</li>
-<li>
-<p>the sizes of dimensions are set either at compile-time or runtime.</p>
-</li>
-<li>
-<p>The elements can easily be accessed via the operator <code>()</code>.</p>
-</li>
-</ul>
-</div>
-<div class="listingblock">
-<div class="title">Example of a 3D array with dimension set either at compilation or at runtime</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">View&lt;double***&gt; data("label", N, M, K);     // 3 at runtime, 0 at compilation
-View&lt;double**[K]&gt; data("label", N, M);      // 2 at runtime, 1 at compilation
-View&lt;double[N][M][K]&gt; data("label");        // 3 at compilation
-
-data(i, j, k) = 3.14;</code></pre>
-</div>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-The <code>label</code> of the view is not mandatory, but it is useful for debugging and profiling.
-</td>
-</tr>
-</table>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_usage"><a class="anchor" href="#_usage"></a>3. Usage</h2>
-<div class="sectionbody">
-<details>
-<summary class="title"><strong>First example:</strong> build and fill-up a view</summary>
-<div class="content">
-<div class="dlist">
-<dl>
-<dt class="hdlist1">1D example</dt>
-<dd>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">#include &lt;Kokkos_Core.hpp&gt;
-#include &lt;iostream&gt;
-
-int main(int argc, char* argv[]) {
-Kokkos::initialize(argc, argv);
-{
-    const size_t N = 100000;
-    // Create a 1D View of doubles
-    Kokkos::View&lt;int*&gt; myView("MyView", N);
-    // Fill the View with data
-    Kokkos::parallel_for(N, KOKKOS_LAMBDA(const int i) { myView(i) = i; });
-    // Compute the sum of all elements
-    int sum = 0.0;
-    Kokkos::parallel_reduce(N, KOKKOS_LAMBDA(const int i, int&amp; partial_sum) {
-    partial_sum += myView(i);
-    }, sum);
-
-    std::cout &lt;&lt; "Sum: " &lt;&lt; sum &lt;&lt;  std::endl;
-}
-Kokkos::finalize();
-return 0;
-}</code></pre>
-</div>
-</div>
-</dd>
-<dt class="hdlist1">2D example</dt>
-<dd>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">#include &lt;Kokkos_Core.hpp&gt;
-
-int main(int argc, char* argv[]) {
-    Kokkos::initialize(argc, argv);
-    {
-        // Define a 2D view of doubles with 10 elements
-        Kokkos::View&lt;double**&gt; view("view", 10, 2);
-
-        // Initialize the view using parallel_for
-        Kokkos::parallel_for("InitView", 10, KOKKOS_LAMBDA(const int i) {
-            view(i, 0) = i * 1.0;
-            view(i, 1) = i * 2.0;
-        });
-
-        // Print the view elements
-        Kokkos::parallel_for("PrintView", 10, KOKKOS_LAMBDA(const int i) {
-            printf("view(%d) = %f\n", i, view(i, 0));
-            printf("view(%d) = %f\n", i, view(i, 1));
-        });
-    }
-    Kokkos::finalize();
-    return 0;
-}</code></pre>
-</div>
-</div>
-</dd>
-</dl>
-</div>
-</div>
-</details>
-<div class="paragraph">
-<p>Views behave like <code>std::shared_ptr</code> in the sense that they are reference-counted objects. They are automatically deleted when the last reference to them is removed:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">#include &lt;Kokkos_Core.hpp&gt;
-#include &lt;iostream&gt;
-
-int main(int argc, char* argv[]) {
-    int N = 5, K = 10;
-    Kokkos::initialize(argc, argv);
-    {
-        Kokkos::View&lt;double*[5]&gt; a("a", N), b("b", K);
-        a = b;                                                  // a gets deallocated and both a and b are points to the same thing
-        Kokkos::View&lt;double**&gt; c(b);                            // copy constructor
-        std::cout &lt;&lt; "Label of c: " &lt;&lt; c.label() &lt;&lt; std::endl;  // The label of c is the same as the label of b
-        a(0, 2) = 1;
-        b(0, 2) = 2;
-        c(0, 2) = 3;
-        std::cout &lt;&lt; "a(0, 2) = " &lt;&lt; a(0, 2) &lt;&lt; std::endl;
-    }
-    Kokkos::finalize();
-    return 0;
-}</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Result</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-none hljs">Label of c: b
-a(0, 2) = 3</code></pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_properties"><a class="anchor" href="#_properties"></a>4. Properties</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Views have several properties that can be queried at runtime:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><code>label()</code>: the label of the view</p>
-</li>
-<li>
-<p><code>rank()</code>: the number of dimensions of the view</p>
-</li>
-<li>
-<p><code>extent(i)</code>: the size of the <code>i</code>-th dimension</p>
-</li>
-<li>
-<p><code>span()</code>: the total number of elements in the view</p>
-</li>
-<li>
-<p><code>data()</code>: a pointer to the data</p>
-</li>
-<li>
-<p><code>operator()</code>: access to the data</p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_exercice"><a class="anchor" href="#_exercice"></a>5. Exercice</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Exercice taken from the Kokkos tutorial: <a href="views_exercice_tutorial.html" class="xref page">Inner Product, Flat Parallelism an the CPU, with Views</a>.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_references"><a class="anchor" href="#_references"></a>References</h2>
-<div class="sectionbody">
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>Kokkos documentation API <a href="https://kokkos.org/kokkos-core-wiki/API/core/view/view.html" class="bare">kokkos.org/kokkos-core-wiki/API/core/view/view.html</a></p>
+<p>Distributing the vector across processing elements.</p>
 </li>
 <li>
-<p>Kokkos package description <a href="https://docs.trilinos.org/dev/packages/kokkos/doc/html/classKokkos_1_1View.html" class="bare">docs.trilinos.org/dev/packages/kokkos/doc/html/classKokkos_1_1View.html</a></p>
+<p>Storing the sparse matrix with global indices.</p>
+</li>
+<li>
+<p>Performing local computations using Kokkos parallel constructs.</p>
+</li>
+<li>
+<p>Utilizing PGAS operations for necessary remote data accesses.</p>
 </li>
 </ol>
+</div>
+<div class="paragraph">
+<p>This strategy can lead to significant performance improvements, especially for large-scale problems that exceed the memory capacity of a single node.</p>
+</div>
+<div class="paragraph">
+<p><strong>Example</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">    Kokkos::initialize(argc, argv);
+    {
+        using ExecSpace = Kokkos::Cuda;
+        using RemoteSpace = Kokkos::Experimental::NVShmemSpace;
+        using RemoteView = Kokkos::View&lt;double*, Kokkos::LayoutLeft, RemoteSpace&gt;;
+        const int N = 1000;
+        RemoteView remote_data("RemoteData", N);
+        Kokkos::parallel_for("InitializeData", Kokkos::RangePolicy&lt;ExecSpace&gt;(0, N),
+        KOKKOS_LAMBDA(const int i) {
+            remote_data(i) = static_cast&lt;double&gt;(i);
+        });
+
+        Kokkos::fence();
+        double sum = 0.0;
+        Kokkos::parallel_reduce("SumData", Kokkos::RangePolicy&lt;ExecSpace&gt;(0, N),
+        KOKKOS_LAMBDA(const int i, double&amp; lsum) {
+            lsum += remote_data(i);
+        }, sum);
+        Kokkos::fence();
+        printf("Sum of remote data: %f\n", sum);
+    }
+    Kokkos::finalize();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Explanations:</p>
+</div>
+<div class="paragraph">
+<p>Using Kokkos::Experimental::NVShmemSpace as a remote memory space. Creating a RemoteView using NVShmemSpace. Initializing the remote data using a parallel_for on the CUDA runspace. Computing the sum of the remote data with a parallel_reduce. Using Kokkos::fence() to ensure synchronization between remote operations.</p>
+</div>
+<div class="paragraph">
+<p>This code demonstrates how Kokkos Remote Spaces allows using NVSHMEM as a PGAS backend for simplified multi-GPU programming, providing a global view of the data while maintaining the portability of Kokkos performance</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_references"><a class="anchor" href="#_references"></a>3. References</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>[1] <a href="https://extremecomputingtraining.anl.gov/wp-content/uploads/sites/96/2019/08/ATPESC_2019_Track-2_3_8-1_830am_Trott-Kokkos.pdf" class="bare">extremecomputingtraining.anl.gov/wp-content/uploads/sites/96/2019/08/ATPESC_2019_Track-2_3_8-1_830am_Trott-Kokkos.pdf</a></p>
+</li>
+<li>
+<p>[2] <a href="https://en.wikipedia.org/wiki/Partitioned_global_address_space" class="bare">en.wikipedia.org/wiki/Partitioned_global_address_space</a></p>
+</li>
+</ul>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title"><strong>Points to keep in mind</strong></div>
+<div class="paragraph">
+<p><strong>PGAS</strong> (Partitioned Global Address Space) is a parallel programming model where the global address space is logically partitioned, with each portion local to a process or thread.</p>
+</div>
+<div class="paragraph">
+<p><strong>Kokkos Remote Spaces</strong> is an extension of Kokkos that adds support for Distributed Shared Memory (DSM) to enable a global view of data in a multi-GPU, multi-node, multi-device environment.</p>
+</div>
+<div class="paragraph">
+<p><strong>Kokkos Remote Spaces</strong> is an extension of Kokkos that adds support for Distributed Shared Memory (DSM) to enable a global view of data in a multi-GPU, multi-node, multi-device environment.</p>
+</div>
+<div class="paragraph">
+<p><strong>NVShmemSpace</strong> is an NVIDIA implementation of the Partitioned Global Address Space (PGAS) model that enables low-latency access to shared memory distributed across multiple GPUs in a cluster.</p>
+</div>
+<div class="paragraph">
+<p><strong>ROC_SHMEM</strong> is an implementation of the Partitioned Global Address Space (PGAS) model for AMD GPUs, enabling GPU-initiated communication operations in a multi-GPU environment</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Support for PGAS in Kokkos:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Kokkos Remote Spaces extends Kokkos to support PGAS models.</p>
+</li>
+<li>
+<p>Bridges the gap between shared and distributed memory programming.</p>
+</li>
+<li>
+<p>Particularly relevant for "super-node" architectures and evolving network infrastructures.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>&#8230;&#8203;</p>
+</div>
+</div>
 </div>
 </div>
 </div>
