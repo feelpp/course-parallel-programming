@@ -33,7 +33,7 @@ if (FEELPP_ENABLE_KOKKOS)
     add_executable(03_views_properties 03_views_properties.cpp)
     add_executable(04_kokkos_exercise_views 04_kokkos_exercise_views.cpp)
 
-    # My prog 
+    # My prog
     add_executable(10_kokkos_cholesky 10_kokkos_cholesky.cpp)
     add_executable(11_kokkos_memspace 11_kokkos_memspace.cpp)
     #add_executable(12_kokkos_simple_multi_gpus 12_kokkos_simple_multi_gpus.cpp)
@@ -43,7 +43,7 @@ if (FEELPP_ENABLE_KOKKOS)
     #add_executable(16_kokkos_simd 16_kokkos_simd.cpp)
     #add_executable(17_kokkos_polynom_jacobi_1 17_kokkos_polynom_jacobi_1.cpp)
 
-    # feelpp_add_application(kokkos SRCS feelpp_kokkos.cpp)
+    feelpp_add_application(kokkos SRCS feelpp_kokkos.cpp)
 
     # Link Kokkos to the executable
     target_link_libraries(00_views Kokkos::kokkos)
@@ -52,7 +52,7 @@ if (FEELPP_ENABLE_KOKKOS)
     target_link_libraries(03_views_properties Kokkos::kokkos)
     target_link_libraries(04_kokkos_exercise_views Kokkos::kokkos)
 
-    # My prog 
+    # My prog
     target_link_libraries(10_kokkos_cholesky Kokkos::kokkos)
     target_link_libraries(11_kokkos_memspace Kokkos::kokkos)
     #target_link_libraries(12_kokkos_simple_multi_gpus Kokkos::kokkos)
