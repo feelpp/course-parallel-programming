@@ -11,12 +11,14 @@ To compile a program with Kokkos and Feel++ on Gaya, you need to load the spack 
 
 [source, bash]
 ----
-spacktivate feelpp-openmpi4-rocm-kokkos <1>
-spacktivate feelpp-openmpi4-kokkos <2>
+source /data/cemosis/spack/share/spack/setup-env.sh <1>
+spacktivate feelpp-openmpi4-rocm-kokkos <2>
+spacktivate feelpp-openmpi4-kokkos <3>
 ----
 
-<1> Load the environment with ROCM support.
-<2> Load the environment without ROCM support.
+<1> Setup the bash environment, and load spack commands.
+<2> Load the environment with ROCM support.
+<3> Load the environment without ROCM support.
 
 == Set-up CMake
 
