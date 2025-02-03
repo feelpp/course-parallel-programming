@@ -16,7 +16,8 @@ The content of this part has ben  constructed from the slides from the https://i
 
 - xref:advanced-concepts/advanced-reductions.adoc[Advanced Reductions]
 - xref:advanced-concepts/hierarchical-parallelism.adoc[Hierarchical Parallelism]
-- xref:advanced-concepts/mpi-pgas.adoc[MPI and PGAS]
+- xref:advanced-concepts/mpi.adoc[MPI]
+- xref:advanced-concepts/pgas.adoc[PGAS]
 - xref:advanced-concepts/multidimensional-loops-and-data-structure.adoc[Multidimensional Loops and Data Structure]
 - xref:advanced-concepts/single-instruction-mutliple-data.adoc[Single Instruction Multiple Data]
 - xref:advanced-concepts/asynchronicity-and-streams.adoc[Asynchronicity and Stream]

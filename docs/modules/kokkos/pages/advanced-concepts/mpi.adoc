@@ -1,0 +1,135 @@
+= Kokkos MPI (Message Passing Interface) 
+
+== Introduction
+
+[.text-justify]
+In the realm of high-performance computing, the integration of internode communication models with intranode parallelism frameworks has become increasingly crucial. This synergy is exemplified by the combination of *MPI* (Message Passing Interface) and *PGAS* (Partitioned Global Address Space) with Kokkos, a performance portability ecosystem for manycore architectures. 
+
+== Internode Communication
+
+[.text-justify]
+The integration of MPI concept inside Kokkos represents a powerful approach to hybrid programming, leveraging the strengths of both paradigms. MPI excels in distributed memory parallelism, while Kokkos shines in shared memory parallelism and performance portability across diverse architectures [1]. 
+
+[.text-justify]
+When writing a hybrid MPI-Kokkos program, one of the primary considerations is data transfer between MPI ranks. Kokkos Views, the library's multidimensional array abstraction, can be seamlessly integrated with MPI communications. To send data from a Kokkos View, one simply needs to pass the View's data pointer and size to MPI functions [2]. For example:
+
+[source, c++]
+----
+    Kokkos::View<double*> myView("MyView", 1000);
+    MPI_Send(myView.data(), myView.size(), MPI_DOUBLE, dest, tag, comm);
+----
+
+[.text-justify]
+This straightforward approach works because Kokkos ensures that View data is contiguous in memory, aligning perfectly with MPI's expectations [2].
+
+[.text-justify]
+A key optimization in hybrid MPI-Kokkos programs is the overlapping of communication and computation. This can be achieved by leveraging Kokkos' execution spaces and MPI's non-blocking communication primitives. For example:
+
+[source, c++]
+----
+    auto future = Kokkos::parallel_for(policy, KOKKOS_LAMBDA(int i) {
+    // Computation kernel
+    });
+    MPI_Request request;
+    MPI_Isend(data, count, MPI_INT, dest, tag, comm, &request);
+    future.wait(); // Wait for computation to complete
+    MPI_Wait(&request, MPI_STATUS_IGNORE); // Wait for communication to complete
+----
+
+[.text-justify]
+This pattern allows the computation to proceed concurrently with the MPI communication, potentially masking latency and improving overall performance [1].
+
+[.text-justify]
+Buffer packing strategies play a crucial role in optimizing MPI communication, especially when dealing with non-contiguous data. Kokkos provides efficient mechanisms for packing and unpacking data. One approach is to use Kokkos parallel_for to pack data into a contiguous buffer before sending:
+
+[source, c++]
+----
+    Kokkos::View<double*> sendBuffer("SendBuffer", count);
+    Kokkos::parallel_for(count, KOKKOS_LAMBDA(int i) {
+        sendBuffer(i) = computeValue(i);
+    });
+    MPI_Send(sendBuffer.data(), count, MPI_DOUBLE, dest, tag, comm);
+----
+
+[.text-justify]
+This method ensures efficient memory access patterns and can leverage the full parallelism of the underlying hardware.
+
+[.text-justify]
+For sparse communication patterns, generating efficient index lists is crucial. Kokkos can assist in this process through its parallel algorithms. For instance, to create a list of indices for non-zero elements:
+
+[source, c++]
+----
+    Kokkos::View<int*> indexList("IndexList", n);
+    Kokkos::parallel_scan(n, KOKKOS_LAMBDA(int i, int& update, bool final) {
+    if (data(i) != 0) {
+        if (final) indexList(update) = i;
+        ++update;
+    }
+    });
+----
+
+[.text-justify]
+This approach efficiently generates a compact list of relevant indices, which can then be used to optimize MPI communications for sparse data structures.
+
+
+*Example*
+
+[source, c++]
+----
+    #include <Kokkos_Core.hpp>
+    #include <mpi.h>
+    #include <iostream>
+    #include <vector>
+
+    int main(int argc, char* argv[]) {
+        MPI_Init(&argc, &argv);
+        int rank, size;
+        MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+        MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+        Kokkos::initialize(argc, argv);
+        {
+            const int localSize = 1000;
+            Kokkos::View<double*> localData("localData", localSize);        
+            Kokkos::parallel_for("fill", localSize, KOKKOS_LAMBDA(const int i) {
+                localData(i) = rank * localSize + i;
+            });
+            // Calculate the local sum
+            double localSum = 0.0;
+            Kokkos::parallel_reduce("sum", localSize, KOKKOS_LAMBDA(const int i, double& sum) {
+                sum += localData(i);
+            }, localSum);
+            // MPI reduction to get the global sum
+            double globalSum;
+            MPI_Reduce(&localSum, &globalSum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+            // Display the result on process 0
+            if (rank == 0) {
+                std::cout << "Somme globale : " << globalSum << std::endl;
+            }
+        }
+        Kokkos::finalize();
+        MPI_Finalize();
+        return 0;
+    }
+----
+
+Explanations:
+
+
+
+== References
+** [1] https://kokkos.org/kokkos-core-wiki/usecases/MPI-Halo-Exchange.html
+** [2] https://indico.math.cnrs.fr/event/12037/attachments/5040/8156/KokkosTutorial_07_Tools.pdf
+
+
+.*Points to keep in mind*
+****
+
+*MPI* in Kokkos C++ is a standard message passing interface used in conjunction with Kokkos for inter-process communication in distributed parallel applications, enabling efficient data exchange between compute nodes while exploiting the performance portability capabilities of Kokkos for single-node computing.
+
+
+... 
+
+
+****
+

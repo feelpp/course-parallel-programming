@@ -1,83 +1,16 @@
-= Kokkos MPI (Message Passing Interface)  and PGAS (Partitioned Global Address Space)
+= Kokkos PGAS (Partitioned Global Address Space)
 
 == Introduction
 
 [.text-justify]
 In the realm of high-performance computing, the integration of internode communication models with intranode parallelism frameworks has become increasingly crucial. This synergy is exemplified by the combination of *MPI* (Message Passing Interface) and *PGAS* (Partitioned Global Address Space) with Kokkos, a performance portability ecosystem for manycore architectures. 
 
-== Internode Communication
-
-[.text-justify]
-The integration of MPI concept inside Kokkos represents a powerful approach to hybrid programming, leveraging the strengths of both paradigms. MPI excels in distributed memory parallelism, while Kokkos shines in shared memory parallelism and performance portability across diverse architectures [1]. 
-
-[.text-justify]
-When writing a hybrid MPI-Kokkos program, one of the primary considerations is data transfer between MPI ranks. Kokkos Views, the library's multidimensional array abstraction, can be seamlessly integrated with MPI communications. To send data from a Kokkos View, one simply needs to pass the View's data pointer and size to MPI functions [2]. For example:
-
-[source, c++]
-----
-    Kokkos::View<double*> myView("MyView", 1000);
-    MPI_Send(myView.data(), myView.size(), MPI_DOUBLE, dest, tag, comm);
-----
-
-[.text-justify]
-This straightforward approach works because Kokkos ensures that View data is contiguous in memory, aligning perfectly with MPI's expectations [2].
-
-[.text-justify]
-A key optimization in hybrid MPI-Kokkos programs is the overlapping of communication and computation. This can be achieved by leveraging Kokkos' execution spaces and MPI's non-blocking communication primitives. For example:
-
-[source, c++]
-----
-    auto future = Kokkos::parallel_for(policy, KOKKOS_LAMBDA(int i) {
-    // Computation kernel
-    });
-    MPI_Request request;
-    MPI_Isend(data, count, MPI_INT, dest, tag, comm, &request);
-    future.wait(); // Wait for computation to complete
-    MPI_Wait(&request, MPI_STATUS_IGNORE); // Wait for communication to complete
-----
-
-[.text-justify]
-This pattern allows the computation to proceed concurrently with the MPI communication, potentially masking latency and improving overall performance [1].
-
-[.text-justify]
-Buffer packing strategies play a crucial role in optimizing MPI communication, especially when dealing with non-contiguous data. Kokkos provides efficient mechanisms for packing and unpacking data. One approach is to use Kokkos parallel_for to pack data into a contiguous buffer before sending:
-
-[source, c++]
-----
-    Kokkos::View<double*> sendBuffer("SendBuffer", count);
-    Kokkos::parallel_for(count, KOKKOS_LAMBDA(int i) {
-        sendBuffer(i) = computeValue(i);
-    });
-    MPI_Send(sendBuffer.data(), count, MPI_DOUBLE, dest, tag, comm);
-----
-
-[.text-justify]
-This method ensures efficient memory access patterns and can leverage the full parallelism of the underlying hardware.
-
-[.text-justify]
-For sparse communication patterns, generating efficient index lists is crucial. Kokkos can assist in this process through its parallel algorithms. For instance, to create a list of indices for non-zero elements:
-
-[source, c++]
-----
-    Kokkos::View<int*> indexList("IndexList", n);
-    Kokkos::parallel_scan(n, KOKKOS_LAMBDA(int i, int& update, bool final) {
-    if (data(i) != 0) {
-        if (final) indexList(update) = i;
-        ++update;
-    }
-    });
-----
-
-[.text-justify]
-This approach efficiently generates a compact list of relevant indices, which can then be used to optimize MPI communications for sparse data structures.
-
-
 
 == Kokkos Remote Spaces: PGAS Support
 
 [.text-justify]
 
-*PGAS (Partitioned Global Address Space)* models are gaining traction, particularly with the advent of "super-node" architectures and evolving network infrastructures [3][4]. Kokkos Remote Spaces extends the Kokkos ecosystem to embrace this paradigm, offering a bridge between shared and distributed memory programming models.
+*PGAS (Partitioned Global Address Space)* models are gaining traction, particularly with the advent of "super-node" architectures and evolving network infrastructures [1][2]. Kokkos Remote Spaces extends the Kokkos ecosystem to embrace this paradigm, offering a bridge between shared and distributed memory programming models.
 
 *PGAS* enables Kokkos to provide a global view of data for convenient multi-GPU, multi-node, and multi-device programming. PGAS provides a high-level abstraction for remote memory accesses, simplifying distributed programming for developers using Kokkos. Kokkos Remote Spaces supports multiple PGAS backends, including SHMEM, *NVSHMEM*, *ROCSHMEM*, and *MPI* One-side, providing flexibility for different types of systems and architectures. PGAS implementations are optimized for high-performance communications, which is crucial for the scientific computing applications that Kokkos targets. Using PGAS allows Kokkos to maintain its philosophy of performance portability across different architectures, from CPUs to GPUs. By using PGAS, Kokkos can offer efficient and portable distributed programming, while maintaining a consistent programming interface with the rest of the Kokkos ecosystem.
 
@@ -150,10 +83,8 @@ This code demonstrates how Kokkos Remote Spaces allows using NVSHMEM as a PGAS b
 
 
 == References
-** [1] https://kokkos.org/kokkos-core-wiki/usecases/MPI-Halo-Exchange.html
-** [2] https://indico.math.cnrs.fr/event/12037/attachments/5040/8156/KokkosTutorial_07_Tools.pdf
-** [3] https://extremecomputingtraining.anl.gov/wp-content/uploads/sites/96/2019/08/ATPESC_2019_Track-2_3_8-1_830am_Trott-Kokkos.pdf
-** [4] https://en.wikipedia.org/wiki/Partitioned_global_address_space
+** [1] https://extremecomputingtraining.anl.gov/wp-content/uploads/sites/96/2019/08/ATPESC_2019_Track-2_3_8-1_830am_Trott-Kokkos.pdf
+** [2] https://en.wikipedia.org/wiki/Partitioned_global_address_space
 
 .*Points to keep in mind*
 ****
