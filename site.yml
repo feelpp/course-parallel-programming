@@ -37,3 +37,8 @@ asciidoc:
     swimmer: Swimmer
     python: Python
     cpp: C++
+
+  extensions:
+  - docs/antora/extensions/cpp-dynamic-processor-collapsible.js
+  - docs/antora/extensions/make-dynamic-processor.js
+
