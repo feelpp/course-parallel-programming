@@ -44,3 +44,10 @@ jupyter/
 auto-save-list
 tramp
 .\#*
+_minted*
+*.aux
+*.log
+*.synctex.gz
+*.fls
+/cpp/
+/cpp.old/
