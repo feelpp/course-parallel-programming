@@ -12,7 +12,7 @@
 //:cpp: C++
 
 ifeval::[{showproof} >= 2]
-.Solution
+.Allgather
 [%collapsible.proof]
 ====
 [%dynamic,c,filename="MPI_Allgather.c",compile="mpi",np=3]
@@ -23,54 +23,289 @@ include::ROOT:example$src/MPI/MPI_Allgather.c[]
 endif::[]
 
 
+ifeval::[{showproof} >= 2]
 .Allreduce
-[.examp]
-****
-.Code Allreduce
-[source,c]
+[%collapsible.proof]
+====
+[%dynamic,c,filename="MPI_Allreduce.c",compile="mpi",np=4]
 ----
-include::ROOT:example$src/MPI/MPI_Allreduce.c[indent=0]
+include::ROOT:example$src/MPI/MPI_Allreduce.c[]
 ----
-****
+====
+endif::[]
 
 
-
-
-.Code Demo -
+ifeval::[{showproof} >= 2]
+.MPI_Alltoall
+[%collapsible.proof]
+====
+[%dynamic,c,filename="MPI_Alltoall.c",compile="mpi",np=3]
 ----
-MPI_Allgather
-MPI_Allreduce
-MPI_Alltoall
-MPI_Barrier
-MPI_Bcast
-MPI_BSend
-MPI_Buffer_attach
-MPI_Buffer_detach
-MPI_Comm_spawn
-MPI_Comm_split
-MPI_Exscan
-MPI_File_close
-MPI_File_open
-MPI_File
-MPI_Gather
-MPI_Graph_get
-MPI_Graph_neigbors_count
-MPI_Graph_neigbors
-MPI_Graphdims_get
-MPI_lallgather
-MPI_lallreduce
-MPI_lalltoall
-MPI_lbarrier
-MPI-lbcast
-MPI_lbsend
-MPI_lreduce
-MPI_lreduce_scatter
-MPI_lreduce_scatter_block
-MPI_lresend
-MPI_lscatterv
-MPI_lssend
-
-
+include::ROOT:example$src/MPI/MPI_Alltoall.c[]
 ----
-...
+====
+endif::[]
+
+
+ifeval::[{showproof} >= 2]
+.MPI_Barrier
+[%collapsible.proof]
+====
+[%dynamic,c,filename="MPI_Barrier.c",compile="mpi",np=4]
+----
+include::ROOT:example$src/MPI/MPI_Barrier.c[]
+----
+====
+endif::[]
+
+
+ifeval::[{showproof} >= 2]
+.MPI_Bcast
+[%collapsible.proof]
+====
+[%dynamic,c,filename="MPI_Bcast.c",compile="mpi",np=2]
+----
+include::ROOT:example$src/MPI/MPI_Bcast.c[]
+----
+====
+endif::[]
+
+
+ifeval::[{showproof} >= 2]
+.MPI_Bsend
+[%collapsible.proof]
+====
+[%dynamic,c,filename="MPI_Bsend.c",compile="mpi",np=2]
+----
+include::ROOT:example$src/MPI/MPI_Bsend.c[]
+----
+====
+endif::[]
+
+
+
+ifeval::[{showproof} >= 2]
+.MPI_Comm_spawn
+[%collapsible.proof]
+====
+[%dynamic,c,filename="MPI_Comm_spawn.c",compile="mpi",np=4]
+----
+include::ROOT:example$src/MPI/MPI_Comm_spawn.c[]
+----
+====
+endif::[]
+
+
+ifeval::[{showproof} >= 2]
+.MPI_Comm_split
+[%collapsible.proof]
+====
+[%dynamic,c,filename="MPI_Comm_split.c",compile="mpi",np=4]
+----
+include::ROOT:example$src/MPI/MPI_Comm_split.c[]
+----
+====
+endif::[]
+
+
+ifeval::[{showproof} >= 2]
+.MPI_Exscan
+[%collapsible.proof]
+====
+[%dynamic,c,filename="MPI_Exscan.c",compile="mpi",np=4]
+----
+include::ROOT:example$src/MPI/MPI_Exscan.c[]
+----
+====
+endif::[]
+
+
+
+ifeval::[{showproof} >= 2]
+.MPI_File
+[%collapsible.proof]
+====
+[%dynamic,c,filename="MPI_File.c",compile="mpi",np=3]
+----
+include::ROOT:example$src/MPI/MPI_File.c[]
+----
+====
+endif::[]
+
+
+
+ifeval::[{showproof} >= 2]
+.MPI_Gather
+[%collapsible.proof]
+====
+[%dynamic,c,filename="MPI_Gather.c",compile="mpi",np=4]
+----
+include::ROOT:example$src/MPI/MPI_Gather.c[]
+----
+====
+endif::[]
+
+
+
+ifeval::[{showproof} >= 2]
+.MPI_Graph_get
+[%collapsible.proof]
+====
+[%dynamic,c,filename="MPI_Graph_get.c",compile="mpi",np=3]
+----
+include::ROOT:example$src/MPI/MPI_Graph_get.c[]
+----
+====
+endif::[]
+
+
+ifeval::[{showproof} >= 2]
+.MPI_Graphdims_get
+[%collapsible.proof]
+====
+[%dynamic,c,filename="MPI_Graphdims_get.c",compile="mpi",np=3]
+----
+include::ROOT:example$src/MPI/MPI_Graphdims_get.c[]
+----
+====
+endif::[]
+
+
+
+ifeval::[{showproof} >= 2]
+.MPI_allgather
+[%collapsible.proof]
+====
+[%dynamic,c,filename="MPI_Iallgather.c",compile="mpi",np=4]
+----
+include::ROOT:example$src/MPI/MPI_Iallgather.c[]
+----
+====
+endif::[]
+
+
+ifeval::[{showproof} >= 2]
+.MPI_allreduce
+[%collapsible.proof]
+====
+[%dynamic,c,filename="MPI_Iallreduce.c",compile="mpi",np=4]
+----
+include::ROOT:example$src/MPI/MPI_Iallreduce.c[]
+----
+====
+endif::[]
+
+
+ifeval::[{showproof} >= 2]
+.MPI_alltoall
+[%collapsible.proof]
+====
+[%dynamic,c,filename="MPI_Ialltoall.c",compile="mpi",np=3]
+----
+include::ROOT:example$src/MPI/MPI_Ialltoall.c[]
+----
+====
+endif::[]
+
+
+ifeval::[{showproof} >= 2]
+.MPI_barrier
+[%collapsible.proof]
+====
+[%dynamic,c,filename="MPI_Ibarrier.c",compile="mpi",np=4]
+----
+include::ROOT:example$src/MPI/MPI_Ibarrier.c[]
+----
+====
+endif::[]
+
+
+ifeval::[{showproof} >= 2]
+.MPI_bcast
+[%collapsible.proof]
+====
+[%dynamic,c,filename="MPI_Ibcast.c",compile="mpi",np=4]
+----
+include::ROOT:example$src/MPI/MPI_Ibcast.c[]
+----
+====
+endif::[]
+
+
+
+ifeval::[{showproof} >= 2]
+.MPI_reduce
+[%collapsible.proof]
+====
+[%dynamic,c,filename="MPI_Ireduce.c",compile="mpi",np=3]
+----
+include::ROOT:example$src/MPI/MPI_Ireduce.c[]
+----
+====
+endif::[]
+
+
+ifeval::[{showproof} >= 2]
+.MPI_reduce_scatter
+[%collapsible.proof]
+====
+[%dynamic,c,filename="MPI_Ireduce_scatter.c",compile="mpi",np=4]
+----
+include::ROOT:example$src/MPI/MPI_Ireduce_scatter.c[]
+----
+====
+endif::[]
+
+
+
+ifeval::[{showproof} >= 2]
+.MPI_reduce_scatter
+[%collapsible.proof]
+====
+[%dynamic,c,filename="MPI_Ireduce_scatter.c",compile="mpi",np=3]
+----
+include::ROOT:example$src/MPI/MPI_Ireduce_scatter.c[]
+----
+====
+endif::[]
+
+
+ifeval::[{showproof} >= 2]
+.MPI_reduce_scatter_block
+[%collapsible.proof]
+====
+[%dynamic,c,filename="MPI_Ireduce_scatter_block.c",compile="mpi",np=3]
+----
+include::ROOT:example$src/MPI/MPI_Ireduce_scatter_block.c[]
+----
+====
+endif::[]
+
+
+ifeval::[{showproof} >= 2]
+.MPI_scatterv
+[%collapsible.proof]
+====
+[%dynamic,c,filename="MPI_Iscatterv.c",compile="mpi",np=3]
+----
+include::ROOT:example$src/MPI/MPI_Iscatterv.c[]
+----
+====
+endif::[]
+
+
+
+ifeval::[{showproof} >= 2]
+.MPI_ssend
+[%collapsible.proof]
+====
+[%dynamic,c,filename="MPI_Issend.c",compile="mpi",np=3]
+----
+include::ROOT:example$src/MPI/MPI_Issend.c[]
+----
+====
+endif::[]
+
+
+
 
