@@ -7,48 +7,21 @@
 
 
 
+== List of programms
 
-.Test compile {cpp}
-[%dynamic,cpp,filename="Hello.hpp",compile="sh"] 
-----
-#include <iostream>
-
-int main()
-{
-        std::cout << "Hello, world!" << std::endl;
-        return 0;
-}
-----
-
+//:cpp: C++
 
 ifeval::[{showproof} >= 2]
 .Solution
 [%collapsible.proof]
 ====
-[%dynamic,c,filename="MPI_Allgather.c",compile="mpi",np=2]
+[%dynamic,c,filename="MPI_Allgather.c",compile="mpi",np=3]
 ----
 include::ROOT:example$src/MPI/MPI_Allgather.c[]
 ----
 ====
 endif::[]
 
-
-
-== List of programms
-
-//* xref:MPI_Allgather.c[MPI_Allgather]
-
-//:cpp: C++
-
-.Allgather
-[.examp]
-****
-.Code Allgather
-[source,c]
-----
-include::ROOT:example$src/MPI/MPI_Allgather.c[indent=0]
-----
-****
 
 .Allreduce
 [.examp]
