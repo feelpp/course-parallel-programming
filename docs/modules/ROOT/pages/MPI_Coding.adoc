@@ -9,7 +9,7 @@
 
 
 .Test compile {cpp}
-[%dynamic,cpp,filename="Hello.hpp",compile=true,run=true] 
+[%dynamic,cpp,filename="Hello.hpp",compile="sh"] 
 ----
 #include <iostream>
 
@@ -21,6 +21,16 @@ int main()
 ----
 
 
+ifeval::[{showproof} >= 2]
+.Solution
+[%collapsible.proof]
+====
+[%dynamic,c,filename="MPI_Allgather.c",compile="mpi",np=2]
+----
+include::ROOT:example$src/MPI/MPI_Allgather.c[]
+----
+====
+endif::[]
 
 
 
