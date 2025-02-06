@@ -3,7 +3,47 @@
 == Introduction
 
 [.text-justify]
+In terms of performance under Kokkos C++, the choice between MPI and PGAS (Partitioned Global Address Space) depends on the specific application context and the target hardware architecture. Here are the key points to consider:
+
+1. MPI is generally more mature and widely used for distributed programming[2]. It offers good performance for two-sided communications and is well optimized on many platforms.
+
+2. PGAS, on the other hand, can offer performance advantages for some use cases:
+
+- It better exploits data locality, which can improve efficiency and scalability compared to traditional shared memory approaches[3].
+- PGAS allows one-sided communication operations, which can be more efficient in some scenarios[3].
+
+3. Kokkos proposes "remote spaces" that implement the PGAS model, including NVSHMEM, conventional SHMEM, and one-sided MPI[2][5]. These implementations can provide good performance, especially on specific architectures such as NVIDIA GPUs.
+
+4. A performance study using miniFE (a mini-benchmark for solving linear systems) showed that implementations based on SHMEM (a form of PGAS) can outperform MPI in some cases [1][4].
+
+5. However, it is important to note that performance can vary significantly depending on the specific application, problem size, and hardware architecture.
+
+
+[plantuml, format=svg, opts="inline"]
+----
+legend
+[Kokkos C++] 
+  |_[MPI] 
+    |_Used for: CPU, GPU
+    |_Strengths: Two-way communications, maturity
+    |_Best for: Traditional HPC applications
+
+  |_[PGAS] 
+    |_Implementations: SHMEM, NVSHMEM, ROCSHMEM
+    |_Used for: CPU, NVIDIA GPU, AMD GPU
+    |_Strengths: One-way communications, data locality
+    |_Best for: Applications with frequent access to remote data
+end legend
+----
+
+
+
 
 
 == References
-** [1]
+** [1] https://extremecomputingtraining.anl.gov/wp-content/uploads/sites/96/2019/08/ ATPESC_2019_Track-2_3_8-1_830am_Trott-Kokkos.pdf
+** [2] https://www.reddit.com/r/cpp/comments/1efklad/mpi_or_gpu_parallel_computation_of_dem_code_for/
+** [3] https://en.wikipedia.org/wiki/Partitioned_global_address_space
+** [4] https://oaciss.uoregon.edu/E4S-Forum19/talks/Trott-E4S.pdf
+** [5] https://github.com/kokkos/kokkos-remote-spaces
+
