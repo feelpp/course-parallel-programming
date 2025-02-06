@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Advanced concepts :: Parallel Programming</title>
-    <link rel="canonical" href="https://feelpp.github.io/parallel-programming/parallel-programming/kokkos/advanced-concepts/index.html">
+    <title>Kokkos MPI (Message Passing Interface) vs PGAS (Partitioned Global Address Space) :: Parallel Programming</title>
+    <link rel="canonical" href="https://feelpp.github.io/parallel-programming/parallel-programming/kokkos/advanced-concepts/mpi-vs-pgas.html">
     <meta name="generator" content="Antora 3.1.10">
     <link rel="stylesheet" href="../../../_/css/site.css">
 <link rel="icon" href="../../../_/img/favicon.ico" type="image/x-icon">
@@ -246,7 +246,7 @@ MathJax.Hub.Config({
   </li>
 </ul>
   </li>
-  <li class="nav-item is-current-page" data-depth="2">
+  <li class="nav-item" data-depth="2">
     <button class="nav-item-toggle"></button>
     <a class="nav-link" href="index.html">Advanced Concepts</a>
 <ul class="nav-list">
@@ -319,13 +319,12 @@ MathJax.Hub.Config({
   <nav class="breadcrumbs" aria-label="breadcrumbs">
   <ul>
     <li><a href="../../index.html">Main</a></li>
-    <li><a href="../index.html">Kokkos</a></li>
-    <li><a href="index.html">Advanced Concepts</a></li>
+    <li><a href="mpi-vs-pgas.html">Kokkos MPI (Message Passing Interface) vs PGAS (Partitioned Global Address Space)</a></li>
   </ul>
 </nav>
 
   
-    <div class="edit-this-page"><a href="https://github.com/feelpp/course-parallel-programming/edit/feature/kokkos/docs/modules/kokkos/pages/advanced-concepts/index.adoc">Edit this Page</a></div>
+    <div class="edit-this-page"><a href="https://github.com/feelpp/course-parallel-programming/edit/feature/kokkos/docs/modules/kokkos/pages/advanced-concepts/mpi-vs-pgas.adoc">Edit this Page</a></div>
   
   <div class="page-downloads">
   <span class="label">Download as</span>
@@ -345,63 +344,80 @@ MathJax.Hub.Config({
   <div class="toc-menu"></div>
 </aside>
 <article class="doc">
-<h1 class="page">Advanced concepts</h1>
-<div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
-<p>The content of this part has ben  constructed from the slides from the <a href="https://indico.math.cnrs.fr/event/12037/">Kokkos training days</a> held in 2024.</p>
-</div>
-</div>
-</div>
+<h1 class="page">Kokkos MPI (Message Passing Interface) vs PGAS (Partitioned Global Address Space)</h1>
 <div class="sect1">
-<h2 id="_other_ressources"><a class="anchor" href="#_other_ressources"></a>1. Other ressources</h2>
+<h2 id="_introduction"><a class="anchor" href="#_introduction"></a>1. Introduction</h2>
 <div class="sectionbody">
+<div class="paragraph text-justify">
+<p>In terms of performance under Kokkos C++, the choice between MPI and PGAS (Partitioned Global Address Space) depends on the specific application context and the target hardware architecture. Here are the key points to consider:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>MPI is generally more mature and widely used for distributed programming[2]. It offers good performance for two-sided communications and is well optimized on many platforms.</p>
+</li>
+<li>
+<p>PGAS, on the other hand, can offer performance advantages for some use cases:</p>
 <div class="ulist">
 <ul>
 <li>
-<p>Organization Kokkos on GitHub: <a href="https://github.com/kokkos">github.com/kokkos</a>,</p>
+<p>It better exploits data locality, which can improve efficiency and scalability compared to traditional shared memory approaches[3].</p>
 </li>
 <li>
-<p>Slides, recording and Q&amp;A for the Lectures: <a href="https://github.com/kokkos/kokkos-tutorials/wiki/Kokkos-Lecture-Series">github.com/kokkos/kokkos-tutorials/wiki</a>,</p>
-</li>
-<li>
-<p>Kokkos Core Wiki, with API documentation: <a href="https://kokkos.github.io/kokkos-core-wiki">kokkos.github.io/kokkos-core-wiki</a>,</p>
-</li>
-<li>
-<p>Slack channel for Kokkos: <a href="https://kokkos.slack.com">kokkosteam.slack.com</a>.</p>
+<p>PGAS allows one-sided communication operations, which can be more efficient in some scenarios[3].</p>
 </li>
 </ul>
 </div>
+</li>
+<li>
+<p>Kokkos proposes "remote spaces" that implement the PGAS model, including NVSHMEM, conventional SHMEM, and one-sided MPI[2][5]. These implementations can provide good performance, especially on specific architectures such as NVIDIA GPUs.</p>
+</li>
+<li>
+<p>A performance study using miniFE (a mini-benchmark for solving linear systems) showed that implementations based on SHMEM (a form of PGAS) can outperform MPI in some cases [1][4].</p>
+</li>
+<li>
+<p>However, it is important to note that performance can vary significantly depending on the specific application, problem size, and hardware architecture.</p>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>legend
+[Kokkos C++]
+  |_[MPI]
+    |_Used for: CPU, GPU
+    |_Strengths: Two-way communications, maturity
+    |_Best for: Traditional HPC applications
+
+  |_[PGAS]
+    |_Implementations: SHMEM, NVSHMEM, ROCSHMEM
+    |_Used for: CPU, NVIDIA GPU, AMD GPU
+    |_Strengths: One-way communications, data locality
+    |_Best for: Applications with frequent access to remote data
+end legend</pre>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_contents"><a class="anchor" href="#_contents"></a>2. Contents</h2>
+<h2 id="_references"><a class="anchor" href="#_references"></a>2. References</h2>
 <div class="sectionbody">
 <div class="ulist">
 <ul>
 <li>
-<p><a href="advanced-reductions.html" class="xref page">Advanced Reductions</a></p>
+<p>[1] <a href="https://extremecomputingtraining.anl.gov/wp-content/uploads/sites/96/2019/08/" class="bare">extremecomputingtraining.anl.gov/wp-content/uploads/sites/96/2019/08/</a> ATPESC_2019_Track-2_3_8-1_830am_Trott-Kokkos.pdf</p>
 </li>
 <li>
-<p><a href="hierarchical-parallelism.html" class="xref page">Hierarchical Parallelism</a></p>
+<p>[2] <a href="https://www.reddit.com/r/cpp/comments/1efklad/mpi_or_gpu_parallel_computation_of_dem_code_for/" class="bare">www.reddit.com/r/cpp/comments/1efklad/mpi_or_gpu_parallel_computation_of_dem_code_for/</a></p>
 </li>
 <li>
-<p><a href="mpi.html" class="xref page">MPI</a></p>
+<p>[3] <a href="https://en.wikipedia.org/wiki/Partitioned_global_address_space" class="bare">en.wikipedia.org/wiki/Partitioned_global_address_space</a></p>
 </li>
 <li>
-<p><a href="pgas.html" class="xref page">PGAS</a></p>
+<p>[4] <a href="https://oaciss.uoregon.edu/E4S-Forum19/talks/Trott-E4S.pdf" class="bare">oaciss.uoregon.edu/E4S-Forum19/talks/Trott-E4S.pdf</a></p>
 </li>
 <li>
-<p><a href="mpi-vs-pgas.html" class="xref page">MPI vs PGAS</a></p>
-</li>
-<li>
-<p><a href="multidimensional-loops-and-data-structure.html" class="xref page">Multidimensional Loops and Data Structure</a></p>
-</li>
-<li>
-<p><a href="single-instruction-mutliple-data.html" class="xref page">Single Instruction Multiple Data</a></p>
-</li>
-<li>
-<p><a href="asynchronicity-and-streams.html" class="xref page">Asynchronicity and Stream</a></p>
+<p>[5] <a href="https://github.com/kokkos/kokkos-remote-spaces" class="bare">github.com/kokkos/kokkos-remote-spaces</a></p>
 </li>
 </ul>
 </div>

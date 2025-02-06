@@ -372,10 +372,13 @@ MathJax.Hub.Config({
 <div class="content">
 <div class="title">Start</div>
 <div class="paragraph">
-<p>This start example illustrates how to do a task reduction and consists in calculating the sum of all elements of an array.</p>
+<p>This start example illustrates how to do a task reduction and consists in calculating the sum of all elements of an array.
+.Code Start</p>
 </div>
+<details class="proof">
+<summary class="title">Details</summary>
+<div class="content">
 <div class="listingblock">
-<div class="title">Code Start</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-cpp hljs" data-lang="cpp">#include &lt;stdio.h&gt;
 #include &lt;stdlib.h&gt;
@@ -411,6 +414,8 @@ int main(int argc, char* argv[])
 </div>
 </div>
 </div>
+</details>
+</div>
 </div>
 <div class="sidebarblock examp">
 <div class="content">
@@ -419,6 +424,9 @@ int main(int argc, char* argv[])
 <p>Specifies that each thread should have its own instance of a variable, and that the variable should be initialized with the value of the variable, because it exists before the parallel construct.
 .Code Firstprivate</p>
 </div>
+<details class="proof">
+<summary class="title">Details</summary>
+<div class="content">
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-cpp hljs" data-lang="cpp">#include &lt;omp.h&gt;
@@ -460,6 +468,8 @@ int main() {
 </div>
 </div>
 </div>
+</details>
+</div>
 </div>
 <div class="sidebarblock examp">
 <div class="content">
@@ -468,6 +478,9 @@ int main() {
 <p>The private clause declares the variables in the list to be private to each thread in a team.
 .Code Private</p>
 </div>
+<details class="proof">
+<summary class="title">Details</summary>
+<div class="content">
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-cpp hljs" data-lang="cpp">#include &lt;stdio.h&gt;
@@ -505,6 +518,8 @@ int main(int argc, char* argv[])
 </div>
 </div>
 </div>
+</details>
+</div>
 </div>
 <div class="sidebarblock examp">
 <div class="content">
@@ -512,8 +527,10 @@ int main(int argc, char* argv[])
 <div class="paragraph">
 <p>Specifies that the enclosing context&#8217;s version of the variable is set equal to the private version of whichever thread executes the final iteration (for-loop construct) or last section (#pragma sections).</p>
 </div>
+<details class="proof">
+<summary class="title">Code Lastprivate</summary>
+<div class="content">
 <div class="listingblock">
-<div class="title">Code Lastprivate</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-cpp hljs" data-lang="cpp">#include &lt;stdio.h&gt;
 #include &lt;stdlib.h&gt;
@@ -550,6 +567,8 @@ int main(int argc, char* argv[])
 </div>
 </div>
 </div>
+</details>
+</div>
 </div>
 <div class="sidebarblock examp">
 <div class="content">
@@ -557,8 +576,10 @@ int main(int argc, char* argv[])
 <div class="paragraph">
 <p>The linear clause provides a superset of the functionality provided by the private clause.</p>
 </div>
+<details class="proof">
+<summary class="title">Code Linear</summary>
+<div class="content">
 <div class="listingblock">
-<div class="title">Code Linear</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-cpp hljs" data-lang="cpp">#include &lt;stdio.h&gt;
 #include &lt;stdlib.h&gt;
@@ -595,6 +616,8 @@ int main(int argc, char* argv[])
 </div>
 </div>
 </div>
+</details>
+</div>
 </div>
 <div class="sidebarblock examp">
 <div class="content">
@@ -602,8 +625,10 @@ int main(int argc, char* argv[])
 <div class="paragraph">
 <p>Scheduling is a method in OpenMP to distribute iterations to different threads in for loop.</p>
 </div>
+<details class="proof">
+<summary class="title">Code Schedule</summary>
+<div class="content">
 <div class="listingblock">
-<div class="title">Code Schedule</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-cpp hljs" data-lang="cpp">#include &lt;stdio.h&gt;
 #include &lt;stdlib.h&gt;
@@ -630,6 +655,8 @@ int main(int argc, char* argv[])
 </div>
 </div>
 </div>
+</details>
+</div>
 </div>
 <div class="sidebarblock examp">
 <div class="content">
@@ -637,8 +664,10 @@ int main(int argc, char* argv[])
 <div class="paragraph">
 <p>The none clause requires that each variable that is referenced in the construct, and that does not have a predetermined data-sharing attribute, must have its data-sharing attribute explicitly determined by being listed in a data-sharing attribute clause.</p>
 </div>
+<details class="proof">
+<summary class="title">Code None</summary>
+<div class="content">
 <div class="listingblock">
-<div class="title">Code None</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-cpp hljs" data-lang="cpp">#include &lt;stdio.h&gt;
 #include &lt;stdlib.h&gt;
@@ -679,6 +708,8 @@ int main(int argc, char* argv[])
 </div>
 </div>
 </div>
+</details>
+</div>
 </div>
 <div class="sidebarblock examp">
 <div class="content">
@@ -689,8 +720,10 @@ int main(int argc, char* argv[])
 <div class="paragraph">
 <p>This application consists of a thread, in an OpenMP parallel region, that spawns tasks.</p>
 </div>
+<details class="proof">
+<summary class="title">Code Task</summary>
+<div class="content">
 <div class="listingblock">
-<div class="title">Code Task</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-cpp hljs" data-lang="cpp">#include &lt;stdio.h&gt;
 #include &lt;stdlib.h&gt;
@@ -733,11 +766,21 @@ int main(int argc, char* argv[])
 }</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p>This example consists in calculating the sum of all elements of an array.</p>
 </div>
+</details>
+</div>
+</div>
+<div class="sidebarblock examp">
+<div class="content">
+<div class="title">Code Reduction</div>
+<div class="paragraph">
+<p>This example consists in calculating the sum of all elements of an array.
+.Code Task Reduction</p>
+</div>
+<details class="proof">
+<summary class="title">Details</summary>
+<div class="content">
 <div class="listingblock">
-<div class="title">Code Task Reduction</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-cpp hljs" data-lang="cpp">#include &lt;stdio.h&gt;
 #include &lt;stdlib.h&gt;
@@ -787,11 +830,21 @@ int main(int argc, char* argv[])
 }</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p>Use the taskwait pragma to specify a wait for child tasks to be completed that are generated by the current task. This application consists of a thread, in an OpenMP parallel region that spawns tasks. It first spawns two tasks, then wait for these to complete before spawning a third task. The execution flow can be visualised below:</p>
 </div>
+</details>
+</div>
+</div>
+<div class="sidebarblock examp">
+<div class="content">
+<div class="title">Code Reduction</div>
+<div class="paragraph">
+<p>Use the taskwait pragma to specify a wait for child tasks to be completed that are generated by the current task. This application consists of a thread, in an OpenMP parallel region that spawns tasks. It first spawns two tasks, then wait for these to complete before spawning a third task. The execution flow can be visualised below:
+.Code Task Wait</p>
+</div>
+<details class="proof">
+<summary class="title">Details</summary>
+<div class="content">
 <div class="listingblock">
-<div class="title">Code Task Wait</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-cpp hljs" data-lang="cpp">#include &lt;stdio.h&gt;
 #include &lt;stdlib.h&gt;
@@ -874,6 +927,8 @@ int main(int argc, char* argv[])
 }</code></pre>
 </div>
 </div>
+</div>
+</details>
 </div>
 </div>
 <div class="paragraph">

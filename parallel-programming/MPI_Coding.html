@@ -367,28 +367,15 @@ MathJax.Hub.Config({
 </li>
 </ul>
 </div>
-<div class="listingblock">
-<div class="title">Test compile C++</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-cpp hljs" data-lang="cpp">#include &lt;iostream&gt;
-
-int main()
-{
-        std::cout &lt;&lt; "Hello, world!" &lt;&lt; std::endl;
-        return 0;
-}</code></pre>
-</div>
-</div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="_list_of_programms"><a class="anchor" href="#_list_of_programms"></a>1. List of programms</h2>
 <div class="sectionbody">
-<div class="sidebarblock examp">
+<details class="proof">
+<summary class="title">Allgather</summary>
 <div class="content">
-<div class="title">Allgather</div>
 <div class="listingblock">
-<div class="title">Code Allgather</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">#include &lt;stdio.h&gt;
 #include &lt;stdlib.h&gt;
@@ -446,12 +433,11 @@ int main(int argc, char* argv[])
 </div>
 </div>
 </div>
-</div>
-<div class="sidebarblock examp">
+</details>
+<details class="proof">
+<summary class="title">Allreduce</summary>
 <div class="content">
-<div class="title">Allreduce</div>
 <div class="listingblock">
-<div class="title">Code Allreduce</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">#include &lt;stdio.h&gt;
 #include &lt;stdlib.h&gt;
@@ -522,46 +508,1655 @@ int main(int argc, char* argv[])
 </div>
 </div>
 </div>
-</div>
-<div class="listingblock">
-<div class="title">Code Demo -</div>
+</details>
+<details class="proof">
+<summary class="title">MPI_Alltoall</summary>
 <div class="content">
-<pre>MPI_Allgather
-MPI_Allreduce
-MPI_Alltoall
-MPI_Barrier
-MPI_Bcast
-MPI_BSend
-MPI_Buffer_attach
-MPI_Buffer_detach
-MPI_Comm_spawn
-MPI_Comm_split
-MPI_Exscan
-MPI_File_close
-MPI_File_open
-MPI_File
-MPI_Gather
-MPI_Graph_get
-MPI_Graph_neigbors_count
-MPI_Graph_neigbors
-MPI_Graphdims_get
-MPI_lallgather
-MPI_lallreduce
-MPI_lalltoall
-MPI_lbarrier
-MPI-lbcast
-MPI_lbsend
-MPI_lreduce
-MPI_lreduce_scatter
-MPI_lreduce_scatter_block
-MPI_lresend
-MPI_lscatterv
-MPI_lssend</pre>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;mpi.h&gt;
+
+/**
+ * @brief Illustrates how to use an all to all.
+ * @details This application is meant to be run with 3 MPI processes. Every MPI
+ * process begins with a buffer containing 3 integers, one for each process
+ * including themselves. They also have a buffer in which receive the integer
+ * that has been sent by each other process for them. It can be visualised as
+ * follows:
+ *
+ * +-----------------------+ +-----------------------+ +-----------------------+
+ * |       Process 0       | |       Process 1       | |       Process 2       |
+ * +-------+-------+-------+ +-------+-------+-------+ +-------+-------+-------+
+ * | Value | Value | Value | | Value | Value | Value | | Value | Value | Value |
+ * |   0   |  100  |  200  | |  300  |  400  |  500  | |  600  |  700  |  800  |
+ * +-------+-------+-------+ +-------+-------+-------+ +-------+-------+-------+
+ *     |       |       |_________|_______|_______|_________|___    |       |
+ *     |       |    _____________|_______|_______|_________|   |   |       |
+ *     |       |___|_____________|_      |      _|_____________|___|       |
+ *     |      _____|_____________| |     |     | |_____________|_____      |
+ *     |     |     |               |     |     |               |     |     |
+ *  +-----+-----+-----+         +-----+-----+-----+         +-----+-----+-----+
+ *  |  0  | 300 | 600 |         | 100 | 400 | 700 |         | 200 | 500 | 800 |
+ *  +-----+-----+-----+         +-----+-----+-----+         +-----+-----+-----+
+ *  |    Process 0    |         |    Process 1    |         |    Process 2    |
+ *  +-----------------+         +-----------------+         +-----------------+
+ **/
+int main(int argc, char* argv[])
+{
+    MPI_Init(&amp;argc, &amp;argv);
+
+    // Get number of processes and check that 3 processes are used
+    int size;
+    MPI_Comm_size(MPI_COMM_WORLD, &amp;size);
+    if(size != 3)
+    {
+        printf("This application is meant to be run with 3 MPI processes.\n");
+        MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
+    }
+
+    // Get my rank
+    int my_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &amp;my_rank);
+
+    // Define my value
+    int my_values[3];
+    for(int i = 0; i &lt; 3; i++)
+    {
+        my_values[i] = my_rank * 300 + i * 100;
+    }
+    printf("Process %d, my values = %d, %d, %d.\n", my_rank, my_values[0], my_values[1], my_values[2]);
+
+    int buffer_recv[3];
+    MPI_Alltoall(&amp;my_values, 1, MPI_INT, buffer_recv, 1, MPI_INT, MPI_COMM_WORLD);
+    printf("Values collected on process %d: %d, %d, %d.\n", my_rank, buffer_recv[0], buffer_recv[1], buffer_recv[2]);
+
+    MPI_Finalize();
+
+    return EXIT_SUCCESS;
+}</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p>&#8230;&#8203;</p>
 </div>
+</details>
+<details class="proof">
+<summary class="title">MPI_Barrier</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;mpi.h&gt;
+
+/**
+ * @brief Illustrates how to use an MPI barrier.
+ **/
+int main(int argc, char* argv[])
+{
+    MPI_Init(&amp;argc, &amp;argv);
+
+    // Get my rank
+    int my_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &amp;my_rank);
+
+    printf("[MPI process %d] I start waiting on the barrier.\n", my_rank);
+    MPI_Barrier(MPI_COMM_WORLD);
+    printf("[MPI process %d] I know all MPI processes have waited on the barrier.\n", my_rank);
+
+    MPI_Finalize();
+
+    return EXIT_SUCCESS;
+}</code></pre>
+</div>
+</div>
+</div>
+</details>
+<details class="proof">
+<summary class="title">MPI_Bcast</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;mpi.h&gt;
+
+/**
+ * @brief Illustrates how to broadcast a message.
+ * @details This code picks a process as the broadcast root, and makes it
+ * broadcast a specific value. Other processes participate to the broadcast as
+ * receivers. These processes then print the value they received via the 
+ * broadcast.
+ **/
+int main(int argc, char* argv[])
+{
+    MPI_Init(&amp;argc, &amp;argv);
+
+    // Get my rank in the communicator
+    int my_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &amp;my_rank);
+
+    // Determine the rank of the broadcast emitter process
+    int broadcast_root = 0;
+
+    int buffer;
+    if(my_rank == broadcast_root)
+    {
+        buffer = 12345;
+        printf("[MPI process %d] I am the broadcast root, and send value %d.\n", my_rank, buffer);
+    }
+    MPI_Bcast(&amp;buffer, 1, MPI_INT, broadcast_root, MPI_COMM_WORLD);
+    if(my_rank != broadcast_root)
+    {
+        printf("[MPI process %d] I am a broadcast receiver, and obtained value %d.\n", my_rank, buffer);
+    }
+
+    MPI_Finalize();
+
+    return EXIT_SUCCESS;
+}</code></pre>
+</div>
+</div>
+</div>
+</details>
+<details class="proof">
+<summary class="title">MPI_Bsend</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;mpi.h&gt;
+
+/**
+ * @brief Illustrates how to send a message in a blocking asynchronous fashion.
+ * @details This application is meant to be used with 2 processes; 1 sender and
+ * 1 receiver. The sender will declare a buffer containing enough space for 1
+ * message that will contain 1 integer. It then attaches the buffer to MPI and
+ * issues the MPI_Bsend. Finally, it detaches the buffer and frees it, while the
+ * receiver prints the message received.
+ **/
+int main(int argc, char* argv[])
+{
+    MPI_Init(&amp;argc, &amp;argv);
+
+    // Get the number of processes and check only 2 are used.
+    int size;
+    MPI_Comm_size(MPI_COMM_WORLD, &amp;size);
+    if(size != 2)
+    {
+        printf("This application is meant to be run with 2 processes.\n");
+        MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
+    }
+
+    // Get my rank and do the corresponding job
+    enum role_ranks { SENDER, RECEIVER };
+    int my_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &amp;my_rank);
+    switch(my_rank)
+    {
+        case SENDER:
+        {
+            // Declare the buffer and attach it
+            int buffer_attached_size = MPI_BSEND_OVERHEAD + sizeof(int);
+            char* buffer_attached = (char*)malloc(buffer_attached_size);
+            MPI_Buffer_attach(buffer_attached, buffer_attached_size);
+
+            // Issue the MPI_Bsend
+            int buffer_sent = 12345;
+            printf("[MPI process %d] I send value %d.\n", my_rank, buffer_sent);
+            MPI_Bsend(&amp;buffer_sent, 1, MPI_INT, RECEIVER, 0, MPI_COMM_WORLD);
+
+            // Detach the buffer. It blocks until all messages stored are sent.
+            MPI_Buffer_detach(&amp;buffer_attached, &amp;buffer_attached_size);
+            free(buffer_attached);
+            break;
+        }
+        case RECEIVER:
+        {
+            // Receive the message and print it.
+            int received;
+            MPI_Recv(&amp;received, 1, MPI_INT, SENDER, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            printf("[MPI process %d] I received value: %d.\n", my_rank, received);
+            break;
+        }
+    }
+
+    MPI_Finalize();
+
+    return EXIT_SUCCESS;
+}</code></pre>
+</div>
+</div>
+</div>
+</details>
+<details class="proof">
+<summary class="title">MPI_Comm_spawn</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;mpi.h&gt;
+
+/**
+ * @brief Illustrates how to spawn MPI processes.
+ **/
+int main(int argc, char* argv[])
+{
+    MPI_Init(&amp;argc, &amp;argv);
+
+    MPI_Comm parent;
+    MPI_Comm_get_parent(&amp;parent);
+    if(parent == MPI_COMM_NULL)
+    {
+        // We have no parent communicator so we have been spawned directly by the user
+        MPI_Comm child;
+        int spawn_error;
+        printf("We are processes spawned directly by you, we now spawn a new instance of an MPI application.\n");
+        MPI_Comm_spawn(argv[0], MPI_ARGV_NULL, 1, MPI_INFO_NULL, 0, MPI_COMM_WORLD, &amp;child, &amp;spawn_error);
+    }
+    else
+    {
+        // We have been spawned by another MPI process
+        printf("I have been spawned by MPI processes.\n");
+    }
+
+    MPI_Finalize();
+
+    return EXIT_SUCCESS;
+}</code></pre>
+</div>
+</div>
+</div>
+</details>
+<details class="proof">
+<summary class="title">MPI_Comm_split</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;mpi.h&gt;
+
+/**
+ * @brief Illustrates
+ * @details MPI processes split into two groups depending on whether their rank
+ * is even.
+ *
+ * +----------------+---+---+---+---+
+ * | MPI processes  | 0 | 1 | 2 | 3 |
+ * +----------------+---+---+---+---+
+ * | MPI_COMM_WORLD | X | X | X | X |
+ * | Subgroup A     | X |   | X |   |
+ * | Subgroup B     |   | X |   | X |
+ * +----------------+---+---+---+---+
+ *
+ * In subcommunicator A, MPI processes are assigned ranks in the same order as
+ * their rank in the global communicator.
+ * In subcommunicator B, MPI processes are assigned ranks in the opposite order
+ * as their rank in the global communicator.
+ **/
+int main(int argc, char* argv[])
+{
+    MPI_Init(&amp;argc, &amp;argv);
+
+    // Check that 4 MPI processes are used
+    int comm_size;
+    MPI_Comm_size(MPI_COMM_WORLD, &amp;comm_size);
+    if(comm_size != 4)
+    {
+        printf("This application is meant to be run with 4 MPI processes, not %d.\n", comm_size);
+        MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
+    }
+
+    // Get my rank in the global communicator
+    int my_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &amp;my_rank);
+
+    // Determine the colour and key based on whether my rank is even.
+    char subcommunicator;
+    int colour;
+    int key;
+    if(my_rank % 2 == 0)
+    {
+        subcommunicator = 'A';
+        colour = 0;
+        key = my_rank;
+    }
+    else
+    {
+        subcommunicator = 'B';
+        colour = 1;
+        key = comm_size - my_rank;
+    }
+
+    // Split de global communicator
+    MPI_Comm new_comm;
+    MPI_Comm_split(MPI_COMM_WORLD, colour, key, &amp;new_comm);
+
+    // Get my rank in the new communicator
+    int my_new_comm_rank;
+    MPI_Comm_rank(new_comm, &amp;my_new_comm_rank);
+
+    // Print my new rank and new communicator
+    printf("[MPI process %d] I am now MPI process %d in subcommunicator %c.\n", my_rank, my_new_comm_rank, subcommunicator);
+
+    MPI_Finalize();
+
+    return EXIT_SUCCESS;
+}</code></pre>
+</div>
+</div>
+</div>
+</details>
+<details class="proof">
+<summary class="title">MPI_Exscan</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;mpi.h&gt;
+
+/**
+ * @brief Illustrate how to use an MPI_Exscan.
+ * @details This program uses MPI_Exscan to compute a progressive sum of ranks. It
+ * can be visualised as follows:
+ *
+ * +---------------+   +---------------+   +---------------+   +---------------+
+ * | MPI process 0 |   | MPI process 1 |   | MPI process 2 |   | MPI process 3 |
+ * +---------------+   +---------------+   +---------------+   +---------------+
+ * |       0       |   |       1       |   |       2       |   |       3       |
+ * +-------+-------+   +-------+-------+   +-------+-------+   +-------+-------+
+ *         |                   |                   |                    
+ *         |                +--+--+                |                    
+ *         +----------------| SUM |                |                    
+ *         |                +--+--+                |                    
+ *         |                   |                +--+--+                 
+ *         |                   +----------------| SUM |                 
+ *         |                   |                +--+--+                 
+ *         |                   |                   |                    
+ *         |                   |                   |                    
+ *          \                   \                   \                      
+ *           \                   \                   \                  
+ *            \                   \                   \                 
+ *             \_______________    \_______________    \_______________ 
+ *                             |                   |                   |
+ *                             |                   |                   |
+ * +-------+-------+   +-------+-------+   +-------+-------+   +-------+-------+
+ * |   undefined   |   |       0       |   |       1       |   |       3       |
+ * +---------------+   +---------------+   +---------------+   +---------------+
+ * | MPI process 0 |   | MPI process 1 |   | MPI process 2 |   | MPI process 3 |
+ * +---------------+   +---------------+   +---------------+   +---------------+
+ *                                       
+ **/
+int main(int argc, char* argv[])
+{
+    MPI_Init(&amp;argc, &amp;argv);
+
+    // Get my rank
+    int my_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &amp;my_rank);
+
+    // Get the sum of all ranks up to the one before mine and print it
+    int total;
+    MPI_Exscan(&amp;my_rank, &amp;total, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
+
+    // The result on MPI process 0 is undefined, do not print it
+    if(my_rank == 0)
+    {
+        printf("[MPI process 0] Total = undefined.\n");
+    }
+    else
+    {
+        printf("[MPI process %d] Total = %d.\n", my_rank, total);
+    }
+
+    MPI_Finalize();
+
+    return EXIT_SUCCESS;
+}</code></pre>
+</div>
+</div>
+</div>
+</details>
+<details class="proof">
+<summary class="title">MPI_File</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;mpi.h&gt;
+
+/**
+ * @brief Illustrates the use of the MPI_File handle.
+ * @details This applications consists in opening a file in read-write mode, or
+ * create it if it does not already exist, and get a handle on that file.
+ **/
+int main(int argc, char* argv[])
+{
+    MPI_Init(&amp;argc, &amp;argv);
+
+    int my_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &amp;my_rank);
+
+    MPI_File handle;
+    int access_mode = MPI_MODE_CREATE /* Create the file if it does not exist */
+                    | MPI_MODE_RDWR; /* With read-write access */
+    if(MPI_File_open(MPI_COMM_WORLD, "file.tmp", access_mode, MPI_INFO_NULL, &amp;handle) != MPI_SUCCESS)
+    {
+        printf("[MPI process %d] Failure in opening the file.\n", my_rank);
+        MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
+    }
+
+    printf("[MPI process %d] File opened successfully.\n", my_rank);
+
+    if(MPI_File_close(&amp;handle) != MPI_SUCCESS)
+    {
+        printf("[MPI process %d] Failure in closing the file.\n", my_rank);
+        MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
+    }
+
+    printf("[MPI process %d] File closed successfully.\n", my_rank);
+
+    MPI_Finalize();
+
+    return EXIT_SUCCESS;
+}</code></pre>
+</div>
+</div>
+</div>
+</details>
+<details class="proof">
+<summary class="title">MPI_Gather</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;mpi.h&gt;
+
+/**
+ * @brief Illustrates how to use a gather.
+ * @details This application is meant to be run with 4 MPI processes. Every MPI
+ * process begins with a value, then MPI process 0 is picked to gather all these
+ * values and print them. It can be visualised as follows:
+ *
+ * +-----------+ +-----------+ +-----------+ +-----------+
+ * | Process 0 | | Process 1 | | Process 2 | | Process 3 |
+ * +-+-------+-+ +-+-------+-+ +-+-------+-+ +-+-------+-+ 
+ *   | Value |     | Value |     | Value |     | Value |   
+ *   |   0   |     |  100  |     |  200  |     |  300  |   
+ *   +-------+     +-------+     +-------+     +-------+   
+ *            \            |     |            /
+ *             \           |     |           /
+ *              \          |     |          /
+ *               \         |     |         /
+ *                \        |     |        /
+ *                 \       |     |       /
+ *                +-----+-----+-----+-----+
+ *                |  0  | 100 | 200 | 300 |
+ *                +-----+-----+-----+-----+
+ *                |       Process 0       |
+ *                +-----------------------+
+ **/
+int main(int argc, char* argv[])
+{
+    MPI_Init(&amp;argc, &amp;argv);
+
+    // Get number of processes and check that 4 processes are used
+    int size;
+    MPI_Comm_size(MPI_COMM_WORLD, &amp;size);
+    if(size != 4)
+    {
+        printf("This application is meant to be run with 4 MPI processes.\n");
+        MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
+    }
+
+    // Determine root's rank
+    int root_rank = 0;
+
+    // Get my rank
+    int my_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &amp;my_rank);
+
+    // Define my value
+    int my_value = my_rank * 100;
+    printf("Process %d, my value = %d.\n", my_rank, my_value);
+
+    if(my_rank == root_rank)
+    {
+        int buffer[4];
+        MPI_Gather(&amp;my_value, 1, MPI_INT, buffer, 1, MPI_INT, root_rank, MPI_COMM_WORLD);
+        printf("Values collected on process %d: %d, %d, %d, %d.\n", my_rank, buffer[0], buffer[1], buffer[2], buffer[3]);
+    }
+    else
+    {
+        MPI_Gather(&amp;my_value, 1, MPI_INT, NULL, 0, MPI_INT, root_rank, MPI_COMM_WORLD);
+    }
+
+    MPI_Finalize();
+
+    return EXIT_SUCCESS;
+}</code></pre>
+</div>
+</div>
+</div>
+</details>
+<details class="proof">
+<summary class="title">MPI_Graph_get</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;stdbool.h&gt;
+#include &lt;mpi.h&gt;
+
+/**
+ * @brief Illustrates how to get the indexes and edges of a graph.
+ * @details This application consists of 3 MPI processes that form a fully
+ * connected graph that can be visualised as follows:
+ *
+ * +-----+              +-----+
+ * |     |-------------&gt;|     |
+ * |  0  |              |  1  |
+ * |     |&lt;-------------|     |
+ * +-----+              +-----+
+ *  ^   |                |   ^
+ *  |   |                |   |
+ *  |   |    +-----+     |   |
+ *  |   +---&gt;|     |&lt;----+   |
+ *  |        |  2  |         |
+ *  +--------|     |---------+
+ *           +-----+
+ *
+ * After creating the graph, each MPI process retrieves the graph indexes and
+ * edges, and prints them.
+ **/
+int main(int argc, char* argv[])
+{
+    MPI_Init(&amp;argc, &amp;argv);
+
+    // Size of the default communicator
+    int comm_size;
+    MPI_Comm_size(MPI_COMM_WORLD, &amp;comm_size);
+
+    if(comm_size != 3)
+    {
+        printf("This application is meant to be run with 3 MPI processes, not %d.\n", comm_size);
+        MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
+    }
+
+    // My rank in the default communicator
+    int my_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &amp;my_rank);
+
+    // Declare the total number of neighbours until each MPI process (= the ones before + its own)
+    int indexes[3] = {2, 4, 6};
+
+    // Declare the endpoint of each edge
+    int edges[6] = {1, 2, 0, 2, 0, 1};
+
+    // Allow MPI to reorder ranks if it deems it necessary
+    int reorder = true;
+
+    // Create a communicator given the graph topology.
+    MPI_Comm new_communicator;
+    MPI_Graph_create(MPI_COMM_WORLD, comm_size, indexes, edges, reorder, &amp;new_communicator);
+
+    // Get the graph dimensions
+    int number_of_indexes_retrieved;
+    int number_of_edges_retrieved;
+    MPI_Graphdims_get(new_communicator, &amp;number_of_indexes_retrieved, &amp;number_of_edges_retrieved);
+
+    // Retrieve the indexes and edges
+    int* indexes_retrieved = (int*) malloc(sizeof(int) * number_of_indexes_retrieved);
+    int* edges_retrieved = (int*) malloc(sizeof(int) * number_of_edges_retrieved);
+    MPI_Graph_get(new_communicator, number_of_indexes_retrieved, number_of_edges_retrieved, indexes_retrieved, edges_retrieved);
+
+    // Print all information retrieved
+    printf("[MPI process %d] %d indexes retrieved: {", my_rank, number_of_indexes_retrieved);
+    for(int i = 0; i &lt; number_of_indexes_retrieved; i++)
+    {
+        printf("%d", indexes_retrieved[i]);
+        if(i &lt; number_of_indexes_retrieved - 1)
+        {
+            printf(", ");
+        }
+    }
+    printf("}, and %d edges retrieved: {", number_of_edges_retrieved);
+    for(int i = 0; i &lt; number_of_edges_retrieved; i++)
+    {
+        printf("%d", edges_retrieved[i]);
+        if(i &lt; number_of_edges_retrieved - 1)
+        {
+            printf(", ");
+        }
+    }
+    printf("}.\n");
+
+    MPI_Finalize();
+
+    return EXIT_SUCCESS;
+}</code></pre>
+</div>
+</div>
+</div>
+</details>
+<details class="proof">
+<summary class="title">MPI_Graphdims_get</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;stdbool.h&gt;
+#include &lt;mpi.h&gt;
+
+/**
+ * @brief Illustrates how to get the dimensions of a graph.
+ * @details This application consists of 3 MPI processes that form a fully
+ * connected graph that can be visualised as follows:
+ *
+ * +-----+              +-----+
+ * |     |-------------&gt;|     |
+ * |  0  |              |  1  |
+ * |     |&lt;-------------|     |
+ * +-----+              +-----+
+ *  ^   |                |   ^
+ *  |   |                |   |
+ *  |   |    +-----+     |   |
+ *  |   +---&gt;|     |&lt;----+   |
+ *  |        |  2  |         |
+ *  +--------|     |---------+
+ *           +-----+
+ *
+ * After creating the graph, each MPI process retrieves the graph dimensions and
+ * prints them.
+ **/
+int main(int argc, char* argv[])
+{
+    MPI_Init(&amp;argc, &amp;argv);
+
+    // Size of the default communicator
+    int comm_size;
+    MPI_Comm_size(MPI_COMM_WORLD, &amp;comm_size);
+
+    if(comm_size != 3)
+    {
+        printf("This application is meant to be run with 3 MPI processes, not %d.\n", comm_size);
+        MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
+    }
+
+    // My rank in the default communicator
+    int my_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &amp;my_rank);
+
+    // Declare the total number of neighbours until each MPI process (= the ones before + its own)
+    int indexes[3] = {2, 4, 6};
+
+    // Declare the endpoint of each edge
+    int edges[6] = {1, 2, 0, 2, 0, 1};
+
+    // Allow MPI to reorder ranks if it deems it necessary
+    int reorder = true;
+
+    // Create a communicator given the graph topology.
+    MPI_Comm new_communicator;
+    MPI_Graph_create(MPI_COMM_WORLD, comm_size, indexes, edges, reorder, &amp;new_communicator);
+
+    // Get the graph dimensions and print them
+    int number_of_indexes_retrieved;
+    int number_of_edge_retrieved;
+    MPI_Graphdims_get(new_communicator, &amp;number_of_indexes_retrieved, &amp;number_of_edge_retrieved);
+    printf("[MPI process %d] The graph communicator created contains %d indexes and %d edges.\n", my_rank, number_of_indexes_retrieved, number_of_edge_retrieved);
+
+    MPI_Finalize();
+
+    return EXIT_SUCCESS;
+}</code></pre>
+</div>
+</div>
+</div>
+</details>
+<details class="proof">
+<summary class="title">MPI_allgather</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;mpi.h&gt;
+
+/**
+ * @brief Illustrates how to use a gather in a non-blocking way.
+ * @details This application is meant to be run with 3 MPI processes. Every MPI
+ * process begins with a value, then every MPI process collects the entirety of
+ * the data gathered and moves on immediately to do something else while the
+ * gather progresses. They then wait for the gather to complete before printing
+ * the data gathered. It can be visualised as follows:
+ *
+ * +-----------+  +-----------+  +-----------+
+ * | Process 0 |  | Process 1 |  | Process 2 |
+ * +-+-------+-+  +-+-------+-+  +-+-------+-+
+ *   | Value |      | Value |      | Value |
+ *   |   0   |      |  100  |      |  200  |
+ *   +-------+      +-------+      +-------+
+ *       |________      |      ________|
+ *                |     |     |
+ *             +-----+-----+-----+
+ *             |  0  | 100 | 200 |
+ *             +-----+-----+-----+
+ *             |   Each process  |
+ *             +-----------------+
+ **/
+int main(int argc, char* argv[])
+{
+    MPI_Init(&amp;argc, &amp;argv);
+
+    // Get number of processes and check that 3 processes are used
+    int size;
+    MPI_Comm_size(MPI_COMM_WORLD, &amp;size);
+    if(size != 3)
+    {
+        printf("This application is meant to be run with 3 MPI processes.\n");
+        MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
+    }
+
+    // Get my rank
+    int my_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &amp;my_rank);
+
+    // Define my value
+    int my_value = my_rank * 100;
+    printf("Process %d, my value = %d.\n", my_rank, my_value);
+
+    // Issue the gather and move on immediately after, before the MPI_Iallgather completes
+    int buffer[3];
+    MPI_Request request;
+    MPI_Iallgather(&amp;my_value, 1, MPI_INT, buffer, 1, MPI_INT, MPI_COMM_WORLD, &amp;request);
+
+    // Do another job while the gather progresses
+    // ...
+
+    // Wait for the gather to complete before printing the values received
+    MPI_Wait(&amp;request, MPI_STATUS_IGNORE);
+    printf("Values collected on process %d: %d, %d, %d.\n", my_rank, buffer[0], buffer[1], buffer[2]);
+
+    MPI_Finalize();
+
+    return EXIT_SUCCESS;
+}</code></pre>
+</div>
+</div>
+</div>
+</details>
+<details class="proof">
+<summary class="title">MPI_allreduce</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;mpi.h&gt;
+
+/**
+ * @brief Illustrates how to use a non-blocking all-reduce.
+ * @details This application consists of a sum all-reduction; every MPI process
+ * sends its rank for reduction before the sum of these ranks is stored in the
+ * receive buffer of each MPI process. It can be visualised as follows:
+ *
+ * +-----------+ +-----------+ +-----------+ +-----------+
+ * | Process 0 | | Process 1 | | Process 2 | | Process 3 |
+ * +-+-------+-+ +-+-------+-+ +-+-------+-+ +-+-------+-+
+ *   | Value |     | Value |     | Value |     | Value |
+ *   |   0   |     |   1   |     |   2   |     |   3   |
+ *   +-------+     +----+--+     +--+----+     +-------+
+ *            \         |           |         /
+ *             \        |           |        /
+ *              \       |           |       /
+ *               \      |           |      /
+ *                +-----+-----+-----+-----+
+ *                            |
+ *                        +---+---+
+ *                        |  SUM  |
+ *                        +---+---+
+ *                        |   6   |
+ *                        +-------+
+ *                            |
+ *                +-----+-----+-----+-----+
+ *               /      |           |      \
+ *              /       |           |       \
+ *             /        |           |        \
+ *            /         |           |         \
+ *   +-------+     +----+--+     +--+----+     +-------+  
+ *   |   6   |     |   6   |     |   6   |     |   6   |  
+ * +-+-------+-+ +-+-------+-+ +-+-------+-+ +-+-------+-+
+ * | Process 0 | | Process 1 | | Process 2 | | Process 3 |
+ * +-----------+ +-----------+ +-----------+ +-----------+
+ **/
+int main(int argc, char* argv[])
+{
+    MPI_Init(&amp;argc, &amp;argv);
+
+    // Get the size of the communicator
+    int size = 0;
+    MPI_Comm_size(MPI_COMM_WORLD, &amp;size);
+    if(size != 4)
+    {
+        printf("This application is meant to be run with 4 MPI processes.\n");
+        MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
+    }
+
+    // Get my rank
+    int my_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &amp;my_rank);
+
+    // Each MPI process sends its rank to reduction, root MPI process collects the result
+    int reduction_result = 0;
+    MPI_Request request;
+    MPI_Iallreduce(&amp;my_rank, &amp;reduction_result, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD, &amp;request);
+
+    // Do some other job
+    printf("Process %d issued the MPI_Iallreduce and has moved on, printing this message.\n", my_rank);
+
+    // Wait for the MPI_Iallreduce to complete
+    MPI_Wait(&amp;request, MPI_STATUS_IGNORE);
+
+    printf("[MPI Process %d] The sum of all ranks is %d.\n", my_rank, reduction_result);
+
+    MPI_Finalize();
+
+    return EXIT_SUCCESS;
+}</code></pre>
+</div>
+</div>
+</div>
+</details>
+<details class="proof">
+<summary class="title">MPI_alltoall</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;mpi.h&gt;
+
+/**
+ * @brief Illustrates how to use a non-blocking all to all.
+ * @details This application is meant to be run with 3 MPI processes. Every MPI
+ * process begins with a buffer containing 3 integers, one for each process
+ * including themselves. They also have a buffer in which receive the integer
+ * that has been sent by each other process for them. It can be visualised as
+ * follows:
+ *
+ * +-----------------------+ +-----------------------+ +-----------------------+
+ * |       Process 0       | |       Process 1       | |       Process 2       |
+ * +-------+-------+-------+ +-------+-------+-------+ +-------+-------+-------+
+ * | Value | Value | Value | | Value | Value | Value | | Value | Value | Value |
+ * |   0   |  100  |  200  | |  300  |  400  |  500  | |  600  |  700  |  800  |
+ * +-------+-------+-------+ +-------+-------+-------+ +-------+-------+-------+
+ *     |       |       |_________|_______|_______|_________|___    |       |
+ *     |       |    _____________|_______|_______|_________|   |   |       |
+ *     |       |___|_____________|_      |      _|_____________|___|       |
+ *     |      _____|_____________| |     |     | |_____________|_____      |
+ *     |     |     |               |     |     |               |     |     |
+ *  +-----+-----+-----+         +-----+-----+-----+         +-----+-----+-----+
+ *  |  0  | 300 | 600 |         | 100 | 400 | 700 |         | 200 | 500 | 800 |
+ *  +-----+-----+-----+         +-----+-----+-----+         +-----+-----+-----+
+ *  |    Process 0    |         |    Process 1    |         |    Process 2    |
+ *  +-----------------+         +-----------------+         +-----------------+
+ **/
+int main(int argc, char* argv[])
+{
+    MPI_Init(&amp;argc, &amp;argv);
+
+    // Get number of processes and check that 3 processes are used
+    int size;
+    MPI_Comm_size(MPI_COMM_WORLD, &amp;size);
+    if(size != 3)
+    {
+        printf("This application is meant to be run with 3 MPI processes.\n");
+        MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
+    }
+
+    // Get my rank
+    int my_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &amp;my_rank);
+
+    // Define my value
+    int my_values[3];
+    for(int i = 0; i &lt; 3; i++)
+    {
+        my_values[i] = my_rank * 300 + i * 100;
+    }
+    printf("Process %d, my values = %d, %d, %d.\n", my_rank, my_values[0], my_values[1], my_values[2]);
+
+    int buffer_recv[3];
+    MPI_Request request;
+    MPI_Ialltoall(&amp;my_values, 1, MPI_INT, buffer_recv, 1, MPI_INT, MPI_COMM_WORLD, &amp;request);
+
+    // Do another job while the non-blocking all to all progresses
+    printf("[Process %d] The non-blocking all to all is in progress.\n", my_rank);
+
+    MPI_Wait(&amp;request, MPI_STATUS_IGNORE);
+    printf("Values collected on process %d: %d, %d, %d.\n", my_rank, buffer_recv[0], buffer_recv[1], buffer_recv[2]);
+
+    MPI_Finalize();
+
+    return EXIT_SUCCESS;
+}</code></pre>
+</div>
+</div>
+</div>
+</details>
+<details class="proof">
+<summary class="title">MPI_barrier</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;mpi.h&gt;
+
+/**
+ * @brief Illustrates how to use a non-blocking barrier.
+ * @details This application provides a basic example about a non-blocking
+ * barrier. Although this example may not be very realistic, it does illustrate
+ * how to manipulate a non-blocking barrier.
+ *
+ * This application consists of three jobs for each process:
+ * 1) Get my rank
+ * 2) When I have my rank, I print it
+ * 3) Once all processes obtained their rank, I say it
+ *
+ * Rather than using a classic barrier after 2), we can issue a non-blocking
+ * barrier after 1) so that we overlap the synchronisation of the barrier with
+ * the task 2). Then, once 2) is complete, we can block until the non-blocking
+ * barrier completes to progress to 3).
+ *
+ * The difference can be visualised as follows:
+ *
+ *               +--------------+
+ *               | Barrier sync |
+ * +------+------+--------------+------+
+ * | Task | Task |              | Task |
+ * |   1  |   2  |              |   3  |
+ * +------+------+--------------+------+
+ *                                     |
+ *        +--------------+             |
+ *        | Barrier sync |             |
+ * +------+------+-------+------+      |
+ * | Task | Task |       | Task |      |
+ * |  1   |   2  |       |   3  |      |
+ * +------+------+--------------+      |
+ *                              |      |
+ *                              V      V
+ * ---------------- TIME -------+------+-----&gt;
+ *                               &lt;----&gt;
+ *                                gain
+ **/
+int main(int argc, char* argv[])
+{
+    MPI_Init(&amp;argc, &amp;argv);
+
+    // Get my rank, this is task 1
+    int my_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &amp;my_rank);
+    MPI_Request request;
+    MPI_Ibarrier(MPI_COMM_WORLD, &amp;request);
+
+    // Task 2
+    printf("[MPI process %d] I got my rank, it is %d, I now call MPI_Ibarrier.\n", my_rank, my_rank);
+
+    // Task 3
+    MPI_Wait(&amp;request, MPI_STATUS_IGNORE);
+    printf("[MPI process %d] The MPI_Ibarrier is complete; all processes got their rank.\n", my_rank);
+
+    MPI_Finalize();
+
+    return EXIT_SUCCESS;
+}</code></pre>
+</div>
+</div>
+</div>
+</details>
+<details class="proof">
+<summary class="title">MPI_bcast</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;mpi.h&gt;
+
+/**
+ * @brief Illustrates how to broadcast a message in a non-blocking way.
+ * @details This code picks a process as the broadcast root, and makes it
+ * broadcast a specific value. Other processes participate to the broadcast as
+ * receivers. These processes then print the value they received via the 
+ * broadcast.
+ **/
+int main(int argc, char* argv[])
+{
+    MPI_Init(&amp;argc, &amp;argv);
+
+    // Get my rank in the communicator
+    int my_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &amp;my_rank);
+
+    // Determine the rank of the broadcast emitter process
+    int broadcast_root = 0;
+
+    int buffer;
+    if(my_rank == broadcast_root)
+    {
+        buffer = 12345;
+        printf("[MPI process %d] I am the broadcast root, and send value %d.\n", my_rank, buffer);
+    }
+    MPI_Request request;
+    MPI_Ibcast(&amp;buffer, 1, MPI_INT, broadcast_root, MPI_COMM_WORLD, &amp;request);
+
+    // Do some computation ...
+
+    MPI_Wait(&amp;request, MPI_STATUS_IGNORE);
+
+    if(my_rank != broadcast_root)
+    {
+        printf("[MPI process %d] I am a broadcast receiver, and obtained value %d.\n", my_rank, buffer);
+    }
+
+    MPI_Finalize();
+
+    return EXIT_SUCCESS;
+}</code></pre>
+</div>
+</div>
+</div>
+</details>
+<details class="proof">
+<summary class="title">MPI_reduce</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;mpi.h&gt;
+
+/**
+ * @brief Illustrates how to use a non-blocking reduce.
+ * @details This application consists of a sum reduction; every MPI process
+ * sends its rank for reduction before the sum of these ranks is stored in the
+ * root MPI process. It can be visualised as follows, with MPI process 0 as
+ * root:
+ *
+ * +-----------+ +-----------+ +-----------+ +-----------+
+ * | Process 0 | | Process 1 | | Process 2 | | Process 3 |
+ * +-+-------+-+ +-+-------+-+ +-+-------+-+ +-+-------+-+
+ *   | Value |     | Value |     | Value |     | Value |
+ *   |   0   |     |   1   |     |   2   |     |   3   |
+ *   +-------+     +-------+     +-------+     +-------+
+ *            \         |           |         /
+ *             \        |           |        /
+ *              \       |           |       /
+ *               \      |           |      /
+ *                +-----+-----+-----+-----+
+ *                            |
+ *                        +---+---+
+ *                        |  SUM  |
+ *                        +---+---+
+ *                            |
+ *                        +---+---+
+ *                        |   6   |
+ *                      +-+-------+-+
+ *                      | Process 0 |
+ *                      +-----------+
+ **/
+int main(int argc, char* argv[])
+{
+    MPI_Init(&amp;argc, &amp;argv);
+
+    // Determine root's rank
+    int root_rank = 0;
+
+    // Get my rank
+    int my_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &amp;my_rank);
+
+    // Each MPI process sends its rank to reduction, root MPI process collects the result
+    int reduction_result = 0;
+    MPI_Request request;
+    MPI_Ireduce(&amp;my_rank, &amp;reduction_result, 1, MPI_INT, MPI_SUM, root_rank, MPI_COMM_WORLD, &amp;request);
+
+    // Do some other job
+    printf("Process %d issued the MPI_Ireduce and has moved on, printing this message.\n", my_rank);
+
+    // Wait for the MPI_Ireduce to complete
+    MPI_Wait(&amp;request, MPI_STATUS_IGNORE);
+
+    if(my_rank == root_rank)
+    {
+        printf("The sum of all ranks is %d.\n", reduction_result);
+    }
+
+    MPI_Finalize();
+
+    return EXIT_SUCCESS;
+}</code></pre>
+</div>
+</div>
+</div>
+</details>
+<details class="proof">
+<summary class="title">MPI_reduce_scatter</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;mpi.h&gt;
+
+/**
+ * @brief Illustrates how to use a non-blocking reduce scatter block.
+ * @details This application is meant to be run with 3 MPI processes. It
+ * consists of a sum reduction; every MPI process has four values to send for
+ * reduction. The first values from the MPI process will be reduced and stored 
+ * on the MPI process 0. The second and third values will be reduced separately 
+ * and stored on MPI process 1, similarly with the fourth values on MPI process
+ * 2. It can be visualised as follows:
+ *
+ *      +---------------+  +---------------+  +---------------+
+ *      |   Process 0   |  |   Process 1   |  |   Process 2   |
+ *      +---------------+  +---------------+  +---------------+
+ *      |     Values    |  |     Values    |  |     Values    |
+ *      +---+---+---+---+  +---+---+---+---+  +---+---+---+---+
+ *      | 0 | 1 | 2 | 3 |  | 4 | 5 | 6 | 7 |  | 8 | 9 | 10| 11|
+ *      +---+---+---+---+  +---+---+---+---+  +---+---+---+---+
+ *        |    \   \   \     /  |     |  \      /   /   /   |
+ *        | ____\___\___\___/___|_____|___\____/   /   /    |
+ *        |/     \   \   \      |     |    \      /   /     |
+ *        |       \___\___\____ | ____|_____\____/   /      |
+ *        |            \   \   \|/    |      \      /       |
+ *        |             \___\___|____ | ______\____/        |
+ *        |                  \  |    \|/       \            |
+ *        |                   \_|_____|_________\__________ |
+ *        |                     |     |                    \|
+ *        |                     |     |                     |
+ *     +--+--+                +-+---+-+---+              +--+--+
+ *     | SUM |                | SUM | SUM |              | SUM |
+ *     +-----+                +-----+-----+              +-----+
+ *     |  12 |                |  15 |  18 |              |  21 |
+ *     +--+--+                +--+--+--+--+              +--+--+
+ *        |                      |     |                    |      
+ *  +-----+-----+             +--+-----+--+           +-----+-----+
+ *  | Process 0 |             | Process 1 |           | Process 2 |
+ *  +-----------+             +-----------+           +-----------+
+ *  |   Value   |             |   Values  |           |   Value   |
+ *  +-----------+             +-----+-----+           +-----------+
+ *  |     13    |             |  16 |  20 |           |     23    |
+ *  +-----------+             +-----+-----+           +-----------+
+ **/
+int main(int argc, char* argv[])
+{
+    MPI_Init(&amp;argc, &amp;argv);
+
+    // Get the size of the communicator
+    int size = 0;
+    MPI_Comm_size(MPI_COMM_WORLD, &amp;size);
+    if(size != 3)
+    {
+        printf("This application is meant to be run with 3 MPI processes.\n");
+        MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
+    }
+
+    // Get my rank
+    int my_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &amp;my_rank);
+
+    // Defines my values
+    int values[4] = {4 * my_rank, 4 * my_rank + 1, 4 * my_rank + 2, 4 * my_rank + 3};
+
+    // Define the block lengths
+    int counts[3] = {1, 2, 1};
+
+    if(my_rank == 1)
+    {
+        // Each MPI process sends its values and the buffer to receive the corresponding reduction variables
+        int reduction_results[2];
+        MPI_Request request;
+        MPI_Ireduce_scatter(values, reduction_results, counts, MPI_INT, MPI_SUM, MPI_COMM_WORLD, &amp;request);
+
+        // Do some job while it progresses
+        // ...
+
+        // Wait for the MPI_Ireduce_scatter to complete
+        MPI_Wait(&amp;request, MPI_STATUS_IGNORE);
+        printf("[MPI process %d] The sum I received are %d and %d.\n", my_rank, reduction_results[0], reduction_results[1]);
+    }
+    else
+    {
+        // Each MPI process sends its values and the buffer to receive the corresponding reduction variables
+        int reduction_result;
+        MPI_Request request;
+        MPI_Ireduce_scatter(values, &amp;reduction_result, counts, MPI_INT, MPI_SUM, MPI_COMM_WORLD, &amp;request);
+
+        // Do some job while it progresses
+        // ...
+
+        // Wait for the MPI_Ireduce_scatter to complete
+        MPI_Wait(&amp;request, MPI_STATUS_IGNORE);
+        printf("[MPI process %d] The sum I received is %d.\n", my_rank, reduction_result);
+    }
+
+    MPI_Finalize();
+
+    return EXIT_SUCCESS;
+}</code></pre>
+</div>
+</div>
+</div>
+</details>
+<details class="proof">
+<summary class="title">MPI_reduce_scatter</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;mpi.h&gt;
+
+/**
+ * @brief Illustrates how to use a non-blocking reduce scatter block.
+ * @details This application is meant to be run with 3 MPI processes. It
+ * consists of a sum reduction; every MPI process has four values to send for
+ * reduction. The first values from the MPI process will be reduced and stored 
+ * on the MPI process 0. The second and third values will be reduced separately 
+ * and stored on MPI process 1, similarly with the fourth values on MPI process
+ * 2. It can be visualised as follows:
+ *
+ *      +---------------+  +---------------+  +---------------+
+ *      |   Process 0   |  |   Process 1   |  |   Process 2   |
+ *      +---------------+  +---------------+  +---------------+
+ *      |     Values    |  |     Values    |  |     Values    |
+ *      +---+---+---+---+  +---+---+---+---+  +---+---+---+---+
+ *      | 0 | 1 | 2 | 3 |  | 4 | 5 | 6 | 7 |  | 8 | 9 | 10| 11|
+ *      +---+---+---+---+  +---+---+---+---+  +---+---+---+---+
+ *        |    \   \   \     /  |     |  \      /   /   /   |
+ *        | ____\___\___\___/___|_____|___\____/   /   /    |
+ *        |/     \   \   \      |     |    \      /   /     |
+ *        |       \___\___\____ | ____|_____\____/   /      |
+ *        |            \   \   \|/    |      \      /       |
+ *        |             \___\___|____ | ______\____/        |
+ *        |                  \  |    \|/       \            |
+ *        |                   \_|_____|_________\__________ |
+ *        |                     |     |                    \|
+ *        |                     |     |                     |
+ *     +--+--+                +-+---+-+---+              +--+--+
+ *     | SUM |                | SUM | SUM |              | SUM |
+ *     +-----+                +-----+-----+              +-----+
+ *     |  12 |                |  15 |  18 |              |  21 |
+ *     +--+--+                +--+--+--+--+              +--+--+
+ *        |                      |     |                    |      
+ *  +-----+-----+             +--+-----+--+           +-----+-----+
+ *  | Process 0 |             | Process 1 |           | Process 2 |
+ *  +-----------+             +-----------+           +-----------+
+ *  |   Value   |             |   Values  |           |   Value   |
+ *  +-----------+             +-----+-----+           +-----------+
+ *  |     13    |             |  16 |  20 |           |     23    |
+ *  +-----------+             +-----+-----+           +-----------+
+ **/
+int main(int argc, char* argv[])
+{
+    MPI_Init(&amp;argc, &amp;argv);
+
+    // Get the size of the communicator
+    int size = 0;
+    MPI_Comm_size(MPI_COMM_WORLD, &amp;size);
+    if(size != 3)
+    {
+        printf("This application is meant to be run with 3 MPI processes.\n");
+        MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
+    }
+
+    // Get my rank
+    int my_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &amp;my_rank);
+
+    // Defines my values
+    int values[4] = {4 * my_rank, 4 * my_rank + 1, 4 * my_rank + 2, 4 * my_rank + 3};
+
+    // Define the block lengths
+    int counts[3] = {1, 2, 1};
+
+    if(my_rank == 1)
+    {
+        // Each MPI process sends its values and the buffer to receive the corresponding reduction variables
+        int reduction_results[2];
+        MPI_Request request;
+        MPI_Ireduce_scatter(values, reduction_results, counts, MPI_INT, MPI_SUM, MPI_COMM_WORLD, &amp;request);
+
+        // Do some job while it progresses
+        // ...
+
+        // Wait for the MPI_Ireduce_scatter to complete
+        MPI_Wait(&amp;request, MPI_STATUS_IGNORE);
+        printf("[MPI process %d] The sum I received are %d and %d.\n", my_rank, reduction_results[0], reduction_results[1]);
+    }
+    else
+    {
+        // Each MPI process sends its values and the buffer to receive the corresponding reduction variables
+        int reduction_result;
+        MPI_Request request;
+        MPI_Ireduce_scatter(values, &amp;reduction_result, counts, MPI_INT, MPI_SUM, MPI_COMM_WORLD, &amp;request);
+
+        // Do some job while it progresses
+        // ...
+
+        // Wait for the MPI_Ireduce_scatter to complete
+        MPI_Wait(&amp;request, MPI_STATUS_IGNORE);
+        printf("[MPI process %d] The sum I received is %d.\n", my_rank, reduction_result);
+    }
+
+    MPI_Finalize();
+
+    return EXIT_SUCCESS;
+}</code></pre>
+</div>
+</div>
+</div>
+</details>
+<details class="proof">
+<summary class="title">MPI_reduce_scatter_block</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;mpi.h&gt;
+
+/**
+ * @brief Illustrates how to use a non-blocking reduce scatter block.
+ * @details This application is meant to be run with 3 MPI processes. It
+ * consists of a sum reduction; every MPI process has three values to send for
+ * reduction. The first values from the MPI process will be reduced and stored 
+ * on the MPI process 0. The second values will be reduced separately and stored
+ * on MPI process 1, similarly with the third values on MPI process 2. It can be
+ * visualised as follows:
+ *
+ *      +-----------+  +-----------+  +-----------+
+ *      | Process 0 |  | Process 1 |  | Process 2 |
+ *      +-----------+  +-----------+  +-----------+
+ *      |   Values  |  |   Values  |  |   Values  |
+ *      +---+---+---+  +---+---+---+  +---+---+---+ 
+ *      | 0 | 1 | 2 |  | 3 | 4 | 5 |  | 6 | 7 | 8 |
+ *      +---+---+---+  +---+---+---+  +---+---+---+
+ *        |    \   \     /   |    \    /   /    |
+ *        | ____\___\___/____|_____\__/   /     |
+ *        |/     \   \       |      \    /      |
+ *        |       \___\_____ | ______\__/       |
+ *        |            \    \|/       \         |
+ *        |             \____|_________\_______ |
+ *        |                  |                 \|
+ *        |                  |                  |
+ *     +--+--+            +--+--+            +-----+
+ *     | SUM |            | SUM |            | SUM |
+ *     +-----+            +-----+            +-----+
+ *     |  9  |            |  12 |            |  15 |
+ *     +--+--+            +--+--+            +--+--+
+ *        |                  |                  |      
+ *  +-----+-----+      +-----+-----+      +-----+-----+
+ *  | Process 0 |      | Process 1 |      | Process 2 |
+ *  +-----------+      +-----------+      +-----------+
+ *  |   Value   |      |   Value   |      |   Value   |
+ *  |     9     |      |     12    |      |     15    |
+ *  +-----------+      +-----------+      +-----------+
+ **/
+int main(int argc, char* argv[])
+{
+    MPI_Init(&amp;argc, &amp;argv);
+
+    // Get the size of the communicator
+    int size = 0;
+    MPI_Comm_size(MPI_COMM_WORLD, &amp;size);
+    if(size != 3)
+    {
+        printf("This application is meant to be run with 3 MPI processes.\n");
+        MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
+    }
+
+    // Get my rank
+    int my_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &amp;my_rank);
+
+    // Defines my values
+    int values[3] = {3 * my_rank, 3 * my_rank + 1, 3 * my_rank + 2};
+
+    // Each MPI process sends its values and the buffer to receive the corresponding reduction variables
+    int reduction_result;
+    MPI_Request request;
+    MPI_Ireduce_scatter_block(values, &amp;reduction_result, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD, &amp;request);
+
+    // Do some job while it progresses
+    // ...
+
+    // Wait for the MPI_Ireduce_scatter_block to complete
+    MPI_Wait(&amp;request, MPI_STATUS_IGNORE);
+    printf("[MPI process %d] The sum I received is %d.\n", my_rank, reduction_result);
+
+    MPI_Finalize();
+
+    return EXIT_SUCCESS;
+}</code></pre>
+</div>
+</div>
+</div>
+</details>
+<details class="proof">
+<summary class="title">MPI_scatterv</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;mpi.h&gt;
+
+/**
+ * @brief Illustrates how to use the non-blocking variable version of a scatter.
+ * @details A process is designed as root and begins with a buffer containig all
+ * values, and prints them. It then dispatches these values to all the processes
+ * in the same communicator. Other process just receive the dispatched value(s)
+ * meant for them. Finally, everybody prints the value received. This
+ * application is designed to cover all cases:
+ * - Different send counts
+ * - Different displacements
+ * This application is meant to be run with 3 processes.
+ *
+ *       +-----------------------------------------+
+ *       |                Process 0                |
+ *       +-----+-----+-----+-----+-----+-----+-----+
+ *       | 100 |  0  | 101 | 102 |  0  |  0  | 103 |
+ *       +-----+-----+-----+-----+-----+-----+-----+
+ *         |            |     |                |
+ *         |            |     |                |
+ *         |            |     |                |
+ *         |            |     |                |
+ *         |            |     |                |
+ *         |            |     |                |
+ * +-----------+ +-------------------+ +-----------+
+ * | Process 0 | |    Process 1      | | Process 2 |
+ * +-+-------+-+ +-+-------+-------+-+ +-+-------+-+
+ *   | Value |     | Value | Value |     | Value |
+ *   |  100  |     |  101  |  102  |     |  103  |
+ *   +-------+     +-------+-------+     +-------+ 
+ *                
+ **/
+int main(int argc, char* argv[])
+{
+    MPI_Init(&amp;argc, &amp;argv);
+
+    // Get number of processes and check that 3 processes are used
+    int size;
+    MPI_Comm_size(MPI_COMM_WORLD, &amp;size);
+    if(size != 3)
+    {
+        printf("This application is meant to be run with 3 processes.\n");
+        MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
+    }
+
+    // Determine root's rank
+    int root_rank = 0;
+
+    // Get my rank
+    int my_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &amp;my_rank);
+
+    MPI_Request request;
+
+    switch(my_rank)
+    {
+        case 0:
+        {
+            // Define my value
+            int my_value;
+
+            // Declare the buffer
+            int buffer[7] = {100, 0, 101, 102, 0, 0, 103};
+
+            // Declare the counts
+            int counts[3] = {1, 2, 1};
+
+            // Declare the displacements
+            int displacements[3] = {0, 2, 6};
+
+            printf("Values in the buffer of root process:");
+            for(int i = 0; i &lt; 7; i++)
+            {
+                printf(" %d", buffer[i]);
+            }
+            printf("\n");
+
+            // Launch the variable scatter
+            MPI_Iscatterv(buffer, counts, displacements, MPI_INT, &amp;my_value, 1, MPI_INT, root_rank, MPI_COMM_WORLD, &amp;request);
+
+            // Do another job while the variable scatter progresses
+            // ...
+
+            // Wait for the completion of the variable scatter
+            MPI_Wait(&amp;request, MPI_STATUS_IGNORE);
+            printf("Process %d received value %d.\n", my_rank, my_value);
+            break;
+        }
+        case 1:
+        {
+            // Declare my values
+            int my_values[2];
+
+            // Launch the variable scatter
+            MPI_Iscatterv(NULL, NULL, NULL, MPI_INT, my_values, 2, MPI_INT, root_rank, MPI_COMM_WORLD, &amp;request);
+
+            // Do another job while the variable scatter progresses
+            // ...
+
+            // Wait for the completion of the variable scatter
+            MPI_Wait(&amp;request, MPI_STATUS_IGNORE);
+            printf("Process %d received values %d and %d.\n", my_rank, my_values[0], my_values[1]);
+            break;
+        }
+        case 2:
+        {
+            // Declare my values
+            int my_value;
+
+            // Launch the variable scatter
+            MPI_Iscatterv(NULL, NULL, NULL, MPI_INT, &amp;my_value, 1, MPI_INT, root_rank, MPI_COMM_WORLD, &amp;request);
+
+            // Do another job while the variable scatter progresses
+            // ...
+
+            // Wait for the completion of the variable scatter
+            MPI_Wait(&amp;request, MPI_STATUS_IGNORE);
+            printf("Process %d received value %d.\n", my_rank, my_value);
+            break;
+        }
+    }
+
+    MPI_Finalize();
+
+    return EXIT_SUCCESS;
+}</code></pre>
+</div>
+</div>
+</div>
+</details>
+<details class="proof">
+<summary class="title">MPI_ssend</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-c hljs" data-lang="c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;mpi.h&gt;
+
+/**
+ * @brief Illustrates how to send a message in a non-blocking synchronous
+ * fashion.
+ * @details This program is meant to be run with 2 processes: a sender and a
+ * receiver.
+ **/
+int main(int argc, char* argv[])
+{
+    MPI_Init(&amp;argc, &amp;argv);
+
+    // Get the number of processes and check only 2 processes are used
+    int size;
+    MPI_Comm_size(MPI_COMM_WORLD, &amp;size);
+    if(size != 2)
+    {
+        printf("This application is meant to be run with 2 processes.\n");
+        MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
+    }
+
+    // Get my rank and do the corresponding job
+    enum role_ranks { SENDER, RECEIVER };
+    int my_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &amp;my_rank);
+    switch(my_rank)
+    {
+        case SENDER:
+        {
+            int buffer_sent = 12345;
+            MPI_Request request;
+            printf("MPI process %d sends value %d.\n", my_rank, buffer_sent);
+            MPI_Issend(&amp;buffer_sent, 1, MPI_INT, 1, 0, MPI_COMM_WORLD, &amp;request);
+            
+            // Do other things while the MPI_Issend completes
+            // &lt;...&gt;
+
+            // Let's wait for the MPI_Issend to complete before progressing further.
+            MPI_Status status;
+            MPI_Wait(&amp;request, &amp;status);
+            break;
+        }
+        case RECEIVER:
+        {
+            int received;
+            MPI_Recv(&amp;received, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            printf("MPI process %d received value: %d.\n", my_rank, received);
+            break;
+        }
+    }
+
+    MPI_Finalize();
+
+    return EXIT_SUCCESS;
+}</code></pre>
+</div>
+</div>
+</div>
+</details>
 </div>
 </div>
 </article>
