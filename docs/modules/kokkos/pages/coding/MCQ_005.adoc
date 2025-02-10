@@ -1,0 +1,213 @@
+
+= Welcome to MCQ Kokkos 
+
+*Quiz on the concept of advanced reduction*
+
+++++
+<div id="mcq">
+  <p>1.What is the default reducer in Kokkos ?</p>
+  <input type="radio" name="q1" value="a"> Max<br>
+  <input type="radio" name="q1" value="b"> Min<br>
+  <input type="radio" name="q1" value="c"> Sum<br>
+  <input type="radio" name="q1" value="d"> Prod<br>
+  <button onclick="checkAnswer('c')">Submit</button>
+  <p id="result"></p>
+</div>
+
+<script>
+function checkAnswer(rightAnswer) {
+    let answer = document.querySelector('input[name="q1"]:checked')?.value;
+    let result = document.getElementById("result");
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+++++
+
+
+++++
+<div id="mcq">
+  <p>2.What operation does the Kokkos::BAnd reducer perform ?</p>
+  <input type="radio" name="q1" value="a"> Binary addition<br>
+  <input type="radio" name="q1" value="b"> Binary AND<br>
+  <input type="radio" name="q1" value="c"> Binary OR<br>
+  <input type="radio" name="q1" value="d"> Binary XOR<br>
+  <button onclick="checkAnswer('b')">Submit</button>
+  <p id="result"></p>
+</div>
+
+<script>
+function checkAnswer(rightAnswer) {
+    let answer = document.querySelector('input[name="q1"]:checked')?.value;
+    let result = document.getElementById("result");
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+++++
+
+
+
+++++
+<div id="mcq">
+  <p>3. What reducer allows us to find both the minimum value and its index ?</p>
+  <input type="radio" name="q1" value="a"> Min<br>
+  <input type="radio" name="q1" value="b"> MinLoc<br>
+  <input type="radio" name="q1" value="c"> MinMax<br>
+  <input type="radio" name="q1" value="d"> MinMaxLoc<br>
+  <button onclick="checkAnswer('b')">Submit</button>
+  <p id="result"></p>
+</div>
+
+<script>
+function checkAnswer(rightAnswer) {
+    let answer = document.querySelector('input[name="q1"]:checked')?.value;
+    let result = document.getElementById("result");
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+++++
+
+
+
+++++
+<div id="mcq">
+  <p>4. How do you specify a custom reducer in a parallel reduction ?</p>
+  <input type="radio" name="q1" value="a"> As a first argument<br>
+  <input type="radio" name="q1" value="b"> As a final argument<br>
+  <input type="radio" name="q1" value="c"> In the body of the lambda<br>
+  <input type="radio" name="q1" value="d"> In a separate function<br>
+  <button onclick="checkAnswer('b')">Submit</button>
+  <p id="result"></p>
+</div>
+
+<script>
+function checkAnswer(rightAnswer) {
+    let answer = document.querySelector('input[name="q1"]:checked')?.value;
+    let result = document.getElementById("result");
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+++++
+
+
+
+
+
+++++
+<div id="mcq">
+  <p>5. What does the Kokkos::MinMaxLoc reducer do ?</p>
+  <input type="radio" name="q1" value="a"> Find the minimum and maximum<br>
+  <input type="radio" name="q1" value="b"> Find the minimum and maximum with their indices<br>
+  <input type="radio" name="q1" value="c"> Find the minimum or maximum, whichever is closer<br>
+  <input type="radio" name="q1" value="d"> Find the average between the minimum and the maximum<br>
+  <button onclick="checkAnswer('b')">Submit</button>
+  <p id="result"></p>
+</div>
+
+<script>
+function checkAnswer(rightAnswer) {
+    let answer = document.querySelector('input[name="q1"]:checked')?.value;
+    let result = document.getElementById("result");
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+++++
+
+
+
+
+++++
+<div id="mcq">
+  <p>6. Do Kokkos reducers work on variable length arrays ?</p>
+  <input type="radio" name="q1" value="a"> Yes, always<br>
+  <input type="radio" name="q1" value="b"> No, never<br>
+  <input type="radio" name="q1" value="c"> Only for certain reducersl<br>
+  <input type="radio" name="q1" value="d"> Only on CPU<br>
+  <button onclick="checkAnswer('b')">Submit</button>
+  <p id="result"></p>
+</div>
+
+<script>
+function checkAnswer(rightAnswer) {
+    let answer = document.querySelector('input[name="q1"]:checked')?.value;
+    let result = document.getElementById("result");
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+++++
+
+
+
+
+++++
+<div id="mcq">
+  <p>7. What is special about reductions in scalar variables ?</p>
+  <input type="radio" name="q1" value="a"> They are faster<br>
+  <input type="radio" name="q1" value="b"> They are guaranteed to be synchronous<br>
+  <input type="radio" name="q1" value="c"> They only work on CPU<br>
+  <input type="radio" name="q1" value="d"> They require a special reducer<br>
+  <button onclick="checkAnswer('b')">Submit</button>
+  <p id="result"></p>
+</div>
+
+<script>
+function checkAnswer(rightAnswer) {
+    let answer = document.querySelector('input[name="q1"]:checked')?.value;
+    let result = document.getElementById("result");
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+++++
+
+
+
+++++
+<div id="mcq">
+  <p>8. Is it possible to make multiple discounts simultaneously in Kokkos ?</p>
+  <input type="radio" name="q1" value="a"> No, nevers<br>
+  <input type="radio" name="q1" value="b"> Yes, but only two at a time<br>
+  <input type="radio" name="q1" value="c"> Yes, with identical data types<br>
+  <input type="radio" name="q1" value="d"> Yes, even with different data types<br>
+  <button onclick="checkAnswer('d')">Submit</button>
+  <p id="result"></p>
+</div>
+
+<script>
+function checkAnswer(rightAnswer) {
+    let answer = document.querySelector('input[name="q1"]:checked')?.value;
+    let result = document.getElementById("result");
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+++++

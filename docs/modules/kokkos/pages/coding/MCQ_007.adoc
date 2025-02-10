@@ -1,0 +1,213 @@
+
+= Welcome to MCQ Kokkos 
+
+*Quiz on the concept of of Asynchronicity, Streams, and Task Parallelism*
+
+++++
+<div id="mcq">
+  <p>1.What does asynchronous execution mean in Kokkos ?</p>
+  <input type="radio" name="q1" value="a"> Operations are always executed in order<br>
+  <input type="radio" name="q1" value="b"> Operations may return before they are completed<br>
+  <input type="radio" name="q1" value="c"> Operations cannot be parallelized<br>
+  <input type="radio" name="q1" value="d"> Operations are always synchronous<br>
+  <button onclick="checkAnswer('b')">Submit</button>
+  <p id="result"></p>
+</div>
+
+<script>
+function checkAnswer(rightAnswer) {
+    let answer = document.querySelector('input[name="q1"]:checked')?.value;
+    let result = document.getElementById("result");
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+++++
+
+
+++++
+<div id="mcq">
+  <p>2.How do I force completion of all pending operations in Kokkos ?</p>
+  <input type="radio" name="q1" value="a"> With the wait() function<br>
+  <input type="radio" name="q1" value="b"> With the sync() function<br>
+  <input type="radio" name="q1" value="c"> With the fence() function<br>
+  <input type="radio" name="q1" value="d"> With the complete() function<br>
+  <button onclick="checkAnswer('c')">Submit</button>
+  <p id="result"></p>
+</div>
+
+<script>
+function checkAnswer(rightAnswer) {
+    let answer = document.querySelector('input[name="q1"]:checked')?.value;
+    let result = document.getElementById("result");
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+++++
+
+
+
+++++
+<div id="mcq">
+  <p>3. What is the main purpose of Task Parallelism in Kokkos ?</p>
+  <input type="radio" name="q1" value="a"> Optimize memory usage<br>
+  <input type="radio" name="q1" value="b"> Manage dependencies between irregular tasks<br>
+  <input type="radio" name="q1" value="c"> Replace data parallelism<br>
+  <input type="radio" name="q1" value="d"> Simplify sequential programming<br>
+  <button onclick="checkAnswer('b')">Submit</button>
+  <p id="result"></p>
+</div>
+
+<script>
+function checkAnswer(rightAnswer) {
+    let answer = document.querySelector('input[name="q1"]:checked')?.value;
+    let result = document.getElementById("result");
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+++++
+
+
+
+++++
+<div id="mcq">
+  <p>4. How do I create a task in Kokkos ?</p>
+  <input type="radio" name="q1" value="a"> With task.create()<br>
+  <input type="radio" name="q1" value="b"> With policy.create()<br>
+  <input type="radio" name="q1" value="c"> With Kokkos::create_task()<br>
+  <input type="radio" name="q1" value="d"> With new Task()<br>
+  <button onclick="checkAnswer('b')">Submit</button>
+  <p id="result"></p>
+</div>
+
+<script>
+function checkAnswer(rightAnswer) {
+    let answer = document.querySelector('input[name="q1"]:checked')?.value;
+    let result = document.getElementById("result");
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+++++
+
+
+
+
+
+++++
+<div id="mcq">
+  <p>5. What does the task respawn mechanism in Kokkos allow ?</p>
+  <input type="radio" name="q1" value="a"> Create a new task<br>
+  <input type="radio" name="q1" value="b"> Complete a current task<br>
+  <input type="radio" name="q1" value="c"> Restart a task without waiting for its dependencies<br>
+  <input type="radio" name="q1" value="d"> Delete a task<br>
+  <button onclick="checkAnswer('b')">Submit</button>
+  <p id="result"></p>
+</div>
+
+<script>
+function checkAnswer(rightAnswer) {
+    let answer = document.querySelector('input[name="q1"]:checked')?.value;
+    let result = document.getElementById("result");
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+++++
+
+
+
+
+++++
+<div id="mcq">
+  <p>6. What Kokkos concept allows to execute operations in parallel on different streams ?</p>
+  <input type="radio" name="q1" value="a"> TaskPolicy<br>
+  <input type="radio" name="q1" value="b"> StreamPolicy<br>
+  <input type="radio" name="q1" value="c"> Runtime Space Instances<br>
+  <input type="radio" name="q1" value="d"> ParallelPolicy<br>
+  <button onclick="checkAnswer('c')">Submit</button>
+  <p id="result"></p>
+</div>
+
+<script>
+function checkAnswer(rightAnswer) {
+    let answer = document.querySelector('input[name="q1"]:checked')?.value;
+    let result = document.getElementById("result");
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+++++
+
+
+
+
+++++
+<div id="mcq">
+  <p>7. How can we implement nested parallelism in a Kokkos task?</p>
+  <input type="radio" name="q1" value="a"> It is not possible<br>
+  <input type="radio" name="q1" value="b"> Using TeamThreadRange<br>
+  <input type="radio" name="q1" value="c"> By creating a new task<br>
+  <input type="radio" name="q1" value="d"> Only with sequential loops<br>
+  <button onclick="checkAnswer('b')">Submit</button>
+  <p id="result"></p>
+</div>
+
+<script>
+function checkAnswer(rightAnswer) {
+    let answer = document.querySelector('input[name="q1"]:checked')?.value;
+    let result = document.getElementById("result");
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+++++
+
+
+
+++++
+<div id="mcq">
+  <p>8. What is the main advantage of combining Task Parallelism and Data Parallelism in Kokkos ?</p>
+  <input type="radio" name="q1" value="a"> Reduce memory consumption<br>
+  <input type="radio" name="q1" value="b"> Increase the accuracy of calculations<br>
+  <input type="radio" name="q1" value="c"> Improve locality and exploit material hierarchy<br>
+  <input type="radio" name="q1" value="d"> Simplify the code<br>
+  <button onclick="checkAnswer('c')">Submit</button>
+  <p id="result"></p>
+</div>
+
+<script>
+function checkAnswer(rightAnswer) {
+    let answer = document.querySelector('input[name="q1"]:checked')?.value;
+    let result = document.getElementById("result");
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+++++
