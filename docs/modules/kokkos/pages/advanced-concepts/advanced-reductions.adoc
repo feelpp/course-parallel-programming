@@ -3,7 +3,7 @@
 == Introduction
 
 [.text-justify]
-In Kokkos C++, a reduction is a parallel operation that combines the results of individual calculations into a single final value. [1][2] This mechanism, primarily implemented through the Kokkos::parallel_reduce function, offers a powerful paradigm for consolidating data distributed across different processing units. The concept of a "Reducer" in Kokkos encapsulates the logic of combining intermediate values, defining not only the merging operation but also the initialization of thread-private variables and the localization of the final result.
+In Kokkos C++, a reduction is a parallel operation that combines the results of individual calculations into a single final value. [1][2] This mechanism, primarily implemented through the `Kokkos::parallel_reduce` function, offers a powerful paradigm for consolidating data distributed across different processing units. The concept of a "Reducer" in Kokkos encapsulates the logic of combining intermediate values, defining not only the merging operation but also the initialization of thread-private variables and the localization of the final result.
 
 [.text-justify]
 Kokkos allows for multiple reductions to be performed within a single kernel, which can significantly reduce kernel launch overhead and improve overall performance. It also offers the ability to use Views as reduction targets, enabling asynchronous reduction operations. This capability is particularly valuable in scenarios where the reduction result is needed for further computation or when overlapping computation and communication.
@@ -24,74 +24,86 @@ Kokkos offers various built-in reducers for common operations:
     ** `Kokkos::Prod` for product
     ** `Kokkos::Min` and `Kokkos::Max` for minimum and maximum
 
-Example:
-
+.Sum with Kokkos
+[%collapsible.proof]
+====
 [source,c++]
 ----
-    double result;
-    Kokkos::parallel_reduce("Sum", policy,
-    KOKKOS_LAMBDA (const int i, double& lsum) {
-        lsum += data[i];
-    }, Kokkos::Sum<double>(result));
+double result;
+Kokkos::parallel_reduce("Sum", policy,
+KOKKOS_LAMBDA (const int i, double& lsum) {
+    lsum += data[i];
+}, Kokkos::Sum<double>(result));
 ----
-
+====
 ** Multiple Reductions in One Kernel
 
 Kokkos allows performing multiple reductions simultaneously:
 
+.Multiple Reductions
+[%collapsible.proof]
+====
 [source,c++]
 ----
-    struct MultipleResults {
-        double sum;
-        int max;
-    };
+struct MultipleResults {
+    double sum;
+    int max;
+};
 
-    MultipleResults results;
-    Kokkos::parallel_reduce("MultiReduce", policy,
-    KOKKOS_LAMBDA (const int i, MultipleResults& lresults) {
-        lresults.sum += data[i];
-        if (data[i] > lresults.max) lresults.max = data[i];
-    },
-    Kokkos::Sum<MultipleResults>(results));
+MultipleResults results;
+Kokkos::parallel_reduce("MultiReduce", policy,
+KOKKOS_LAMBDA (const int i, MultipleResults& lresults) {
+    lresults.sum += data[i];
+    if (data[i] > lresults.max) lresults.max = data[i];
+},
+Kokkos::Sum<MultipleResults>(results));
 ----
+====
 
-** Using Kokkos::View as Result for Asynchronicity
+** Using `Kokkos::View` as Result for Asynchronicity
 
-For asynchronous operations, you can use `Kokkos::View` as the reduction target:
+For asynchronous operations, you can use xref:basic-concepts/views.adoc[Views] as the reduction target:
 
+.Async Reduction
+[%collapsible.proof]
+====
 [source,c++]
 ----
-    Kokkos::View<double*> result("Result", 1);
-    Kokkos::parallel_reduce("AsyncReduce", policy,
-    KOKKOS_LAMBDA (const int i, double& lsum) {
-        lsum += data[i];
-    }, Kokkos::Sum<double>(result(0)));
+Kokkos::View<double*> result("Result", 1);
+Kokkos::parallel_reduce("AsyncReduce", policy,
+KOKKOS_LAMBDA (const int i, double& lsum) {
+    lsum += data[i];
+}, Kokkos::Sum<double>(result(0)));
 ----
+====
 
 This allows the reduction to be performed asynchronously, with the result available in the view.
 
-** Custom Reductions
-
+** Custom Reductions:
 Kokkos supports custom reduction operations:
 
+.Custom Reduction
+[%collapsible.proof]
+====
 [source,c++]
 ----
-    struct CustomReducer {
-    typedef double value_type;
-    KOKKOS_INLINE_FUNCTION void join(value_type& dest, const value_type& src) const {
-        dest = (dest > src) ? dest : src;  // Custom max operation
-    }
-    KOKKOS_INLINE_FUNCTION void init(value_type& val) const {
-        val = std::numeric_limits<double>::lowest();
-    }
-    };
+struct CustomReducer {
+typedef double value_type;
+KOKKOS_INLINE_FUNCTION void join(value_type& dest, const value_type& src) const {
+    dest = (dest > src) ? dest : src;  // Custom max operation
+}
+KOKKOS_INLINE_FUNCTION void init(value_type& val) const {
+    val = std::numeric_limits<double>::lowest();
+}
+};
 
-    double result;
-    Kokkos::parallel_reduce("CustomReduce", policy,
-    KOKKOS_LAMBDA (const int i, double& lval) {
-        lval = (lval > data[i]) ? lval : data[i];
-    }, CustomReducer());
+double result;
+Kokkos::parallel_reduce("CustomReduce", policy,
+KOKKOS_LAMBDA (const int i, double& lval) {
+    lval = (lval > data[i]) ? lval : data[i];
+}, CustomReducer());
 ----
+====
 
 
 == References
