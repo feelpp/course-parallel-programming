@@ -7,6 +7,41 @@
 
 #include <Kokkos_Core.hpp>
 
+
+
+struct CustomReduction {
+  double max_value;
+  double sum;
+  int count;
+
+  KOKKOS_INLINE_FUNCTION
+  CustomReduction() : max_value(-std::numeric_limits<double>::max()), sum(0.0), count(0) {}
+
+  KOKKOS_INLINE_FUNCTION
+  CustomReduction& operator+=(const CustomReduction& rhs) {
+    max_value = std::max(max_value, rhs.max_value);
+    sum += rhs.sum;
+    count += rhs.count;
+    return *this;
+  }
+
+  KOKKOS_INLINE_FUNCTION
+  void operator+=(const volatile CustomReduction& rhs) volatile {
+    max_value = std::max(max_value, rhs.max_value);
+    sum += rhs.sum;
+    count += rhs.count;
+  }
+};
+
+namespace Kokkos {
+  template<>
+  struct reduction_identity<CustomReduction> {
+    KOKKOS_FORCEINLINE_FUNCTION static CustomReduction sum() {
+      return CustomReduction();
+    }
+  };
+}
+
 int main(int argc, char *argv[]) {
   Kokkos::initialize(argc, argv);
   {
