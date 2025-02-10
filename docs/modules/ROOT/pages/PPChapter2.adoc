@@ -82,10 +82,10 @@ types).
 [.text-justify]
 In each case, there are several transfer modes , using different
 protocols.
-    
+
     int MPI_Send( *const void* *message, *int* length, MPI_Datatype
     type_message, *int* rank_dest, *int* label, MPI_Comm comm)
-    
+
     int MPI_Recv ( *void* *message, *int* length, MPI_Datatype
     type_message, *int* rank_source, *int* label, MPI_Comm comm, MPI_Status
     *status)
@@ -103,7 +103,7 @@ Note this operation is blocking.
     label_message_received, MPI_Comm comm, MPI_Status *status)
 
 *Simultaneous send and receive operation*
-    
+
     int MPI_Sendrecv_replace ( void * message, int length, MPI_Datatype
     type_message, int rank_dest, int label_message_sent, int* rank_source,
     int label_message_recu, MPI_Comm comm, MPI_Status *status)
@@ -207,13 +207,13 @@ MPI_Reduce() followed by an MPI_Bcast()): MPI_Allreduce().
 *Point-to-point sending modes*
 
     _Blocking and Non-blocking mode_
-    
+
     Standard sending MPI_Send() MPI_Isend()
-    
+
     Synchronous send MPI_Ssend() MPI_Issend()
-    
+
     _Buffered_ send MPI_Bsend() MPI_Ibsend()
-    
+
     Receive MPI_Recv() MPI_Irecv()
 
 
@@ -259,8 +259,8 @@ and MPI_Buffer_detach()). They must be allocated taking into account the
 memory overhead of the messages (by adding the MPI_BSEND_OVERHEAD
 constant for each message instance).
 
-    int MPI_Buffer_attach ( void *buf, int size_buf) 
-    int MPI_Buffer_detach ( void *buf, int size_buf) 
+    int MPI_Buffer_attach ( void *buf, int size_buf)
+    int MPI_Buffer_detach ( void *buf, int size_buf)
     int MPI_Bsend( const void *values, int size, MPI_Datatype type_message, int dest, int label, MPI_Comm comm)
 
 
@@ -310,13 +310,13 @@ example) before using it again.
 
     int MPI_Isend( const void *values, int size, MPI_Datatype
     message_type, int dest, int label, MPI_Comm comm, MPI_Request *req)
-    
+
     int MPI_Issend ( const void* values, int size, MPI_Datatype
     message_type, int dest, int label, MPI_Comm comm, MPI_Request *req)
-    
+
     int MPI_Ibsend( const void* values, int size, MPI_Datatype
     message_type, int dest, int label, MPI_Comm comm, MPI_Request *req)
-    
+
     int MPI_Irecv( void *values, int size, MPI_Datatype type_message,
     int* source, int label, MPI_Comm comm, MPI_Request *req)
 
@@ -348,20 +348,20 @@ collectives in MPI 3.0)
 MPI_Wait() waits for the end of a communication. MPI_Test() is the
 non-blocking version.
 
-    int MPI_Wait ( MPI_Request *req, MPI_Status *status) 
+    int MPI_Wait ( MPI_Request *req, MPI_Status *status)
     int MPI_Test( MPI_Request *req, int *flag, MPI_Status *status)
 
 MPI_Waitall() waits for all communications to end. MPI_Testall() is the
 non-blocking version.
 
-    int MPI_Waitall ( int size, MPI_Request reqs[], MPI_Status statuses[]) 
+    int MPI_Waitall ( int size, MPI_Request reqs[], MPI_Status statuses[])
     int* MPI_Testall ( int size, MPI_Request reqs[], int *flag, MPI_Status statuses[])
 
 MPI_Waitany waits for the end of one communication among several.
 
     int MPI_Waitany ( int size, MPI_Request reqs[], int *index,MPI_Status *status)
 
-MPI_Testany is the non-blocking version. 
+MPI_Testany is the non-blocking version.
 
     int* MPI_Testany( int size, MPI_Request reqs[], int *index, int *flag, MPI_Status *status)
 
@@ -454,7 +454,7 @@ a|
 
 • MPI Comm size: Number of processes
 
-• MPI Finalize: Deactivation of the MPI environment 
+• MPI Finalize: Deactivation of the MPI environment
 
 • MPI Abort:Stopping of an MPI program
 
@@ -486,7 +486,7 @@ a|
 
 • MPI Alltoall: Collection and distribution
 
-• MPI Reduce and MPI Allreduce: Reduction 
+• MPI Reduce and MPI Allreduce: Reduction
 
 • MPI Barrier: Global synchronization
 
@@ -728,36 +728,36 @@ if this mode has been activated by calling the OMP_SET_NESTED subroutine
 or by setting the OMP_NESTED environment variable.
 
     *Examples*
-    
+
     #include <omp.h>
-    
-    int main() 
-    { 
+
+    int main()
+    {
     int row;
-    
-    #pragma omp parallel private(rank) num_threads(3) 
-    { 
-    rank=omp_get_thread_num(); 
+
+    #pragma omp parallel private(rank) num_threads(3)
+    {
+    rank=omp_get_thread_num();
     printf("My rank in region 1: %d \n",rank);
-    
-    #pragma omp parallel private(rank) num_threads(2) 
-    { 
-    rank=omp_get_thread_num(); 
-    printf(" My rank in region 2: %d \n",rank); 
+
+    #pragma omp parallel private(rank) num_threads(2)
+    {
+    rank=omp_get_thread_num();
+    printf(" My rank in region 2: %d \n",rank);
     }
-    
+
     }
-    return 0; 
+    return 0;
     }
-    
-    My rank in region 1: 0 
-    My rank in region 2: 1 
-    My rank in region 2: 0 
-    My rank in region 1: 2 
-    My rank in region 2: 1 
-    My rank in region 2: 0 
-    My rank in region 1: 1 
-    My rank in region 2: 0 
+
+    My rank in region 1: 0
+    My rank in region 2: 1
+    My rank in region 2: 0
+    My rank in region 1: 2
+    My rank in region 2: 1
+    My rank in region 2: 0
+    My rank in region 1: 1
+    My rank in region 2: 0
     My rank in region 2: 1
 
 *Work sharing*
@@ -983,18 +983,18 @@ block or an OpenMP Construct. A “structured block” is a single statement
 or a compound statement with a single entry at the top and a single exit
 at the bottom.
 
-    
+
     The *parallel* construction forms To team of threads and starts parallel
     execution.
-    
+
     *#pragma comp parallel* _[clause[ [_ *,* _]clause] ...] new-line
     structured-block_
-    
+
     _clause_ : *if(* _scalar- expression_ *)*
-    
+
     *num_threads(* _integer-expression_ *) default(shared*  *none)
     private(* _list_ *) firstprivate(* _list_ *)*
-    
+
     *shared(* _list_ *) copyin(* _list_ *) reduce(* _operator_ *:* _list_
     *)s*
 
@@ -1005,9 +1005,9 @@ distributed among and executed by the encountering team of threads.
 
 
     *#pragma comp for* _[clause[[_ *,* _] clause] ... ] new-line for-loops_
-    
+
     _clause_ : *private(* _list_ *)*
-    
+
     *firstprivate(* _list_ *) lastprivate(* _list_ *) reduce(* _operator_
     *:* _list_ *) schedule(* _kind[, chunk_size]_ *) collapse(* _n_ *)*
     *ordered nowait*
@@ -1021,16 +1021,16 @@ distributed among and executed by the meeting team of threads.
 
 
     *#pragma comp sections* _[clause[[_ *,* _] clause] ...] new line_
-    
+
     *{*
-    
+
     _[_ *#pragma comp section* _new-line] structured-block_
-    
+
     _[_ *#pragma comp section* _new-line structured-block ]_
-    
+
     _clause_ : *private(* _list_ *)*
-    
-    *firstprivate(* _list_ *) 
+
+    *firstprivate(* _list_ *)
     lastprivate(* _list_ *) reduce(* _operator_
     *:* _list_ *) nowait*
 
@@ -1039,12 +1039,12 @@ a|
 executed by only one of the threads in the team (not necessarily the
 master thread), in the context of its implicit task.
 
-    
+
     *#pragma comp single* _[clause[[_ *,* _] clause] ...] new-line
     structured-block_
-    
+
     _clause_ : *private(* _list_ *)*
-    
+
     *firstprivate(* _list_ *) copyprivate(* _list_ *) nowait*
 
 a|
@@ -1056,31 +1056,31 @@ allowed for the *parallel* and worksharing constructs.
 
     *#pragma comp parallel for* _[clause[[_ *,* _] clause] ...] new-line
     for-loop_
-    
+
     *#pragma comp parallel sections* _[clause[ [_ *,* _]clause] ...]
     new-line_
-    
+
     *{*
     _[_ *#pragma comp section* _new-line] structured-block_
-    
+
     _[_ *#pragma comp section* _new-line structured-block ]_
-    
+
     _..._
     *#pragma comp task* _[clause[ [_ *,* _]clause] ...] new-line
     structured-block_
     _clause_ : *if(* _scalar- expression_ *)*
-    
+
     === untied
-    
-    
+
+
     *default(shared  none) private(* _list_ *) firstprivate(* _list_ *)
     shared(* _list_ *)*
-    
+
     *Master* construction specifies To structured block that is executed by
     the Master thread of the team. There is no implied barriers either on
     entry to, or exit from, the master construct.
-    
-    
+
+
     *#pragma comp Master* _new-line structured-block_
 
 a|
@@ -1092,12 +1092,12 @@ block to a single thread at a time.
 
     The *barriers* construction specifies year explicit barriers did the
     point did which the construct appears.
-    
+
     *#pragma comp barriers* _new- line_
-    
+
     The *taskwait* construction specifies To wait we the completion of child
     tasks generated since the beginning of the current task.
-    
+
     *#pragma comp you asked* _new line_
 
 a|
@@ -1107,13 +1107,13 @@ simultaneous writing threads.
 
 
     *#pragma comp atomic* _new-line expression-stmt_
-    
+
     _stmt-expression_ : one of the following forms:
-    
+
     _x binop_ *=* _expr x_ *++*
-    
+
     *++* _x x_ *- -*
-    
+
     *--x* ___
 
 
@@ -1134,13 +1134,13 @@ allowing code outside the region to run in parallel.
 
 
     *#pragma comp ordered* _new-line structured-block_
-    
-    
+
+
     a|
     *threadprivate* guideline specifies that variables are replicated, with
     each thread having its own copy.
-    
-    
+
+
     *#pragma comp threadprivate* _( list) new- line_
 
 |===
@@ -1167,17 +1167,17 @@ necessary to specify it explicitly in a private clause
     for (i=1; i<n; i++) /* i is private by default */
     b[i] = (a[i] + a[i-1]) / 2.0;
     }
-    
+
 _    |The Parallel Construct a|
     The parallel construct can be used in coarse-grain parallel programs._
-    
+
     void subdomain(float *x, int istart, int ipoints)
     {
     int i;
     for (i = 0; i < ipoints; i++)
     x[istart+i] = 123.456;
     }
-    
+
     void sub(float *x, int npoints)
     {
     int iam, nt, ipoints, istart;
@@ -1192,7 +1192,7 @@ _    |The Parallel Construct a|
     subdomain(x, istart, ipoints);
     }
     }
-    
+
     main()
     {
     float array[10000]
@@ -1208,9 +1208,9 @@ multiple nesting levels
 The call to the omp_set_dynamic routine with argument 0 in C/C++,
 disables the dynamic adjustment of the number of threads in OpenMP
 implementations that support it.
-    
+
     #include <omp.h>
-    
+
     int main()
     {
     omp_set_dynamic(0);
@@ -1225,9 +1225,9 @@ implementations that support it.
 If there are multiple independent loops within a parallel region, you
 can use the nowait clause to avoid the implied barrier at the end of the
 loop construct
-    
+
     #include <math.h>
-    
+
     void nowait_example(int n, int m, float *a, float *b, float *y, float *z)
     {
     int i;
@@ -1253,9 +1253,9 @@ collapse clause may appear, the eﬀect is as if a value of one was
 speciﬁed for n if the collapse clause is not speciﬁed.
 
     void bar(float *a, int i, int j, int k);
-    
+
     int kl, ku, ks, jl, ju, js, il, iu,is;
-    
+
     void sub(float *a)
     {
     int i, j, k;
@@ -1273,9 +1273,9 @@ the end of the execution of the loop construct, the original variable
 _j_ is updated with the value _N/2_ from the last iteration of the loop.
 
     #include <stdio.h>
-    
+
     #define N 100
-    
+
     int main(void)
     {
     float a[N], b[N/2];
@@ -1289,7 +1289,7 @@ _j_ is updated with the value _N/2_ from the last iteration of the loop.
     b[j]= a[i] * 2.0f;
     j++;
     }
-    
+
     printf"%d %f %f\n", j, b[0], b[j-1] );
     /* print out: 50 2.0 198.0 */
     return 0;
@@ -1306,36 +1306,36 @@ Since the order of execution of the two sections in this case is
 unspecified, it is unspecified which section prints which value.
 
     #include <stdio.h>
-    
+
     #define NT 4
-    
+
     int main( ) {
-    
+
     int section_count = 0;
-    
+
     *omp_set_dynamic(0);*
     *omp_set_num_threads(NT);*
     *#pragma omp parallel*
     *#pragma omp sections firstprivate( section_count )*
     {
-    
+
     *#pragma omp section*
     {
     section_count++;
     /* may print the number one or two */
     printf( "section_count %d\n", section_count );
-    
+
     }
-    
+
     *#pragma omp section*
     {
     section_count++;
     /* may print the number one or two */
     printf( "section_count %d\n", section_count );
     }
-    
+
     }
-    
+
     return 0;
     }
 
@@ -1349,14 +1349,14 @@ third single construct in this example. The user must not make any
 assumptions as to which thread will execute a single region.
 
     #include <stdio.h>
-    
+
     void work1() {}
-    
+
     void work2() {}
-    
+
     void single_example()
-    
-    
+
+
     *#pragma omp parallel*
     {
     *#pragma omp single*
@@ -1369,20 +1369,20 @@ assumptions as to which thread will execute a single region.
     work2();
     }
     }
-    
-    
-    
-    
+
+
+
+
     |The master Construct a|
     #include <stdio.h>
-    
+
     extern float average(float,float,float);
     void master_example( float* x, float* xold, int n, float tol )
     {
     int c, i, toobig;
     float error, y;
     c = 0;
-    
+
     #*pragma omp parallel*
     {
     do {
@@ -1390,12 +1390,12 @@ assumptions as to which thread will execute a single region.
     for( i = 1; i < n-1; ++i ){
     xold[i] = x[i];
     }
-    
+
     *#pragma omp single*
     {
     toobig = 0;
     }
-    
+
     *#pragma omp for private(i,y,error) reduction(+:toobig)*
     for(i=1; i<n-1;++i){
     y = x[i];
@@ -1403,7 +1403,7 @@ assumptions as to which thread will execute a single region.
     error = y - x[i];
     if( error > tol or error < -tol ) ++toobig;
     }
-    
+
     *#pragma omp master*
     {
     ++c;
@@ -1417,16 +1417,16 @@ assumptions as to which thread will execute a single region.
 
 |Parrallel Random Access Iterator Loop a|
     #include <vector>
-    
+
     void iterator_example()
-    
+
     {
     std::vector<int> vec(23);
     std::vector<int>::iterator it;
-    
+
     *#pragma omp parallel for default(none) shared(vec)*
     for (it = vec.begin(); it < vec.end(); it++)
-    
+
     {
     // do work with *it //
     }
@@ -1440,11 +1440,11 @@ turn off the dynamic threads capability and set the number of threads
 explicitly to ensure portability.
 
     #include <omp.h>
-    
+
     #include <stdlib.h>
-    
+
     void do_by_16(float *x, int iam, int ipoints) {}
-    
+
     void dynthreads(float *x, int npoints)
     {
     int iam, ipoints;
@@ -1472,7 +1472,7 @@ visible in the construct on which the clause appears. Not all of the
 clauses are valid on all directives. The set of clauses that is valid we
 To particular guideline is described with the directive. Most of the
 clauses accept a comma-separated list of list items. All list items
-appearing in a clause must be visible._ 
+appearing in a clause must be visible._
 
 
 
@@ -1668,7 +1668,7 @@ void omp_get_schedule (omp_sched_t *kind, int *edit)s;
 |Returns the schedule applied when *run-time* schedule is used.
 
 a|
-int omp_get_thread_limit(void)* 
+int omp_get_thread_limit(void)*
 
 |Returns the maximum number of OpenMP
 threads available to the program.
@@ -1907,7 +1907,7 @@ a|
 
 a|
 
-|
+\|
 
 
 |0
@@ -1924,7 +1924,7 @@ a|
 |1
 a|
 
-||
+\|\|
 
 
 |0

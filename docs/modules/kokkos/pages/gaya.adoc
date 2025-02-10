@@ -1,0 +1,46 @@
+= Compile on Gaya
+
+This page gathers the steps to compile a program with Kokkos and Feel++ on the cluster https://intranet.math.unistra.fr/intra/ressources_num%C3%A9riques/calcul/gaya/[Gaya].
+
+The code can be compiled either with the ROCM support (to run on the GPU) or without it.
+On this page, we present the two methods.
+
+== Load the spack environment
+
+To compile a program with Kokkos and Feel++ on Gaya, you need to load the spack environment.
+
+[source, bash]
+----
+source /data/cemosis/spack/share/spack/setup-env.sh <1>
+spacktivate feelpp-openmpi4-rocm-kokkos <2>
+spacktivate feelpp-openmpi4-kokkos <3>
+----
+
+<1> Setup the bash environment, and load spack commands.
+<2> Load the environment with ROCM support.
+<3> Load the environment without ROCM support.
+
+== Set-up CMake
+
+[source, bash]
+----
+cmake --preset feelpp-clang-cpp20-spack-rocm-kokkos-none-release <1>
+cmake --preset feelpp-clang-cpp20-spack-kokkos-none-release <2>
+----
+
+<1> Set-up the CMake configuration with ROCM support.
+<2> Set-up the CMake configuration without ROCM support.
+
+== Compile the code
+
+[source, bash]
+----
+cmake --build --preset feelpp-clang-cpp20-spack-rocm-kokkos-none-release [-t <TARGET_NAME>]
+cmake --build --preset feelpp-clang-cpp20-spack-kokkos-none-release [-t <TARGET_NAME>]
+----
+
+(or `make` indie the corresponding build directory)
+
+== Execute the code
+
+If you compiled the code with ROCM support, you need to execute it on a GPU node, namely `gaya-gpu`.

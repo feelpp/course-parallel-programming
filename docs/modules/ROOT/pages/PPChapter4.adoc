@@ -1,12 +1,22 @@
 = Specx
 
 [.text-justify]
-SPECX is a task-based execution system. It shares many similarities
-with StarPU but is written in modern C++. It also supports speculative
-execution, which is the ability to run tasks ahead of time if others are
-unsure about changing the data.
+*SPECX* is an innovative task-based programming model designed to address the challenges of modern high-performance computing (HPC). In a context where computing power and efficiency are paramount, SPECX is positioned as a leading solution to optimize the performance of complex parallel applications.
+This open-source framework offers developers and researchers a powerful tool to fully exploit the potential of advanced computing architectures. SPECX facilitates the creation and management of asynchronous tasks, enabling more efficient use of available computing resources, whether multi-core processors, clusters or supercomputers.
+
+
+SPECX is a task-based execution system. It shares many similarities with StarPU but is written in modern C++. It also supports speculative execution, which is the ability to run tasks ahead of time if others are unsure about changing the data.
 
 image::image21.png[xref=#fragment21,image,width=642,height=380]
+
+
+
+SPECX's key features include:
+
+* A task-based approach to simplify parallel programming.
+* Automatic management of dependencies between tasks.
+* Asynchronous execution to maximize resource utilization.
+* Compatibility with various HPC environments.
 
 
 == Workflow

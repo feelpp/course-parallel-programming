@@ -37,3 +37,8 @@ asciidoc:
     swimmer: Swimmer
     python: Python
     cpp: C++
+
+  extensions:
+    - '@feelpp/asciidoctor-extensions/src/make-dynamic-processor'
+    - '@feelpp/asciidoctor-extensions/src/cmake-dynamic-processor'
+    - '@feelpp/asciidoctor-extensions/src/cpp-dynamic-processor-collapsible'

@@ -7,165 +7,99 @@ endif::[]
 .INTRODUCTION
 [.examp]
 ****
-
+[.text-justify]
 In many applications today, software must make decisions quickly. And the best way to do so is parallel programming in C / C ++ and Multithreading (multithread programming). Parallel programming is a programming method which allows you to execute several calculations or processes simultaneously. It is used to improve the performance of applications by using multi-core architectures and distributed systems. Parallel programming consists in breaking down a problem into sub-problublicms which can be solved simultaneously by several calculation units. This reduces the overall execution time of a program by effectively using available hardware resources. Parallel machines offer a wonderful opportunity for applications of large calculation requirements. Effective use of these machines, however, requires an in -depth understanding of their operation.
 
 Let's see more about what computing and programming parallel...
 
 
-*What is Parallel Computing?*
+*1. What is Parallel Computing ?*
 
-*Serial Computing*
+[.text-justify]
+In the field of computing, the evolution of technologies has led to significant advances in the way we approach complex problems. Among these advances, parallel computing stands out as a revolutionary approach, offering a powerful alternative to traditional serial computing. To fully understand this concept, it is essential to compare these two computing methods and explore their fundamental characteristics. So, let’s first look at serial computing and then dive into the fascinating world of parallel computing
 
+[.text-justify]
+*Serial Computing* : Traditionally, software has been developed with a focus on serial computation. In this conventional framework, a problem is decomposed into a discrete series of instructions that are executed sequentially, one after the other, on a single processor. This approach inherently limits the system's efficiency, as only one instruction can be processed at any given moment.
 
-Traditionally, software has been written for serial computation:
+[.text-justify]
+*Parallel Computing* : In contrast, parallel computing represents a significant advancement in computational methodology. At its core, parallel computing involves the simultaneous utilization of multiple computational resources to address complex problems. In this paradigm, a problem is divided into discrete components that can be solved concurrently. Each component is further segmented into a series of instructions, which are executed simultaneously across different processors. This necessitates the implementation of an overarching control and coordination mechanism to ensure the effective integration of results.
 
-* A problem is broken into a discrete series of instructions
-* Instructions are executed sequentially one after another
-* Executed on a single processor
-* Only one instruction may execute at any moment in time
 
-image::serialProblem.gif[xref=#fragment_000_001,width=400,height=400]
+*2. Overview of the different hardware architectures*
 
-*Parallel Computing*
+[.text-justify]
+In modern computing, various hardware architectures have been developed to address specific computational needs. Each architecture is uniquely designed to optimize performance for particular tasks, ranging from general-purpose processing to specialized operations in graphics, machine learning, and natural language processing. This section explores the key architectures—CPU, GPU, GPGPU, TPU, NPU, and LPU—highlighting their distinct roles and applications in the evolving landscape of technology.
 
-In the simplest sense, parallel computing is the simultaneous use of multiple compute resources to solve a computational problem:
+*2. 1 CPU, GPU, GPGPU Architecture*
 
-* A problem is broken into discrete parts that can be solved concurrently
-** Each part is further broken down to a series of instructions
-** Instructions from each part execute simultaneously on different processors
-** An overall control/coordination mechanism is employed
+[.text-justify]
+** *CPU*, *GPU*, and *GPGPU* architectures are all types of computer processing architectures, but they differ in their design and operation.
 
+[.text-justify]
+* *CPU*: A central processor (CPU) is a processing unit that is designed to perform various computing tasks including data processing, mathematical and logical calculations, communication between different components of a computer system, etc. Modern CPUs usually have multiple cores to process multiple tasks simultaneously.
 
-image::parallelProblem.gif[xref=#fragment_000_002,width=400,height=400]
+[.text-justify]
+* *GPU*: A graphics processing unit (GPU) is an architecture designed to accelerate the processing of images and graphics. GPUs have thousands of cores that allow them to process millions of pixels simultaneously, making them an ideal choice for video games, 3D modeling, and other graphics-intensive applications.
 
-For example
+[.text-justify]
+* *GPGPU*: A General Processing Architecture (GPGPU) is a type of GPU that is designed to be used for purposes other than graphics processing. GPGPUs are used to perform computations of an intensive nature using the hundreds or thousands of cores available on the graphics card. They are particularly effective for parallel computing, machine learning, and other computationally intensive areas.
 
-image::parallelProblem2.gif[xref=#fragment_000_003,width=400,height=400]
+[.text-justify]
+In conclusion, the main difference between the three architectures CPU, GPU and GPGPU lies in their design and operation. While CPUs are designed for general computer processing, GPUs are designed for specialized graphics processing, and GPGPUs are a modified version of GPUs intended to be used for specialized computer processing other than graphics processing.
 
-* The computational problem should be able to:
-** Be broken apart into discrete pieces of work that can be solved simultaneously;
-** Execute multiple program instructions at any moment in time;
-** Be solved in less time with multiple compute resources than with a single compute resource.
-* The compute resources are typically:
-** A single computer with multiple processors/cores
-** An arbitrary number of such computers connected by a network
 
+*2.2 TPU, NPU, LPU , DPU Architecture*
 
-*Parallel Computers*
+[.text-justify]
+* *TPU*: A Tensor Processing Unit (TPU) is a specialized hardware processor developed by Google to accelerate machine learning. Unlike traditional CPUs or GPUs, TPUs are specifically designed to handle tensor operations, which account for most of the computations in deep learning models. This makes them incredibly efficient at those tasks and provides an enormous speedup compared to CPUs and GPUs. In this article, we’ll explore what a TPU is, how it works, and why they are so beneficial for machine learning applications.
 
-*Virtually all stand-alone computers today are parallel from a hardware perspective:
-** Multiple functional units (L1 cache, L2 cache, branch, prefetch, decode, floating-point, graphics processing (GPU), integer, etc.)
-** Multiple execution units/cores
-** Multiple hardware threads
+[.text-justify]
+* *NPU*: A Neural Processing Unit (NPU), is a specialized hardware accelerator designed for executing artificial neural network tasks efficiently and with high throughput. NPUs deliver high performance while minimizing power consumption, making them suitable for mobile devices, edge computing, and other energy-sensitive applications. NPUs use the traditional von Neumann architecture, which separates the memory and the processing units. TPUs use the systolic array architecture, which integrates the memory and the processing units into a single chip. NPUs have a higher peak performance than TPUs, but they also have a higher latency and power consumption. TPUs have a lower peak performance than NPUs, but they also have a lower latency and power consumption.
 
-image::bgqComputeChip.jpeg[xref=#fragment_000_004,width=400,height=400]
+[.text-justify]
+* *LPU*: Language Processing Units (LPUs) are a relatively new addition, designed specifically for handling the complexities of natural language processing tasks. While CPUs, GPUs, and TPUs play significant roles in the broader field of AI, LPUs offer optimized performance for generative models that deal with text, such as GPT (Generative Pre-trained Transformer). They're good at these tasks and might be more efficient than Graphics Processing Units (GPUs). GPUs are still great for things like graphics and AI.The true power of generative AI comes from the interplay and integration of these processing units. CPUs handle the overarching control and coordination, GPUs accelerate the bulk of computational workloads, TPUs offer specialized efficiency for deep learning, and LPUs bring a new level of performance to natural language processing. Together, they form the backbone of generative AI systems, enabling the rapid development and deployment of models that can create highly realistic and complex outputs.
 
+[.text-justify]
+* *DPU*: A Data Processing Unit (DPU) is a specialized processor designed to optimize data-centric workloads in modern computing environments. It combines a multi-core CPU, hardware accelerators, and high-speed networking capabilities into a single system-on-chip (SoC). DPUs are primarily used to offload networking, security, and storage functions from the main CPU, allowing it to focus on running operating systems and applications. This new class of programmable processors is becoming increasingly important in data centers and cloud computing, where they help improve overall system efficiency and performance. DPUs can handle tasks such as packet processing, encryption, and data compression, effectively becoming a third pillar of computing alongside CPUs and GPUs. As data-intensive applications continue to grow, DPUs are expected to play a crucial role in optimizing data movement and processing in large-scale computing environments.
 
-* Networks connect multiple stand-alone computers (nodes) to make larger parallel computer clusters.
 
-image::nodesNetwork.gif[xref=#fragment_000_005,width=400,height=400]
+*3. Why Use Parallel Computing ?*
 
+[.text-justify]
+Parallel computing is essential for modeling complex real-world phenomena that involve multiple simultaneous events. It utilizes data and task parallelism through shared or distributed memory models. Key benefits include improved performance and scalability, allowing for faster execution times and efficient adaptation to more powerful systems. While parallel computing presents challenges in development and debugging, it remains crucial for solving complex computational problems across various scientific and technological domains. Its ability to handle intricate simulations and process large datasets makes it an indispensable tool in modern computing.
 
-* For example, the schematic below shows a typical LLNL parallel computer cluster:
-** Each compute node is a multi-processor parallel computer in itself
-** Multiple compute nodes are networked together with an Infiniband network
-** Special purpose nodes, also multi-processor, are used for other purposes
 
-image::parallelComputer1.gif[xref=#fragment_000_006,width=400,height=400]
+Main Reasons for Employing Parallel Programming :
 
-* The majority of the world's large parallel computers (supercomputers) are clusters of hardware produced by a handful of (mostly) well known vendors.
+1. **Time and Cost Efficiency**: Theoretically, allocating additional resources to a task can reduce its completion time, leading to potential cost savings. Furthermore, parallel computers can be constructed using inexpensive commodity components.
 
+2. **Solving Large or Complex Problems**: Many problems are so vast or intricate that solving them with a serial program is impractical or impossible, particularly when accounting for limited computer memory.
 
-*CPU, GPU, GPGPU Architecture*
+3. **Concurrency**: A single computational resource is limited to executing one task at a time. In contrast, multiple compute resources can perform numerous tasks simultaneously. For example, collaborative networks provide a global platform for individuals from around the world to meet and work together virtually.
 
-* CPU, GPU, and GPGPU architectures are all types of computer processing architectures, but they differ in their design and operation.
+4. **Utilizing Non-local Resources**: Parallel computing allows for the use of computational resources across wide area networks or even the Internet when local resources are insufficient.
 
+5. **Maximizing Hardware Efficiency**: Modern computers, including laptops, are inherently parallel in architecture with multiple processors and cores. Parallel software is specifically designed to exploit this architecture effectively. In many cases, traditional serial programs fail to utilize the full potential of modern computing power.
 
-* CPU: A central processor (CPU) is a processing unit that is designed to perform various computing tasks including data processing, mathematical and logical calculations, communication between different components of a computer system, etc. Modern CPUs usually have multiple cores to process multiple tasks simultaneously.
 
-* GPU: A graphics processing unit (GPU) is an architecture designed to accelerate the processing of images and graphics. GPUs have thousands of cores that allow them to process millions of pixels simultaneously, making them an ideal choice for video games, 3D modeling, and other graphics-intensive applications.
 
-* GPGPU: A General Processing Architecture (GPGPU) is a type of GPU that is designed to be used for purposes other than graphics processing. GPGPUs are used to perform computations of an intensive nature using the hundreds or thousands of cores available on the graphics card. They are particularly effective for parallel computing, machine learning, and other computationally intensive areas.
 
-* In conclusion, the main difference between the three architectures CPU, GPU and GPGPU lies in their design and operation. While CPUs are designed for general computer processing, GPUs are designed for specialized graphics processing, and GPGPUs are a modified version of GPUs intended to be used for specialized computer processing other than graphics processing.
+*4. Kokkos: A Modern Solution for Portable Parallel Programming*
 
+[.text-justify]
+Parallel programming has become essential to fully exploit the capabilities of modern hardware architectures. These architectures include different types of specialized processors, each designed for specific tasks:
 
-*TPU, NPU, LPU Architecture*
+* *CPU (Central Processing Unit)* is the traditional general-purpose processor, capable of performing a wide variety of tasks but with a limited number of cores.
+* *GPU (Graphics Processing Unit)* is optimized for massive parallel processing, particularly efficient for graphics computations and certain types of algorithms.
+* *TPU (Tensor Processing Unit)* is designed specifically for machine learning and artificial intelligence operations.
+* *NPU (Neural Processing Unit)* is similar to the TPU, but usually integrated into mobile devices for local AI tasks.
 
-* TPU: A Tensor Processing Unit (TPU) is a specialized hardware processor developed by Google to accelerate machine learning. Unlike traditional CPUs or GPUs, TPUs are specifically designed to handle tensor operations, which account for most of the computations in deep learning models. This makes them incredibly efficient at those tasks and provides an enormous speedup compared to CPUs and GPUs. In this article, we’ll explore what a TPU is, how it works, and why they are so beneficial for machine learning applications.
+[.text-justify]
+In this context of hardware diversity, *Kokkos* emerges as a powerful solution for portable parallel programming. *Kokkos* is a C++ library that allows developers to write high-performance parallel code that can run efficiently on various hardware architectures, including multi-core *CPUs* and *GPUs*. This library provides a hardware abstraction that allows expressing parallel algorithms in a way that is independent of the underlying architecture, while automatically optimizing performance for each specific platform. Kokkos thus greatly simplifies the process of developing portable and high-performance parallel applications, by allowing developers to focus on the algorithm rather than on the implementation details specific to each architecture. I therefore invite you to consult the Kokkos section after studying the basics of parallel programming.
 
-* NPU: A Neural Processing Unit (NPU), is a specialized hardware accelerator designed for executing artificial neural network tasks efficiently and with high throughput. NPUs deliver high performance while minimizing power consumption, making them suitable for mobile devices, edge computing, and other energy-sensitive applications. NPUs use the traditional von Neumann architecture, which separates the memory and the processing units. TPUs use the systolic array architecture, which integrates the memory and the processing units into a single chip. NPUs have a higher peak performance than TPUs, but they also have a higher latency and power consumption. TPUs have a lower peak performance than NPUs, but they also have a lower latency and power consumption.
 
-* LPU: Language Processing Units (LPUs) are a relatively new addition, designed specifically for handling the complexities of natural language processing tasks. While CPUs, GPUs, and TPUs play significant roles in the broader field of AI, LPUs offer optimized performance for generative models that deal with text, such as GPT (Generative Pre-trained Transformer). They're good at these tasks and might be more efficient than Graphics Processing Units (GPUs). GPUs are still great for things like graphics and AI.The true power of generative AI comes from the interplay and integration of these processing units. CPUs handle the overarching control and coordination, GPUs accelerate the bulk of computational workloads, TPUs offer specialized efficiency for deep learning, and LPUs bring a new level of performance to natural language processing. Together, they form the backbone of generative AI systems, enabling the rapid development and deployment of models that can create highly realistic and complex outputs.
 
-
-*Why Use Parallel Computing?*
-
-The Real World Is Massively Complex
-
-* In the natural world, many complex, interrelated events are happening at the same time, yet within a temporal sequence.
-* Compared to serial computing, parallel computing is much better suited for modeling, simulating and understanding complex, real world phenomena.
-
-
-*Key points concerning parallel programming*
-
-    * Types of parallelism
-
-** Data parallelism: The same operations are carried out on different data sets, often used in the processing of large amounts of data.
-
-** Task parallelism: different independent tasks are carried out in parallel. This is often used in applications where several processes can be executed simultaneously.
-
-    * Programming models: There are several models of parallel programming, each with its own characteristics and use cases:
-
-    
- ** Shared memory: Threads share the same memory, which facilitates communication between them. Libraries like OpenMP are often used in this context.
-
- ** Distributed memory: each calculation unit has its own memory, and communication is made by passing messages, as with MPI (Passing Interface message).
-
- 
-    * Benefits
-
- ** Improved performance: Using several cores or machines, programs can run much faster.
- ** Scalability: Applications can be designed to adapt to increasingly powerful systems by adding resources.
-
-    * Disadvantages
-
- ** Complexity: Writing parallel programs can be more complex than writing sequential programs due to the need to manage synchronization and communication between threads or processes.
-
- ** Difficulties of debugging: errors in parallel programs, such as race conditions, can be difficult to detect and correct.
-
-
-*Main Reasons for Using Parallel Programming*
-
-** Save time and or money
-
-*** In theory, throwing more resources at a task will shorten its time to completion, with potential cost savings.
-*** Parallel computers can be built from cheap, commodity components
-
-
-** Solver large/ More complex problems
-
-*** Many problems are so large and/or complex that it is impractical or impossible to solve them using a serial program, especially given limited computer memory.
-
-
-** Provide concurency
-
-*** A single compute resource can only do one thing at a time. Multiple compute resources can do many things simultaneously.
-*** Example: Collaborative Networks provide a global venue where people from around the world can meet and conduct work "virtually."
-
-** Take advantage of non-local resources
-
-*** Using compute resources on a wide area network, or even the Internet when local compute resources are scarce or insufficient.
-
-** Make better use of underlying parallel hardware
-
-*** Modern computers, even laptops, are parallel in architecture with multiple processors/cores.
-*** Parallel software is specifically intended for parallel hardware with multiple cores, threads, etc.
-*** In most cases, serial programs run on modern computers "waste" potential computing power.
-
-
-*Who Is Using Parallel Computing?*
+*5. Who Is Using Parallel Computing?*
 
 * *Science and Engineering*
 

@@ -1,0 +1,207 @@
+= Kokkos Execution Spaces
+
+image::kokkos-core.png[xref=#fragment101,width=400,height=200]
+
+== Introduction
+
+[.text-justify]
+In a simple way, Kokkos introduces the concept of execution spaces as a fundamental abstraction for parallel computing. Execution spaces in Kokkos represent the logical grouping of computational units that share identical performance properties, providing a unified interface to target diverse hardware architectures [1].
+
+[.text-justify]
+Basically, a defined execution space where parallel operations can be executed in a heterogeneous computing environment. In modern GPU/CPU hybrid systems, for example, two main types of execution spaces emerge: GPU cores and CPU cores. This abstraction thus allows developers to write code that can seamlessly adapt to different hardware configurations without major modifications. So it is easier to do than to worry about how to do it for different configurations.
+
+[.text-justify]
+Another point, controlling the execution location of parallel bodies in Kokkos is a crucial aspect of performance optimization and hardware utilization. By default, Kokkos will execute parallel operations in the default execution space, unless otherwise specified [2]. However, developers have several methods at their disposal to fine-tune the execution location of their parallel code.
+
+
+== Methods for Controlling Execution Spaces
+
+image::kokkos-abstractions-doc.png[xref=#fragment101,width=400,height=200]
+
+* *Specifying Execution Spaces* : One approach to control the Execution Space is by explicitly defining it in the parallel dispatch call. This can be achieved by using the RangePolicy template argument [3]. For example, In this code, *ExecutionSpace* is replaced with the desired Execution Space, such as *Kokkos::Cuda* for NVIDIA GPUs or *Kokkos::HIP* for AMD GPUs  or *Kokkos::OpenMP* for multi-core CPUs. Also it is quite simple !
+[source,c++]
+----
+    parallel_for("Label", RangePolicy<ExecutionSpace>(0, numberOfIntervals),
+        [=] (const int64_t i) {
+            /* ... body ... */
+        });
+----
+* *Changing the Default Execution Space* : Another method involves changing the default Execution Space at compilation time. This approach affects all parallel operations that do not explicitly specify an Execution Space. While this method provides a global solution, it may limit flexibility in scenarios where different parts of the application benefit from distinct Execution Spaces.
+
+* *Functor-based Control* : For more granular control, developers can define functors with an execution_space public typedef. This approach ensures that the parallel dispatch will only run the functor in the specified Execution Space, providing a robust mechanism for execution space-specific optimizations.
+
+* *Requirements and Considerations* : It is important to note that utilizing specific Execution Spaces comes with certain requirements. The desired Execution Space must be enabled during Kokkos compilation and properly initialized (and later finalized) in the application. Additionally, for non-CPU Execution Spaces, functions and lambdas may need to be annotated with specific macros to ensure portability [3].
+
+* *Performance Implications* : The choice of Execution Space can significantly impact performance. Kokkos allows developers to target different parts of heterogeneous hardware architectures, enabling optimized utilization of available resources [4]. For instance, compute-intensive operations might benefit from GPU Execution Spaces, while memory-bound tasks could be more suited for CPU Execution Spaces.
+
+* *Advanced Concepts: Team Policies* : For more complex parallel patterns, Kokkos introduces Team Policies, which implement hierarchical parallelism [4]. Team Policies group threads into teams, allowing for sophisticated parallel structures that can better match the underlying hardware topology. This concept is particularly useful for architectures with multiple levels of parallelism, such as GPUs with their warp and block structures.
+
+
+== Execution Patterns
+
+Execution Patterns are the fundamental parallel algorithms in which an application has to be expressed. Examples are
+
+* *parallel_for()*: execute a function in undetermined order a specified amount of times,
+* *parallel_reduce()*: which combines parallel_for() execution with a reduction operation,
+* *parallel_scan()*: which combines a parallel_for() operation with a prefix or postfix scan on output values of each operation, and
+* *task*: which executes a single function with dependencies on other functions.
+
+Expressing an application in these patterns allows the underlying implementation or the used compiler to reason about valid transformations.
+
+*Example*
+
+[source, c++]
+----
+    struct VectorAdd {
+        // Member variables for the vectors
+        Kokkos::View<double*> a;
+        Kokkos::View<double*> b;
+        Kokkos::View<double*> c;
+        // Constructor to initialize the vectors
+        VectorAdd(Kokkos::View<double*> a_, Kokkos::View<double*> b_, Kokkos::View<double*> c_)
+            : a(a_), b(b_), c(c_) {}
+        // Functor to perform vector addition
+        KOKKOS_INLINE_FUNCTION
+        void operator()(const int i) const {
+            c(i) = a(i) + b(i); // Perform addition
+        }
+    };
+    
+    int main(int argc, char* argv[]) {
+        Kokkos::initialize(argc, argv);
+        {
+            const int N = 1000; // Size of the vectors
+            // Allocate and initialize vectors on the device
+            Kokkos::View<double*> a("A", N);
+            Kokkos::View<double*> b("B", N);
+            Kokkos::View<double*> c("C", N);
+            // Initialize vectors a and b on the host
+            Kokkos::parallel_for("InitializeVectors", N, KOKKOS_LAMBDA(const int i) {
+                a(i) = static_cast<double>(i); // Fill vector A with values 0 to N-1
+                b(i) = static_cast<double>(N - i); // Fill vector B with values N-1 to 0
+            });
+            // Perform vector addition using Kokkos parallel_for
+            VectorAdd vectorAdd(a, b, c);
+            Kokkos::parallel_for("VectorAdd", N, vectorAdd);
+            // Synchronize to ensure all computations are complete
+            Kokkos::fence();
+            // Output the first 10 results for verification
+            std::cout << "Result of vector addition (first 10 elements):" << std::endl;
+            for (int i = 0; i < 10; ++i) {
+                std::cout << "c[" << i << "] = " << c(i) << std::endl; // Print results from vector C
+            }
+        }
+        Kokkos::finalize();
+        return 0;
+    }
+----
+
+Explanations: This example effectively demonstrates how to utilize *execution patterns* in Kokkos.
+
+
+== Execution Policies
+
+In the realm of parallel computing, Execution Policies act as the conductors of a grand digital orchestra, directing how functions perform their symphonies of calculations. Among these maestros, Range Policies stand as the simplest, guiding operations through elements like a steady metronome, without concern for order or synchronization. An Execution Policy determines, together with an Execution Pattern, How a function is executed.
+
+* *Range Policies*: Simple policies for executing operations on each element in a range, without specifying order or concurrency.
+
+* *Team Policies* : Used for hierarchical parallelism, grouping threads into teams. Key features include:
+    - League size (number of teams) and team size (threads per team)
+    - Concurrent execution within a team
+    - Team synchronization via barriers
+    - Scratch pad memory for temporary storage
+    - Nested parallel operations
+
+The model is inspired by CUDA and OpenMP, aiming to improve performance across various hardware architectures by encouraging locality-aware programming. [5]
+
+
+*Example*
+
+[source, c++]
+----
+    struct VectorAdd {
+        Kokkos::View<double*> a;
+        Kokkos::View<double*> b;
+        Kokkos::View<double*> c;
+        VectorAdd(Kokkos::View<double*> a_, Kokkos::View<double*> b_, Kokkos::View<double*> c_)
+            : a(a_), b(b_), c(c_) {}
+        KOKKOS_INLINE_FUNCTION
+        void operator()(const int i) const {
+            c(i) = a(i) + b(i); // Perform addition
+        }
+    };
+
+    int main(int argc, char* argv[]) {
+        Kokkos::initialize(argc, argv);
+        {
+            const int N = 1000; // Size of the vectors
+            // Allocate vectors on the device
+            Kokkos::View<double*> a("A", N);
+            Kokkos::View<double*> b("B", N);
+            Kokkos::View<double*> c("C", N);
+            // Initialize vectors a and b on the host
+            Kokkos::parallel_for("InitializeVectors", N, KOKKOS_LAMBDA(const int i) {
+                a(i) = static_cast<double>(i); // Fill vector A with values 0 to N-1
+                b(i) = static_cast<double>(N - i); // Fill vector B with values N-1 to 0
+            });
+            // Perform vector addition using default execution policy
+            Kokkos::parallel_for("VectorAdd", N, VectorAdd(a, b, c));
+            // Synchronize to ensure all computations are complete
+            Kokkos::fence();
+            // Output the first 10 results for verification
+            std::cout << "Result of vector addition (first 10 elements):" << std::endl;
+            for (int i = 0; i < 10; ++i) {
+                std::cout << "c[" << i << "] = " << c(i) << std::endl; // Print results from vector C
+            }
+            // Perform vector addition using a different execution policy (Dynamic Scheduling)
+            Kokkos::TeamPolicy<> teamPolicy(N, 32); // League size: N, Team size: 32
+            Kokkos::parallel_for(teamPolicy, KOKKOS_LAMBDA(const Kokkos::TeamPolicy<>::member_type& teamMember) {
+                const int teamSize = teamMember.team_size();
+                const int i = teamMember.league_rank() * teamSize + teamMember.team_rank();
+                if (i < N) {
+                    c(i) = a(i) + b(i); // Perform addition within the team
+                }
+            });
+
+            // Synchronize again after using the team policy
+            Kokkos::fence();
+            // Output the results after using the team policy
+            std::cout << "Result of vector addition using Team Policy (first 10 elements):" << std::endl;
+            for (int i = 0; i < 10; ++i) {
+                std::cout << "c[" << i << "] = " << c(i) << std::endl; // Print results from vector C
+            }
+        }
+        Kokkos::finalize();
+        return 0;
+    }
+
+----
+
+Explanations: This example effectively demonstrates how to use different execution *policies* to perform computations efficiently in a parallel computing environment.
+
+
+
+== References
+
+** [1] https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/Machine-Model.html
+** [2] https://kokkos.org/kokkos-core-wiki/API/core/execution_spaces.html#
+** [3] https://indico.math.cnrs.fr/event/12037/attachments/5040/8129/
+** [4] https://github.com/kokkos/kokkos-core-wiki/blob/main/docs/source/ProgrammingGuide/ProgrammingModel.md
+** [5] https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/ProgrammingModel.html
+
+
+
+.*Points to keep in mind*
+****
+
+*Execution Patterns* : The Kokkos patterns execution designates the parallelism models which allow to express calculation operations in parallel, such as parallel loops and reductions, while allowing Kokkos to manage the distribution of these tasks on the available execution resources available.
+
+*Team Policies* : Kokkos' police execution define how parallel operations are carried out, specifying the type of execution, the granularity of work and the resources to be used to optimize performance on different architectures.
+
+*Space Accessibility* : Space Accessibility is a trait that expresses the accessibility and assignability relationships between different memory and execution spaces. It allows to determine:
+
+*** Whether an execution space can access a given memory space.
+*** Whether data can be assigned or copied between different memory spaces.
+
+****
+

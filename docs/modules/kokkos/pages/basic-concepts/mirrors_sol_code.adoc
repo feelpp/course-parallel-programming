@@ -1,0 +1,16 @@
+xref:basic-concepts/mirrors.adoc#Example[Back].
+
+
+[%dynamic, cmake]
+----
+cmake_minimum_required(VERSION 3.16)
+project(KokkosTutorial)
+
+add_executable(kokkos_mirror 05_kokkos_mirrors.cpp)
+target_link_libraries(kokkos_mirror Kokkos::kokkos)
+----
+
+[%dynamic, cpp, filename="05_kokkos_mirrors.cpp"]
+----
+include::example$src/05_kokkos_mirrors.cpp[]
+----

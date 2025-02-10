@@ -1,0 +1,70 @@
+= Installation
+
+Kokkos is avaiable on a GitHub repository: https://github.com/kokkos/kokkos[github.com/kokkos/kokkos].
+
+
+== Via CMake
+
+To build Kokkos with CMake, you can use the following commands:
+
+NOTE:
+[source,sh]
+----
+cmake -DKokkos_<BACKEND>=ON
+----
+
+Where `<BACKEND>` is one of the following:
+
+[cols="1,1", options="header"]
+|===
+| Backend | Description
+
+| SERIAL
+| Enables serial execution backend
+
+| OPENMP
+| Enables OpenMP backend
+
+| CUDA
+| Enables CUDA backend
+
+| HIP
+| Enables HIP backend
+
+| SYCL
+| Enables SYCL backend
+
+| THREADS
+| Enables POSIX threads backend
+|===
+
+
+
+== Via Spack
+
+https://spack.io/[Spack] is a package manager for supercomputers, Linux, and macOS.
+It makes installing scientific software easy.
+To install Kokkos with Spack, you can use the following commands:
+
+[source,sh]
+----
+spack install kokkos
+----
+
+Some variants are available for Kokkos, you can use the following command to see the full list of variants:
+
+[source,sh]
+----
+spack info kokkos
+----
+
+[NOTE]
+====
+On `gaya`, there are environments already set with spack.
+You can load the environment with the following command:
+
+[source,sh]
+----
+spacktivate feelpp-openmpi4-kokkos
+----
+====

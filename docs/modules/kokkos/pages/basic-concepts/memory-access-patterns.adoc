@@ -1,0 +1,126 @@
+= Kokkos Memory Access Patterns
+
+== Introduction
+
+[.text-justify]
+In the realm of high-performance computing, managing memory access patterns is crucial for achieving optimal performance across diverse hardware architectures. The View's Layout parameter plays a pivotal role in determining how data is organized in memory. Kokkos offers several layout options, including LayoutRight, LayoutLeft, and LayoutStride [1]. LayoutRight, which is typically the default for CPU architectures, organizes data in a row-major format, where elements of the rightmost dimension are contiguous in memory. Conversely, LayoutLeft, often preferred for GPU architectures, uses a column-major layout. This flexibility allows developers to tailor the data organization to the specific requirements of their target hardware, maximizing performance across different platforms.
+
+[.text-justify]
+Memory access patterns in Kokkos are intricately linked to how parallel work indices are mapped to the layout of multidimensional array data. The library provides a sophisticated mapping mechanism that aligns the iteration space of parallel computations with the underlying memory layout. This alignment is critical for performance, as it directly impacts how efficiently the hardware can fetch and process data [2]. For instance, when using a LayoutRight View on a CPU, iterating over the rightmost dimension in the innermost loop of a parallel_for construct will result in cache-friendly, stride-1 memory accesses [3].
+
+[.text-justify]
+The significance of proper memory access patterns and layouts cannot be overstated when it comes to performance. On CPUs, well-aligned access patterns lead to efficient cache utilization, reducing memory latency and improving overall throughput. The importance of caching is particularly evident in operations like inner products, where repeated access to the same data can benefit greatly from cache locality [2]. On GPUs, coalesced memory accesses are paramount. When threads in a warp access contiguous memory locations, the GPU can combine these accesses into fewer, larger transactions, significantly boosting memory bandwidth utilization [4].
+
+
+== Managing Memory Access Patterns
+
+Memory access patterns play a pivotal role in achieving performance portability with Kokkos. The library provides mechanisms to control data layout and optimize memory access for different architectures.
+
+=== View's Layout Parameter and Data Layout Control
+
+The View's Layout parameter in Kokkos is a powerful tool for controlling data layout:
+
+** Kokkos provides different layout options, primarily `LayoutRight` and `LayoutLeft`.
+** `LayoutRight` is typically the default for CPUs, representing row-major order.
+** `LayoutLeft` is often the default for GPUs, representing column-major order.
+** These layouts determine how multidimensional data is stored in memory.
+
+For example, to create a 2D view with a specific layout:
+[source,c++]
+----
+Kokkos::View<double**, Kokkos::LayoutRight> view2D("view2D", 64, 64);
+----
+This creates a 64x64 2D array with a row-major layout.
+
+=== Kokkos Mapping and Memory Access Patterns
+
+Kokkos maps parallel work indices to the layout of multidimensional array data:
+
+** The mapping aims to provide efficient access if iteration indices correspond to the first index of the array.
+** This mapping is crucial for performance, as it determines how threads access memory.
+
+Consider this example:
+[source,c++]
+----
+View<double***, ...> view(...);
+Kokkos::parallel_for("Label", ...,
+KOKKOS_LAMBDA (int workIndex) {
+    view(workIndex, ..., ...) = ...; // Efficient access
+    view(..., workIndex, ...) = ...; // Less efficient
+});
+----
+
+Here, accessing the view with `workIndex` as the first parameter is more efficient due to the default layout and mapping.
+
+=== Performance Impact of Memory Access Patterns and Layouts
+
+To illustrate the performance impact of different memory configurations, consider a simple inner product computation. When implemented with a LayoutRight View on a CPU, the operation benefits from efficient cache usage as it iterates over contiguous memory. However, the same layout on a GPU may lead to uncoalesced memory accesses, potentially reducing performance by an order of magnitude or more [2]. Conversely, a LayoutLeft View would provide coalesced accesses on the GPU but might suffer from cache thrashing on the CPU. This example underscores the importance of selecting the appropriate layout for each target architecture to achieve optimal performance
+
+Thefore, the significance of memory access patterns and layouts on performance cannot be overstated:
+
+** On CPUs, proper access patterns lead to effective caching, reducing memory latency.
+** On GPUs, coalesced memory access is crucial for performance, where adjacent threads access adjacent memory locations.
+** Misaligned or non-coalesced access can lead to significant performance degradation, potentially by more than 10x on GPUs.
+
+Concrete Example of Memory Configuration Performance
+
+image::kokkos-layout-Left-Right.png[xref=#fragment101,width=483,height=270]
+
+Let's consider a simple inner product computation:
+[source,c++]
+----
+Kokkos::parallel_reduce("Label",
+RangePolicy<ExecutionSpace>(0, N),
+KOKKOS_LAMBDA (const size_t row, double& valueToUpdate) {
+    double thisRowsSum = 0;
+    for (size_t entry = 0; entry < M; ++entry) {
+    thisRowsSum += A(row, entry) * x(entry);
+    }
+    valueToUpdate += y(row) * thisRowsSum;
+}, result);
+----
+
+Remark in this example:
+
+** For a CPU with `LayoutRight`, this access pattern is cache-friendly.
+
+** For a GPU with `LayoutLeft`, the access to `A(row, entry)` might not be coalesced, potentially leading to performance issues.
+
+To optimize for both architectures, you might need to transpose the data or use different layouts for different devices. That's all.
+
+...
+
+== References
+
+** [1] https://github.com/CExA-project/cheat-sheet-for-kokkos/blob/main/utilization.md
+** [2] https://www.nersc.gov/assets/Uploads/Kokkos-training-Day1-NewUsers-Bruno-v2.pdf
+** [3] https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/View.html
+** [4] https://aiichironakano.github.io/cs653/Edwards-Kokkos-JPDC14.pdf
+
+
+
+.*Points to keep in mind*
+****
+
+
+* *Important concept concerning layout*
+
+** Every *View* has multidimensional array Layout set at compile-time
+** Most-common layouts are *LayoutLeft* and *LayoutRight*.
+** Layouts are extensible and flexible
+** If no layout specified, default for that memory space is used. *LayoutLeft* for *CudaSpace*, *LayoutRight* for *HostSpace*.
+** LayoutRight row-major HostSpace: cached (good),CudaSpace: uncoalesced (bad)
+** LayoutLeft column-major HostSpace: uncached (bad),CudaSpace: coalesced (good)
+** Kokkos architecture-dependent HostSpace: cached (good)  CudaSpace: coalesced (good)
+
+* *Performance*
+
+** For performance, accesses to views in *HostSpace* must *be cached*, while access to views in *CudaSpace* must be *coalesced*.
+** *Uncoalesced access* on *GPUs* and *non-cached loads* on CPUs greatly *reduces performance (can be 10X)*
+** Kokkos maps parallel work indices and multidimensional array layout for *performance portable memory access patterns*.
+
+* *Memory spaces available*
+** HostSpace, CudaSpace, CudaUVMSpace, ... more
+** Remark here is no UVMSpace for HIP, In the meantime, another strategy will have to be used.
+
+****

@@ -8,8 +8,8 @@ if ( NPM_EXECUTABLE )
 
 add_custom_command(OUTPUT "${ANTORA_OUTPUT_DIR}" ALL
     COMMENT "Building documentation... "
-    COMMAND "${npm}" install 
-    COMMAND "${npm}" run antora 
+    COMMAND "${npm}" install
+    COMMAND "${npm}" run antora
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 if ( NOT TARGET doc )
@@ -22,3 +22,5 @@ install(DIRECTORY "${ANTORA_OUTPUT_DIR}/" DESTINATION ${APPLICATION_DOC_DIR} OPT
 else()
     message(STATUS "npm is not installed, can use antora ")
 endif()
+
+add_subdirectory( modules/kokkos/examples/src )

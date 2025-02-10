@@ -1,0 +1,213 @@
+
+= Welcome to MCQ Kokkos 
+
+*General question about Kokkos*
+
+++++
+<div id="mcq">
+  <p>1. What is Kokkos ?</p>
+  <input type="radio" name="q1" value="a"> A programming language<br>
+  <input type="radio" name="q1" value="b"> A C++ programming model for performance portability<br>
+  <input type="radio" name="q1" value="c"> An operating system<br>
+  <input type="radio" name="q1" value="d"> A compiler<br>
+  <button onclick="checkAnswer('b')">Submit</button>
+  <p id="result"></p>
+</div>
+
+<script>
+function checkAnswer(rightAnswer) {
+    let answer = document.querySelector('input[name="q1"]:checked')?.value;
+    let result = document.getElementById("result");
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+++++
+
+
+++++
+<div id="mcq">
+  <p>2. What is the main objective of Kokkos ?</p>
+  <input type="radio" name="q1" value="a"> Optimize performance on a single type of hardware<br>
+  <input type="radio" name="q1" value="b"> Replace CUDA and OpenMP<br>
+  <input type="radio" name="q1" value="c"> Ensure performance portability across different HPC architectures<br>
+  <input type="radio" name="q1" value="d"> A compiler<br>
+  <button onclick="checkAnswer('c')">Submit</button>
+  <p id="result"></p>
+</div>
+
+<script>
+function checkAnswer(rightAnswer) {
+    let answer = document.querySelector('input[name="q1"]:checked')?.value;
+    let result = document.getElementById("result");
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+++++
+
+
+
+++++
+<div id="mcq">
+  <p>3. Which backends does Kokkos support ?</p>
+  <input type="radio" name="q1" value="a"> CUDA only<br>
+  <input type="radio" name="q1" value="b"> OpenMP only<br>
+  <input type="radio" name="q1" value="c"> CUDA, OpenMP, and HPX<br>
+  <input type="radio" name="q1" value="d"> Only CPUs<br>
+  <button onclick="checkAnswer('c')">Submit</button>
+  <p id="result"></p>
+</div>
+
+<script>
+function checkAnswer(rightAnswer) {
+    let answer = document.querySelector('input[name="q1"]:checked')?.value;
+    let result = document.getElementById("result");
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+++++
+
+
+
+++++
+<div id="mcq">
+  <p>4. What does a “View” represent in Kokkos ?</p>
+  <input type="radio" name="q1" value="a"> A graphics window<br>
+  <input type="radio" name="q1" value="b"> A simple pointer<br>
+  <input type="radio" name="q1" value="c"> A multidimensional array with memory management<br>
+  <input type="radio" name="q1" value="d"> A tree data structure<br>
+  <button onclick="checkAnswer('c')">Submit</button>
+  <p id="result"></p>
+</div>
+
+<script>
+function checkAnswer(rightAnswer) {
+    let answer = document.querySelector('input[name="q1"]:checked')?.value;
+    let result = document.getElementById("result");
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+++++
+
+
+
+
+
+++++
+<div id="mcq">
+  <p>5. How does Kokkos manage memory for Views ?</p>
+  <input type="radio" name="q1" value="a"> Manually by the programmer<br>
+  <input type="radio" name="q1" value="b"> Automatically with a reference counter<br>
+  <input type="radio" name="q1" value="c"> Only on CPU<br>
+  <input type="radio" name="q1" value="d"> Without any memory management<br>
+  <button onclick="checkAnswer('b')">Submit</button>
+  <p id="result"></p>
+</div>
+
+<script>
+function checkAnswer(rightAnswer) {
+    let answer = document.querySelector('input[name="q1"]:checked')?.value;
+    let result = document.getElementById("result");
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+++++
+
+
+
+
+++++
+<div id="mcq">
+  <p>6. What is special about the dimensions of a View Kokkos ?</p>
+  <input type="radio" name="q1" value="a"> They are always dynamic<br>
+  <input type="radio" name="q1" value="b"> They are always static<br>
+  <input type="radio" name="q1" value="c"> They can be defined at compile time or at run time<br>
+  <input type="radio" name="q1" value="d"> They are limited to 3 dimensions maximum<br>
+  <button onclick="checkAnswer('c')">Submit</button>
+  <p id="result"></p>
+</div>
+
+<script>
+function checkAnswer(rightAnswer) {
+    let answer = document.querySelector('input[name="q1"]:checked')?.value;
+    let result = document.getElementById("result");
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+++++
+
+
+
+
+++++
+<div id="mcq">
+  <p>7. How is a Kokkos View copied ?</p>
+  <input type="radio" name="q1" value="a"> Default deep copy<br>
+  <input type="radio" name="q1" value="b"> Shallow copy by default<br>
+  <input type="radio" name="q1" value="c"> Unable to copy a View<br>
+  <input type="radio" name="q1" value="d"> Copy only to the same type of memory<br>
+  <button onclick="checkAnswer('b')">Submit</button>
+  <p id="result"></p>
+</div>
+
+<script>
+function checkAnswer(rightAnswer) {
+    let answer = document.querySelector('input[name="q1"]:checked')?.value;
+    let result = document.getElementById("result");
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+++++
+
+
+
+++++
+<div id="mcq">
+  <p>8. What tool does Kokkos provide for profiling and debugging ?</p>
+  <input type="radio" name="q1" value="a"> KokkosDebug<br>
+  <input type="radio" name="q1" value="b"> KokkosProfile<br>
+  <input type="radio" name="q1" value="c"> KokkosP<br>
+  <input type="radio" name="q1" value="d"> KokkosAnalyzer<br>
+  <button onclick="checkAnswer('c')">Submit</button>
+  <p id="result"></p>
+</div>
+
+<script>
+function checkAnswer(rightAnswer) {
+    let answer = document.querySelector('input[name="q1"]:checked')?.value;
+    let result = document.getElementById("result");
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+++++

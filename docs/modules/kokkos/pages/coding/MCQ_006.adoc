@@ -1,0 +1,213 @@
+
+= Welcome to MCQ Kokkos 
+
+*Quiz on the concept of Hierarchical Parallelism*
+
+++++
+<div id="mcq">
+  <p>1.What is a thread team in Kokkos ?</p>
+  <input type="radio" name="q1" value="a"> A group of CPUs<br>
+  <input type="radio" name="q1" value="b"> A collection of threads that can synchronize and share scratch memory<br>
+  <input type="radio" name="q1" value="c"> A set of GPUs<br>
+  <input type="radio" name="q1" value="d"> A type of View Kokkos<br>
+  <button onclick="checkAnswer('b')">Submit</button>
+  <p id="result"></p>
+</div>
+
+<script>
+function checkAnswer(rightAnswer) {
+    let answer = document.querySelector('input[name="q1"]:checked')?.value;
+    let result = document.getElementById("result");
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+++++
+
+
+++++
+<div id="mcq">
+  <p>2.How many levels of nested parallelism does Kokkos allow ?</p>
+  <input type="radio" name="q1" value="a"> 2<br>
+  <input type="radio" name="q1" value="b"> 3<br>
+  <input type="radio" name="q1" value="c"> 4<br>
+  <input type="radio" name="q1" value="d"> Unlimited<br>
+  <button onclick="checkAnswer('b')">Submit</button>
+  <p id="result"></p>
+</div>
+
+<script>
+function checkAnswer(rightAnswer) {
+    let answer = document.querySelector('input[name="q1"]:checked')?.value;
+    let result = document.getElementById("result");
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+++++
+
+
+
+++++
+<div id="mcq">
+  <p>3. What execution policy is used for hierarchical parallelism ?</p>
+  <input type="radio" name="q1" value="a"> RangePolicy<br>
+  <input type="radio" name="q1" value="b"> TeamPolicy<br>
+  <input type="radio" name="q1" value="c"> HierarchyPolicy<br>
+  <input type="radio" name="q1" value="d"> NestedPolicy<br>
+  <button onclick="checkAnswer('b')">Submit</button>
+  <p id="result"></p>
+</div>
+
+<script>
+function checkAnswer(rightAnswer) {
+    let answer = document.querySelector('input[name="q1"]:checked')?.value;
+    let result = document.getElementById("result");
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+++++
+
+
+
+++++
+<div id="mcq">
+  <p>4. What is the finest level of parallelism in Kokkos ?</p>
+  <input type="radio" name="q1" value="a"> League<br>
+  <input type="radio" name="q1" value="b"> Team<br>
+  <input type="radio" name="q1" value="c"> Thread<br>
+  <input type="radio" name="q1" value="d"> Vector<br>
+  <button onclick="checkAnswer('d')">Submit</button>
+  <p id="result"></p>
+</div>
+
+<script>
+function checkAnswer(rightAnswer) {
+    let answer = document.querySelector('input[name="q1"]:checked')?.value;
+    let result = document.getElementById("result");
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+++++
+
+
+
+
+
+++++
+<div id="mcq">
+  <p>5. What method is used to synchronize threads within a team ?</p>
+  <input type="radio" name="q1" value="a"> team_sync()<br>
+  <input type="radio" name="q1" value="b"> team_barrier()<br>
+  <input type="radio" name="q1" value="c"> team_wait()<br>
+  <input type="radio" name="q1" value="d"> team_fence()<br>
+  <button onclick="checkAnswer('b')">Submit</button>
+  <p id="result"></p>
+</div>
+
+<script>
+function checkAnswer(rightAnswer) {
+    let answer = document.querySelector('input[name="q1"]:checked')?.value;
+    let result = document.getElementById("result");
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+++++
+
+
+
+
+++++
+<div id="mcq">
+  <p>6. What type of memory is shared between threads in the same team ?</p>
+  <input type="radio" name="q1" value="a"> Global memorys<br>
+  <input type="radio" name="q1" value="b"> Shared memory<br>
+  <input type="radio" name="q1" value="c"> Scratch memory<br>
+  <input type="radio" name="q1" value="d"> Team memory<br>
+  <button onclick="checkAnswer('c')">Submit</button>
+  <p id="result"></p>
+</div>
+
+<script>
+function checkAnswer(rightAnswer) {
+    let answer = document.querySelector('input[name="q1"]:checked')?.value;
+    let result = document.getElementById("result");
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+++++
+
+
+
+
+++++
+<div id="mcq">
+  <p>7. What policy is used for thread-level parallelism in a team ?</p>
+  <input type="radio" name="q1" value="a"> TeamThreadRange<br>
+  <input type="radio" name="q1" value="b"> ThreadTeamRange<br>
+  <input type="radio" name="q1" value="c"> TeamParallelRange<br>
+  <input type="radio" name="q1" value="d"> ParallelTeamRange<br>
+  <button onclick="checkAnswer('a')">Submit</button>
+  <p id="result"></p>
+</div>
+
+<script>
+function checkAnswer(rightAnswer) {
+    let answer = document.querySelector('input[name="q1"]:checked')?.value;
+    let result = document.getElementById("result");
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+++++
+
+
+
+++++
+<div id="mcq">
+  <p>8. What is the main advantage of hierarchical parallelism in Kokkos ?</p>
+  <input type="radio" name="q1" value="a"> Simplification of the code<br>
+  <input type="radio" name="q1" value="b"> Reduction of memory consumption<br>
+  <input type="radio" name="q1" value="c"> Better exploitation of different levels of hardware parallelism<br>
+  <input type="radio" name="q1" value="d"> Increased accuracy of calculations<br>
+  <button onclick="checkAnswer('c')">Submit</button>
+  <p id="result"></p>
+</div>
+
+<script>
+function checkAnswer(rightAnswer) {
+    let answer = document.querySelector('input[name="q1"]:checked')?.value;
+    let result = document.getElementById("result");
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+++++

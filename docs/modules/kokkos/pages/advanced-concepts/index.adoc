@@ -1,0 +1,24 @@
+= Advanced concepts
+
+
+The content of this part has ben  constructed from the slides from the https://indico.math.cnrs.fr/event/12037/[Kokkos training days] held in 2024.
+
+
+== Other ressources
+
+- Organization Kokkos on GitHub: https://github.com/kokkos[github.com/kokkos],
+- Slides, recording and Q&A for the Lectures: https://github.com/kokkos/kokkos-tutorials/wiki/Kokkos-Lecture-Series[github.com/kokkos/kokkos-tutorials/wiki],
+- Kokkos Core Wiki, with API documentation: https://kokkos.github.io/kokkos-core-wiki[kokkos.github.io/kokkos-core-wiki],
+- Slack channel for Kokkos: https://kokkos.slack.com[kokkosteam.slack.com].
+
+
+== Contents
+
+- xref:advanced-concepts/advanced-reductions.adoc[Advanced Reductions]
+- xref:advanced-concepts/hierarchical-parallelism.adoc[Hierarchical Parallelism]
+- xref:advanced-concepts/mpi.adoc[MPI]
+- xref:advanced-concepts/pgas.adoc[PGAS]
+- xref:advanced-concepts/mpi-vs-pgas.adoc[MPI vs PGAS]
+- xref:advanced-concepts/multidimensional-loops-and-data-structure.adoc[Multidimensional Loops and Data Structure]
+- xref:advanced-concepts/single-instruction-mutliple-data.adoc[Single Instruction Multiple Data]
+- xref:advanced-concepts/asynchronicity-and-streams.adoc[Asynchronicity and Stream]

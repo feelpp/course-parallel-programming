@@ -1,0 +1,85 @@
+= Inner Product, Flat Parallelism and the CPU, with Views
+
+Exercise 02 taken from the https://github.com/kokkos/kokkos-tutorials[Kokkos tutorial].
+The initial code file to complete can be found on https://github.com/kokkos/kokkos-tutorials/blob/main/Exercises/02/Begin/exercise_2_begin.cpp[this link].
+
+== Problem statement
+
+The code provided in the exercise is a simple matrix-vector multiplication:
+
+[stem]
+++++
+y = A * x
+++++
+
+.Goals of the exercise
+****
+Replace raw allocations with Kokkos Views.
+
+1. Define device views.
+2. Replace data access with view access operators.
+****
+
+.Run the exercise
+[source, sh]
+----
+./04_kokkos_exercise_views -S 26
+----
+
+CAUTION: The solution are present just below, so if you wann try it by yourself, stop reading this page !
+
+== Solutions
+
+.Allocating memory
+[source, diff]
+----
+- double * const y = new double[ N ];
++ ViewVectorType y( "y", N );
+- double * const x = new double[ M ];
++ ViewVectorType x( "x", M );
+- double * const A = new double[ N * M ];
++ ViewMatrixType A( "A", N, M );
+----
+
+.Initialize data
+[source, diff]
+----
+- for ( int i = 0; i < N; ++i ) {
+-   y[ i ] = 1;
+- }
++ Kokkos::parallel_for( N, KOKKOS_LAMBDA ( int i ) {
++   y( i ) = 1;
++ });
+
+- for ( int i = 0; i < M; ++i ) {
+-   x[ i ] = 1;
+- }
++ Kokkos::parallel_for( M, KOKKOS_LAMBDA ( int i ) {
++ x( i ) = 1;
++ });
+----
+
+.Matrix-vector multiplication
+[source, diff]
+----
+- for ( int j = 0; j < N; ++j ) {
+-   for ( int i = 0; i < M; ++i ) {
+-     A[ j * M + i ] = 1;
+-   }
+- }
++ Kokkos::parallel_for( N, KOKKOS_LAMBDA ( int j ) {
++   for ( int i = 0; i < M; ++i ) {
++     A( j, i ) = 1;
++   }
++ });
+----
+
+Concerning deallocation, Kokkos will automatically deallocate the memory when the views go out of scope.
+
+.Deallocate memory
+[source, diff]
+----
+- delete [] y;
+- delete [] x;
+- delete [] A;
+----

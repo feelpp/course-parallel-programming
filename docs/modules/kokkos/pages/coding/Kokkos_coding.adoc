@@ -1,0 +1,37 @@
+= Kokkos Coding Practice
+
+
+
+.Start
+[.examp]
+****
+This start example illustrates how to do a task reduction and consists in calculating the sum of all elements of an array.
+ifeval::[{showproof} >= 2]
+.Code Start
+[%collapsible.proof]
+====
+[%dynamic,cpp,filename="OpenMP_Start.cpp",compile="openmp"]
+----
+include::ROOT:example$src/OpenMP/OpenMP_Start.cpp[]
+----
+====
+//endif::[]
+****
+
+
+
+.Firstprivate
+[.examp]
+****
+Specifies that each thread should have its own instance of a variable, and that the variable should be initialized with the value of the variable, because it exists before the parallel construct.
+.Code Firstprivate
+[%collapsible.proof]
+====
+[%dynamic,cpp,filename="OpenMP_Firstprivate.cpp",compile="openmp"]
+----
+include::ROOT:example$src/OpenMP/OpenMP_Firstprivate.cpp[]
+----
+====
+//endif::[]
+****
+

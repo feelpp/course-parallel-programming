@@ -1,7 +1,7 @@
 = Antora environment
 
-Antora is our static website generator. 
-We use it to generate the documentation of the project 
+Antora is our static website generator.
+We use it to generate the documentation of the project
 It is part of the documentation of docs.feelpp.org[{feelpp} docs] website.
 
 .To generate the documentation
@@ -15,4 +15,3 @@ It is part of the documentation of docs.feelpp.org[{feelpp} docs] website.
 <2> Generate the documentation
 <3> Serve the documentation, the url is provided in the console
 
-include::antora-ui::partial$antora.adoc[leveloffset=+1]

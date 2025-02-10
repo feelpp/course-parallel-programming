@@ -1,0 +1,112 @@
+= Kokkos PGAS (Partitioned Global Address Space)
+
+== Introduction
+
+[.text-justify]
+In the realm of high-performance computing, the integration of internode communication models with intranode parallelism frameworks has become increasingly crucial. This synergy is exemplified by the combination of *MPI* (Message Passing Interface) and *PGAS* (Partitioned Global Address Space) with Kokkos, a performance portability ecosystem for manycore architectures. 
+
+
+== Kokkos Remote Spaces: PGAS Support
+
+[.text-justify]
+
+*PGAS (Partitioned Global Address Space)* models are gaining traction, particularly with the advent of "super-node" architectures and evolving network infrastructures [1][2]. Kokkos Remote Spaces extends the Kokkos ecosystem to embrace this paradigm, offering a bridge between shared and distributed memory programming models.
+
+*PGAS* enables Kokkos to provide a global view of data for convenient multi-GPU, multi-node, and multi-device programming. PGAS provides a high-level abstraction for remote memory accesses, simplifying distributed programming for developers using Kokkos. Kokkos Remote Spaces supports multiple PGAS backends, including SHMEM, *NVSHMEM*, *ROCSHMEM*, and *MPI* One-side, providing flexibility for different types of systems and architectures. PGAS implementations are optimized for high-performance communications, which is crucial for the scientific computing applications that Kokkos targets. Using PGAS allows Kokkos to maintain its philosophy of performance portability across different architectures, from CPUs to GPUs. By using PGAS, Kokkos can offer efficient and portable distributed programming, while maintaining a consistent programming interface with the rest of the Kokkos ecosystem.
+
+To write a *PGAS* application with Kokkos, developers can utilize the Kokkos Remote Spaces extension. This extension introduces new memory spaces that return data handles with PGAS semantics. Creating a global View in this context is straightforward:
+
+[source, c++]
+----
+    Kokkos::View<double**, Kokkos::LayoutLeft, Kokkos::Experimental::NVShmemSpace> globalView("GlobalView", N, M);
+----
+
+[.text-justify]
+This declaration creates a two-dimensional View that spans across multiple processing elements in a PGAS model.
+
+[.text-justify]
+Accessing global data in a PGAS model requires careful consideration of data locality and communication costs. Kokkos Remote Spaces provides abstractions that simplify this process. For example, accessing an element of the global View might look like this:
+
+[source, c++]
+----
+    auto element = globalView(i, j);
+----
+
+[.text-justify]
+Behind the scenes, Kokkos handles the necessary communication to fetch or update the data, abstracting away the complexities of the underlying PGAS implementation.
+
+[.text-justify]
+A prime example of PGAS applications is the Sparse Matrix-Vector Multiplication (SpMV) operation, a key component of the Conjugate Gradient (CG) method. In a PGAS model using Kokkos Remote Spaces, the vector becomes distributed, while the sparse matrix stores global indices. This approach allows for efficient parallel computation across multiple nodes.
+
+The implementation of SpMV in this context might involve:
+
+1. Distributing the vector across processing elements.
+2. Storing the sparse matrix with global indices.
+3. Performing local computations using Kokkos parallel constructs.
+4. Utilizing PGAS operations for necessary remote data accesses.
+
+This strategy can lead to significant performance improvements, especially for large-scale problems that exceed the memory capacity of a single node.
+
+*Example*
+
+[source, c++]
+----
+    Kokkos::initialize(argc, argv);
+    {
+        using ExecSpace = Kokkos::Cuda;
+        using RemoteSpace = Kokkos::Experimental::NVShmemSpace;
+        using RemoteView = Kokkos::View<double*, Kokkos::LayoutLeft, RemoteSpace>;
+        const int N = 1000;
+        RemoteView remote_data("RemoteData", N);
+        Kokkos::parallel_for("InitializeData", Kokkos::RangePolicy<ExecSpace>(0, N),
+        KOKKOS_LAMBDA(const int i) {
+            remote_data(i) = static_cast<double>(i);
+        });
+        
+        Kokkos::fence();
+        double sum = 0.0;
+        Kokkos::parallel_reduce("SumData", Kokkos::RangePolicy<ExecSpace>(0, N),
+        KOKKOS_LAMBDA(const int i, double& lsum) {
+            lsum += remote_data(i);
+        }, sum);
+        Kokkos::fence();
+        printf("Sum of remote data: %f\n", sum);
+    }
+    Kokkos::finalize();
+----
+
+Explanations:
+
+Using Kokkos::Experimental::NVShmemSpace as a remote memory space. Creating a RemoteView using NVShmemSpace. Initializing the remote data using a parallel_for on the CUDA runspace. Computing the sum of the remote data with a parallel_reduce. Using Kokkos::fence() to ensure synchronization between remote operations.
+
+This code demonstrates how Kokkos Remote Spaces allows using NVSHMEM as a PGAS backend for simplified multi-GPU programming, providing a global view of the data while maintaining the portability of Kokkos performance
+
+
+== References
+** [1] https://extremecomputingtraining.anl.gov/wp-content/uploads/sites/96/2019/08/ATPESC_2019_Track-2_3_8-1_830am_Trott-Kokkos.pdf
+** [2] https://en.wikipedia.org/wiki/Partitioned_global_address_space
+
+.*Points to keep in mind*
+****
+
+*PGAS* (Partitioned Global Address Space) is a parallel programming model where the global address space is logically partitioned, with each portion local to a process or thread.
+
+*Kokkos Remote Spaces* is an extension of Kokkos that adds support for Distributed Shared Memory (DSM) to enable a global view of data in a multi-GPU, multi-node, multi-device environment.
+
+*Kokkos Remote Spaces* is an extension of Kokkos that adds support for Distributed Shared Memory (DSM) to enable a global view of data in a multi-GPU, multi-node, multi-device environment.
+
+*NVShmemSpace* is an NVIDIA implementation of the Partitioned Global Address Space (PGAS) model that enables low-latency access to shared memory distributed across multiple GPUs in a cluster.
+
+*ROC_SHMEM* is an implementation of the Partitioned Global Address Space (PGAS) model for AMD GPUs, enabling GPU-initiated communication operations in a multi-GPU environment
+
+* *Support for PGAS in Kokkos:*
+  ***  Kokkos Remote Spaces extends Kokkos to support PGAS models.
+  ***  Bridges the gap between shared and distributed memory programming.
+  ***  Particularly relevant for "super-node" architectures and evolving network infrastructures.
+
+
+... 
+
+
+****
+

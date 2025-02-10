@@ -2,11 +2,9 @@
 
 
 
-.Heat equation in 2D
-[.examp]
-****
+== Heat equation in 2D
 
-* Theory
+=== Theory
 
 Heat (or diffusion) equation is a partial differential equation that describes the variation of temperature in a given region over time
 
@@ -42,17 +40,17 @@ u^{m+1}(i,j) = u^m(i,j) + \Delta t \alpha \nabla^2 u^m(i,j)
 
 Note: The algorithm is stable only when
 
+[stem]
+++++
 \begin{align*}
 \Delta t < \frac{1}{2 \alpha} \frac{(\Delta x \Delta y)^2}{(\Delta x)^2 (\Delta y)^2}
 \end{align*}
-
-****
-
+++++
 
 
-.Code
-[.examp]
-****
+
+== Code
+
 The solver carries out the time development of the 2D heat equation over the number of time steps provided by the user. The default geometry is a flat
 rectangle (with grid size provided by the user), but other shapes may be used via input files. The program will produce an image (PNG) of the temperature field after every 100 iterations.
 
@@ -74,18 +72,10 @@ include::ROOT:example$src/Heat_Equation_ParallelPrograming_Comparison/MPI_OpenMP
 ----
 include::ROOT:example$src/Heat_Equation_ParallelPrograming_Comparison/Cuda/core_cuda.cu[indent=0]
 ----
-****
 
-.*Performance*
 ****
+.*Performance*
 ADD SOME RESULTS
 ****
 
-
-
-
-
-
-
 ...
-
