@@ -39,7 +39,6 @@ asciidoc:
     cpp: C++
 
   extensions:
-  - docs/antora/extensions/cmake-dynamic-processor.js
-  - docs/antora/extensions/make-dynamic-processor.js
-  - docs/antora/extensions/cpp-dynamic-processor-collapsible.js
-
+    - '@feelpp/asciidoctor-extensions/src/make-dynamic-processor'
+    - '@feelpp/asciidoctor-extensions/src/cmake-dynamic-processor'
+    - '@feelpp/asciidoctor-extensions/src/cpp-dynamic-processor-collapsible'
