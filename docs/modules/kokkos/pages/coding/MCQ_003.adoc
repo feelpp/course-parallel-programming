@@ -1,0 +1,213 @@
+
+= Welcome to MCQ Kokkos 
+
+*Quiz on the concept of mirrors*
+
+++++
+<div id="mcq">
+  <p>1. What are mirrors in Kokkos ?</p>
+  <input type="radio" name="q1" value="a"> Exact copies of the Views<br>
+  <input type="radio" name="q1" value="b"> Views of equivalent arrays potentially residing in different memory spaces<br>
+  <input type="radio" name="q1" value="c"> Pointers to GPU memory<br>
+  <input type="radio" name="q1" value="d"> Data structures for debugging<br>
+  <button onclick="checkAnswer('b')">Submit</button>
+  <p id="result"></p>
+</div>
+
+<script>
+function checkAnswer(rightAnswer) {
+    let answer = document.querySelector('input[name="q1"]:checked')?.value;
+    let result = document.getElementById("result");
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+++++
+
+
+++++
+<div id="mcq">
+  <p>2.What Kokkos function is used to create a mirror ?</p>
+  <input type="radio" name="q1" value="a"> Kokkos::create_mirror()<br>
+  <input type="radio" name="q1" value="b"> Kokkos::create_mirror_view()<br>
+  <input type="radio" name="q1" value="c"> Kokkos::make_mirror()<br>
+  <input type="radio" name="q1" value="d"> Answers a and b are correct<br>
+  <button onclick="checkAnswer('d')">Submit</button>
+  <p id="result"></p>
+</div>
+
+<script>
+function checkAnswer(rightAnswer) {
+    let answer = document.querySelector('input[name="q1"]:checked')?.value;
+    let result = document.getElementById("result");
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+++++
+
+
+
+++++
+<div id="mcq">
+  <p>3. What does the create_mirror_view() function do ?</p>
+  <input type="radio" name="q1" value="a"> It always allocates memory<br>
+  <input type="radio" name="q1" value="b"> It never allocates memory<br>
+  <input type="radio" name="q1" value="c"> It allocates memory only if the host process cannot access the view data<br>
+  <input type="radio" name="q1" value="d"> It always copies the data<br>
+  <button onclick="checkAnswer('c')">Submit</button>
+  <p id="result"></p>
+</div>
+
+<script>
+function checkAnswer(rightAnswer) {
+    let answer = document.querySelector('input[name="q1"]:checked')?.value;
+    let result = document.getElementById("result");
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+++++
+
+
+
+++++
+<div id="mcq">
+  <p>4. What is the difference between create_mirror() and create_mirror_view() ?</p>
+  <input type="radio" name="q1" value="a"> create_mirror() always allocates memory, create_mirror_view() only if needed<br>
+  <input type="radio" name="q1" value="b"> create_mirror() only works on GPU, create_mirror_view() only on CPU<br>
+  <input type="radio" name="q1" value="c"> There is no difference<br>
+  <input type="radio" name="q1" value="d"> create_mirror() copies data, create_mirror_view() does not<br>
+  <button onclick="checkAnswer('a')">Submit</button>
+  <p id="result"></p>
+</div>
+
+<script>
+function checkAnswer(rightAnswer) {
+    let answer = document.querySelector('input[name="q1"]:checked')?.value;
+    let result = document.getElementById("result");
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+++++
+
+
+
+
+
+++++
+<div id="mcq">
+  <p>5. Does Kokkos automatically perform a deep copy when creating a mirror ?</p>
+  <input type="radio" name="q1" value="a"> Yes, always<br>
+  <input type="radio" name="q1" value="b"> No, never<br>
+  <input type="radio" name="q1" value="c"> Only if specified<br>
+  <input type="radio" name="q1" value="d"> Only for GPU views<br>
+  <button onclick="checkAnswer('b')">Submit</button>
+  <p id="result"></p>
+</div>
+
+<script>
+function checkAnswer(rightAnswer) {
+    let answer = document.querySelector('input[name="q1"]:checked')?.value;
+    let result = document.getElementById("result");
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+++++
+
+
+
+
+++++
+<div id="mcq">
+  <p>6. What function is used to copy data between a view and its mirror ?</p>
+  <input type="radio" name="q1" value="a"> Kokkos::copy()<br>
+  <input type="radio" name="q1" value="b"> Kokkos::deep_copy()<br>
+  <input type="radio" name="q1" value="c"> Kokkos::mirror_copy()<br>
+  <input type="radio" name="q1" value="d"> Kokkos::transfer()<br>
+  <button onclick="checkAnswer('b')">Submit</button>
+  <p id="result"></p>
+</div>
+
+<script>
+function checkAnswer(rightAnswer) {
+    let answer = document.querySelector('input[name="q1"]:checked')?.value;
+    let result = document.getElementById("result");
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+++++
+
+
+
+
+++++
+<div id="mcq">
+  <p>7. What is the main interest of using mirrors in Kokkos ?</p>
+  <input type="radio" name="q1" value="a"> Increase the calculation speed<br>
+  <input type="radio" name="q1" value="b"> Facilitate the transfer of data between different memory spaces<br>
+  <input type="radio" name="q1" value="c"> Reduce memory usage<br>
+  <input type="radio" name="q1" value="d"> Simplify the code syntax<br>
+  <button onclick="checkAnswer('b')">Submit</button>
+  <p id="result"></p>
+</div>
+
+<script>
+function checkAnswer(rightAnswer) {
+    let answer = document.querySelector('input[name="q1"]:checked')?.value;
+    let result = document.getElementById("result");
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+++++
+
+
+
+++++
+<div id="mcq">
+  <p>8. When does a mirror reference the same data as the original view ?</p>
+  <input type="radio" name="q1" value="a"> Always<br>
+  <input type="radio" name="q1" value="b"> Never<br>
+  <input type="radio" name="q1" value="c"> When the original view is in the host's memory space<br>
+  <input type="radio" name="q1" value="d"> When the original view is in the device's memory space<br>
+  <button onclick="checkAnswer('c')">Submit</button>
+  <p id="result"></p>
+</div>
+
+<script>
+function checkAnswer(rightAnswer) {
+    let answer = document.querySelector('input[name="q1"]:checked')?.value;
+    let result = document.getElementById("result");
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+++++

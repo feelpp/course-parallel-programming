@@ -1,0 +1,213 @@
+
+= Welcome to MCQ Kokkos 
+
+*Quiz on the concept of View*
+
+++++
+<div id="mcq">
+  <p>1. What is a View Kokkos ?</p>
+  <input type="radio" name="q1" value="a"> A simple pointer<br>
+  <input type="radio" name="q1" value="b"> A multidimensional array with memory management<br>
+  <input type="radio" name="q1" value="c"> A tree data structure<br>
+  <input type="radio" name="q1" value="d"> A graphics window<br>
+  <button onclick="checkAnswer('b')">Submit</button>
+  <p id="result"></p>
+</div>
+
+<script>
+function checkAnswer(rightAnswer) {
+    let answer = document.querySelector('input[name="q1"]:checked')?.value;
+    let result = document.getElementById("result");
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+++++
+
+
+++++
+<div id="mcq">
+  <p>2.How does Kokkos manage memory for Views ?</p>
+  <input type="radio" name="q1" value="a"> Manually by the programmer<br>
+  <input type="radio" name="q1" value="b"> Automatically with a reference counter<br>
+  <input type="radio" name="q1" value="c"> Only on CPU<br>
+  <input type="radio" name="q1" value="d"> Without any memory management<br>
+  <button onclick="checkAnswer('b')">Submit</button>
+  <p id="result"></p>
+</div>
+
+<script>
+function checkAnswer(rightAnswer) {
+    let answer = document.querySelector('input[name="q1"]:checked')?.value;
+    let result = document.getElementById("result");
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+++++
+
+
+
+++++
+<div id="mcq">
+  <p>3. What is special about the dimensions of a View Kokkos ?</p>
+  <input type="radio" name="q1" value="a"> They are always dynamic<br>
+  <input type="radio" name="q1" value="b"> They are always static<br>
+  <input type="radio" name="q1" value="c"> They can be defined at compile time or at run time<br>
+  <input type="radio" name="q1" value="d"> They are limited to 3 dimensions maximum<br>
+  <button onclick="checkAnswer('c')">Submit</button>
+  <p id="result"></p>
+</div>
+
+<script>
+function checkAnswer(rightAnswer) {
+    let answer = document.querySelector('input[name="q1"]:checked')?.value;
+    let result = document.getElementById("result");
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+++++
+
+
+
+++++
+<div id="mcq">
+  <p>4. How is a Kokkos View copied ?</p>
+  <input type="radio" name="q1" value="a"> Default deep copy<br>
+  <input type="radio" name="q1" value="b"> Shallow copy by default<br>
+  <input type="radio" name="q1" value="c"> Unable to copy a View<br>
+  <input type="radio" name="q1" value="d"> Copy only to the same type of memory<br>
+  <button onclick="checkAnswer('b')">Submit</button>
+  <p id="result"></p>
+</div>
+
+<script>
+function checkAnswer(rightAnswer) {
+    let answer = document.querySelector('input[name="q1"]:checked')?.value;
+    let result = document.getElementById("result");
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+++++
+
+
+
+
+
+++++
+<div id="mcq">
+  <p>5. What is the maximum number of dimensions for a Kokkos View ?</p>
+  <input type="radio" name="q1" value="a"> 3<br>
+  <input type="radio" name="q1" value="b"> 5<br>
+  <input type="radio" name="q1" value="c"> 8<br>
+  <input type="radio" name="q1" value="d"> Unlimited<br>
+  <button onclick="checkAnswer('c')">Submit</button>
+  <p id="result"></p>
+</div>
+
+<script>
+function checkAnswer(rightAnswer) {
+    let answer = document.querySelector('input[name="q1"]:checked')?.value;
+    let result = document.getElementById("result");
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+++++
+
+
+
+
+++++
+<div id="mcq">
+  <p>6. What does the Layout parameter represent in a Kokkos View ?</p>
+  <input type="radio" name="q1" value="a"> The size of the View<br>
+  <input type="radio" name="q1" value="b"> The organization of data in memory<br>
+  <input type="radio" name="q1" value="c"> The type of data stored<br>
+  <input type="radio" name="q1" value="d"> The execution space<br>
+  <button onclick="checkAnswer('b')">Submit</button>
+  <p id="result"></p>
+</div>
+
+<script>
+function checkAnswer(rightAnswer) {
+    let answer = document.querySelector('input[name="q1"]:checked')?.value;
+    let result = document.getElementById("result");
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+++++
+
+
+
+
+++++
+<div id="mcq">
+  <p>7. What is special about the default layout on CUDA GPU ?</p>
+  <input type="radio" name="q1" value="a"> LayoutRight<br>
+  <input type="radio" name="q1" value="b"> LayoutLeft<br>
+  <input type="radio" name="q1" value="c"> LayoutRandom<br>
+  <input type="radio" name="q1" value="d"> No default layout<br>
+  <button onclick="checkAnswer('b')">Submit</button>
+  <p id="result"></p>
+</div>
+
+<script>
+function checkAnswer(rightAnswer) {
+    let answer = document.querySelector('input[name="q1"]:checked')?.value;
+    let result = document.getElementById("result");
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+++++
+
+
+
+++++
+<div id="mcq">
+  <p>8. How do you access the elements of a Kokkos View ?</p>
+  <input type="radio" name="q1" value="a"> With brackets [ ]<br>
+  <input type="radio" name="q1" value="b"> With parentheses ( )<br>
+  <input type="radio" name="q1" value="c"> With the .at() method<br>
+  <input type="radio" name="q1" value="d"> With the .get() method<br>
+  <button onclick="checkAnswer('b')">Submit</button>
+  <p id="result"></p>
+</div>
+
+<script>
+function checkAnswer(rightAnswer) {
+    let answer = document.querySelector('input[name="q1"]:checked')?.value;
+    let result = document.getElementById("result");
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+++++
