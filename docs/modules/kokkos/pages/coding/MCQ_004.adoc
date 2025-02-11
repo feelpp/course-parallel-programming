@@ -1,23 +1,13 @@
 
-= Welcome to MCQ Kokkos 
+= Welcome to MCQ Kokkos
 
 *Quiz on the concept of Execution Spaces*
 
 ++++
-<div id="mcq">
-  <p>1.What does an Execution Space represent in Kokkos ?</p>
-  <input type="radio" name="q1" value="a"> A memory space<br>
-  <input type="radio" name="q1" value="b"> A logical grouping of computing units sharing identical performance properties<br>
-  <input type="radio" name="q1" value="c"> A type of View<br>
-  <input type="radio" name="q1" value="d"> A parallel algorithm<br>
-  <button onclick="checkAnswer('b')">Submit</button>
-  <p id="result"></p>
-</div>
-
 <script>
-function checkAnswer(rightAnswer) {
-    let answer = document.querySelector('input[name="q1"]:checked')?.value;
-    let result = document.getElementById("result");
+function checkAnswer(questionName, rightAnswer, resultId) {
+    let answer = document.querySelector(`input[name="${questionName}"]:checked`)?.value;
+    let result = document.getElementById(resultId);
     if (answer === rightAnswer) {
         result.innerHTML = "Correct!";
     } else {
@@ -25,189 +15,84 @@ function checkAnswer(rightAnswer) {
     }
 }
 </script>
-++++
 
-
-++++
-<div id="mcq">
-  <p>2.What is the function of an Execution Space ?</p>
-  <input type="radio" name="q1" value="a"> Manage memory<br>
-  <input type="radio" name="q1" value="b"> Provide parallel execution resources<br>
-  <input type="radio" name="q1" value="c"> Compile the code<br>
-  <input type="radio" name="q1" value="d"> Optimize algorithms<br>
-  <button onclick="checkAnswer('b')">Submit</button>
-  <p id="result"></p>
+<div id="question1">
+    <p>1. What does an Execution Space represent in Kokkos?</p>
+    <input type="radio" name="q1" value="a"> A memory space<br>
+    <input type="radio" name="q1" value="b"> A logical grouping of computing units sharing identical performance properties<br>
+    <input type="radio" name="q1" value="c"> A type of View<br>
+    <input type="radio" name="q1" value="d"> A parallel algorithm<br>
+    <button onclick="checkAnswer('q1', 'b', 'result1')">Submit</button>
+    <p id="result1"></p>
 </div>
 
-<script>
-function checkAnswer(rightAnswer) {
-    let answer = document.querySelector('input[name="q1"]:checked')?.value;
-    let result = document.getElementById("result");
-    if (answer === rightAnswer) {
-        result.innerHTML = "Correct!";
-    } else {
-        result.innerHTML = "Wrong answer, try again.";
-    }
-}
-</script>
-++++
-
-
-
-++++
-<div id="mcq">
-  <p>3. What is the default Execution Space called in Kokkos ?</p>
-  <input type="radio" name="q1" value="a"> Kokkos::DefaultExecutionSpace<br>
-  <input type="radio" name="q1" value="b"> Kokkos::MainExecutionSpace<br>
-  <input type="radio" name="q1" value="c"> Kokkos::PrimaryExecutionSpace<br>
-  <input type="radio" name="q1" value="d"> Kokkos::BaseExecutionSpace<br>
-  <button onclick="checkAnswer('a')">Submit</button>
-  <p id="result"></p>
+<div id="question2">
+    <p>2. What is the function of an Execution Space?</p>
+    <input type="radio" name="q2" value="a"> Manage memory<br>
+    <input type="radio" name="q2" value="b"> Provide parallel execution resources<br>
+    <input type="radio" name="q2" value="c"> Compile the code<br>
+    <input type="radio" name="q2" value="d"> Optimize algorithms<br>
+    <button onclick="checkAnswer('q2', 'b', 'result2')">Submit</button>
+    <p id="result2"></p>
 </div>
 
-<script>
-function checkAnswer(rightAnswer) {
-    let answer = document.querySelector('input[name="q1"]:checked')?.value;
-    let result = document.getElementById("result");
-    if (answer === rightAnswer) {
-        result.innerHTML = "Correct!";
-    } else {
-        result.innerHTML = "Wrong answer, try again.";
-    }
-}
-</script>
-++++
-
-
-
-++++
-<div id="mcq">
-  <p>4. What method is used to synchronize an Execution Space ?</p>
-  <input type="radio" name="q1" value="a"> sync()<br>
-  <input type="radio" name="q1" value="b"> wait()<br>
-  <input type="radio" name="q1" value="c"> fence()<br>
-  <input type="radio" name="q1" value="d"> barrier()<br>
-  <button onclick="checkAnswer('c')">Submit</button>
-  <p id="result"></p>
+<div id="question3">
+    <p>3. What is the default Execution Space called in Kokkos?</p>
+    <input type="radio" name="q3" value="a"> Kokkos::DefaultExecutionSpace<br>
+    <input type="radio" name="q3" value="b"> Kokkos::MainExecutionSpace<br>
+    <input type="radio" name="q3" value="c"> Kokkos::PrimaryExecutionSpace<br>
+    <input type="radio" name="q3" value="d"> Kokkos::BaseExecutionSpace<br>
+    <button onclick="checkAnswer('q3', 'a', 'result3')">Submit</button>
+    <p id="result3"></p>
 </div>
 
-<script>
-function checkAnswer(rightAnswer) {
-    let answer = document.querySelector('input[name="q1"]:checked')?.value;
-    let result = document.getElementById("result");
-    if (answer === rightAnswer) {
-        result.innerHTML = "Correct!";
-    } else {
-        result.innerHTML = "Wrong answer, try again.";
-    }
-}
-</script>
-++++
-
-
-
-
-
-++++
-<div id="mcq">
-  <p>5. What macro is used to make a function compatible with different Execution Spaces ?</p>
-  <input type="radio" name="q1" value="a"> KOKKOS_FUNCTION<br>
-  <input type="radio" name="q1" value="b"> KOKKOS_INLINE_FUNCTION<br>
-  <input type="radio" name="q1" value="c"> KOKKOS_EXEC_FUNCTION<br>
-  <input type="radio" name="q1" value="d"> KOKKOS_PORTABLE_FUNCTION<br>
-  <button onclick="checkAnswer('b')">Submit</button>
-  <p id="result"></p>
+<div id="question4">
+    <p>4. What method is used to synchronize an Execution Space?</p>
+    <input type="radio" name="q4" value="a"> sync()<br>
+    <input type="radio" name="q4" value="b"> wait()<br>
+    <input type="radio" name="q4" value="c"> fence()<br>
+    <input type="radio" name="q4" value="d"> barrier()<br>
+    <button onclick="checkAnswer('q4', 'c', 'result4')">Submit</button>
+    <p id="result4"></p>
 </div>
 
-<script>
-function checkAnswer(rightAnswer) {
-    let answer = document.querySelector('input[name="q1"]:checked')?.value;
-    let result = document.getElementById("result");
-    if (answer === rightAnswer) {
-        result.innerHTML = "Correct!";
-    } else {
-        result.innerHTML = "Wrong answer, try again.";
-    }
-}
-</script>
-++++
-
-
-
-
-++++
-<div id="mcq">
-  <p>6. Which Execution Space is always set, regardless of the backend used ?</p>
-  <input type="radio" name="q1" value="a"> Kokkos::Cuda<br>
-  <input type="radio" name="q1" value="b"> Kokkos::OpenMP<br>
-  <input type="radio" name="q1" value="c"> Kokkos::Serial<br>
-  <input type="radio" name="q1" value="d"> Kokkos::Threads<br>
-  <button onclick="checkAnswer('c')">Submit</button>
-  <p id="result"></p>
+<div id="question5">
+    <p>5. What macro is used to make a function compatible with different Execution Spaces?</p>
+    <input type="radio" name="q5" value="a"> KOKKOS_FUNCTION<br>
+    <input type="radio" name="q5" value="b"> KOKKOS_INLINE_FUNCTION<br>
+    <input type="radio" name="q5" value="c"> KOKKOS_EXEC_FUNCTION<br>
+    <input type="radio" name="q5" value="d"> KOKKOS_PORTABLE_FUNCTION<br>
+    <button onclick="checkAnswer('q5', 'b', 'result5')">Submit</button>
+    <p id="result5"></p>
 </div>
 
-<script>
-function checkAnswer(rightAnswer) {
-    let answer = document.querySelector('input[name="q1"]:checked')?.value;
-    let result = document.getElementById("result");
-    if (answer === rightAnswer) {
-        result.innerHTML = "Correct!";
-    } else {
-        result.innerHTML = "Wrong answer, try again.";
-    }
-}
-</script>
-++++
-
-
-
-
-++++
-<div id="mcq">
-  <p>7. How do you specify the Execution Space in an execution policy ?</p>
-  <input type="radio" name="q1" value="a"> Kokkos::RangePolicy<ExecutionSpace>(...)<br>
-  <input type="radio" name="q1" value="b"> Kokkos::Policy<ExecutionSpace>(...)<br>
-  <input type="radio" name="q1" value="c"> Kokkos::ExecPolicy<ExecutionSpace>(...)<br>
-  <input type="radio" name="q1" value="d"> Kokkos::ParallelPolicy<ExecutionSpace>(...)<br>
-  <button onclick="checkAnswer('a')">Submit</button>
-  <p id="result"></p>
+<div id="question6">
+    <p>6. Which Execution Space is always set, regardless of the backend used?</p>
+    <input type="radio" name="q6" value="a"> Kokkos::Cuda<br>
+    <input type="radio" name="q6" value="b"> Kokkos::OpenMP<br>
+    <input type="radio" name="q6" value="c"> Kokkos::Serial<br>
+    <input type="radio" name="q6" value="d"> Kokkos::Threads<br>
+    <button onclick="checkAnswer('q6', 'c', 'result6')">Submit</button>
+    <p id="result6"></p>
 </div>
 
-<script>
-function checkAnswer(rightAnswer) {
-    let answer = document.querySelector('input[name="q1"]:checked')?.value;
-    let result = document.getElementById("result");
-    if (answer === rightAnswer) {
-        result.innerHTML = "Correct!";
-    } else {
-        result.innerHTML = "Wrong answer, try again.";
-    }
-}
-</script>
-++++
-
-
-
-++++
-<div id="mcq">
-  <p>8. What is the relationship between an Execution Space and a Memory Space in Kokkos ?</p>
-  <input type="radio" name="q1" value="a"> They are always the sames<br>
-  <input type="radio" name="q1" value="b"> They are always different<br>
-  <input type="radio" name="q1" value="c"> An Execution Space has a default Memory Space associated with it<br>
-  <input type="radio" name="q1" value="d"> There is no relationship between the two<br>
-  <button onclick="checkAnswer('c')">Submit</button>
-  <p id="result"></p>
+<div id="question7">
+    <p>7. How do you specify the Execution Space in an execution policy?</p>
+    <input type="radio" name="q7" value="a"> Kokkos::RangePolicy<ExecutionSpace>(...)<br>
+    <input type="radio" name="q7" value="b"> Kokkos::Policy<ExecutionSpace>(...)<br>
+    <input type="radio" name="q7" value="c"> Kokkos::ExecPolicy<ExecutionSpace>(...)<br>
+    <input type="radio" name="q7" value="d"> Kokkos::ParallelPolicy<ExecutionSpace>(...)<br>
+    <button onclick="checkAnswer('q7', 'a', 'result7')">Submit</button>
+    <p id="result7"></p>
 </div>
 
-<script>
-function checkAnswer(rightAnswer) {
-    let answer = document.querySelector('input[name="q1"]:checked')?.value;
-    let result = document.getElementById("result");
-    if (answer === rightAnswer) {
-        result.innerHTML = "Correct!";
-    } else {
-        result.innerHTML = "Wrong answer, try again.";
-    }
-}
-</script>
+<div id="question8">
+    <p>8. What is the relationship between an Execution Space and a Memory Space in Kokkos?</p>
+    <input type="radio" name="q8" value="a"> They are always the same<br>
+    <input type="radio" name="q8" value="b"> They are always different<br>
+    <input type="radio" name="q8" value="c"> An Execution Space has a default Memory Space associated with it<br>
+    <input type="radio" name="q8" value="d"> There is no relationship between the two<br>
+    <button onclick="checkAnswer('q8', 'c', 'result8')">Submit</button>
+    <p id="result8"></p>
+</div>
 ++++
