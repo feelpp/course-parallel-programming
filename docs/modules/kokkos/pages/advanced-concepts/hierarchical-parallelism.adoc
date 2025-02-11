@@ -3,17 +3,16 @@
 == Introduction
 
 [.text-justify]
-Kokkos' *hierarchical parallelism* is a paradigm that enables the exploitation of multiple levels of *shared-memory parallelism*, allowing developers to leverage increased parallelism in their computations for potential performance improvements. This framework supports various levels of parallelism, including thread teams, threads within a team, and vector lanes, which can be nested to create complex parallel structures.
+Kokkos' *hierarchical parallelism* is a paradigm that enables the exploitation of multiple levels of *shared-memory parallelism*, allowing developers to leverage increased parallelism in their computations for potential performance improvements. This framework supports various levels of parallelism, including thread teams, threads within a team, and vector lanes, which can be nested to create complex parallel structures [1][2][6].
 
 [.text-justify]
 The paradigm employs a two-tiered approach: an outer level, often implemented using a league of teams, which divides the overall workload into larger chunks, and an inner level, typically comprising threads within a team, which focuses on finer-grained parallelism within these chunks. *Thread teams*, a fundamental concept in Kokkos, represent collections of threads that can synchronize and share a common scratch pad memory.
 
 
-== hierarchical parallelism
+== Hierarchical parallelism
 
-[.text-justify]
-At the heart of Kokkos' *hierarchical parallelism* lies the ability to exploit multiple levels of *shared-memory parallelism*. 
-This approach allows developers to map complex algorithms to the hierarchical nature of modern hardware, from multi-core CPUs to many-core GPUs and leverage more parallelism in their computations, potentially leading to significant performance improvements. The framework supports various levels of parallelism, including thread teams, threads within a team, and vector lanes, which can be nested to create complex parallel structures [1][2][6]. 
+At the heart of Kokkos' *hierarchical parallelism* lies the ability to exploit multiple levels of *shared-memory parallelism*.
+This approach allows developers to map complex algorithms to the hierarchical nature of modern hardware, from multi-core CPUs to many-core GPUs and leverage more parallelism in their computations, potentially leading to significant performance improvements. The framework supports various levels of parallelism, including thread teams, threads within a team, and vector lanes, which can be nested to create complex parallel structures .
 
 *Similarities and Differences Between Outer and Inner Levels of Parallelism*
 
@@ -50,43 +49,43 @@ Well-coordinated teams can significantly boost performance by:
 
 [source, c++]
 ----
-    struct HierarchicalParallelism {
-        Kokkos::View<double**> matrix;
-        HierarchicalParallelism(int N, int M) : matrix("matrix", N, M) {}
-        KOKKOS_INLINE_FUNCTION
-        void operator()(const Kokkos::TeamPolicy<>::member_type& team_member) const {
-            const int i = team_member.league_rank();
-            Kokkos::parallel_for(Kokkos::TeamThreadRange(team_member, matrix.extent(1)),
-            [&] (const int j) {
-                matrix(i, j) = i * matrix.extent(1) + j;
-            });
-            
-            team_member.team_barrier();
-            if (team_member.team_rank() == 0) {
-            double sum = 0.0;
-            Kokkos::parallel_reduce(Kokkos::TeamThreadRange(team_member, matrix.extent(1)),
-                [&] (const int j, double& lsum) {
-                lsum += matrix(i, j);
-            }, sum);
-            
-            Kokkos::single(Kokkos::PerTeam(team_member), [&] () {
-                matrix(i, 0) = sum;
-            });
-            }
-        }
-    };
+struct HierarchicalParallelism {
+    Kokkos::View<double**> matrix;
+    HierarchicalParallelism(int N, int M) : matrix("matrix", N, M) {}
+    KOKKOS_INLINE_FUNCTION
+    void operator()(const Kokkos::TeamPolicy<>::member_type& team_member) const {
+        const int i = team_member.league_rank();
+        Kokkos::parallel_for(Kokkos::TeamThreadRange(team_member, matrix.extent(1)),
+        [&] (const int j) {
+            matrix(i, j) = i * matrix.extent(1) + j;
+        });
 
-    int main(int argc, char* argv[]) {
-        Kokkos::initialize(argc, argv);
-        {
-            const int N = 1000;
-            const int M = 100;
-            HierarchicalParallelism functor(N, M);
-            Kokkos::parallel_for(Kokkos::TeamPolicy<>(N, Kokkos::AUTO), functor);
+        team_member.team_barrier();
+        if (team_member.team_rank() == 0) {
+        double sum = 0.0;
+        Kokkos::parallel_reduce(Kokkos::TeamThreadRange(team_member, matrix.extent(1)),
+            [&] (const int j, double& lsum) {
+            lsum += matrix(i, j);
+        }, sum);
+
+        Kokkos::single(Kokkos::PerTeam(team_member), [&] () {
+            matrix(i, 0) = sum;
+        });
         }
-        Kokkos::finalize();
-        return 0
-        }
+    }
+};
+
+int main(int argc, char* argv[]) {
+    Kokkos::initialize(argc, argv);
+    {
+        const int N = 1000;
+        const int M = 100;
+        HierarchicalParallelism functor(N, M);
+        Kokkos::parallel_for(Kokkos::TeamPolicy<>(N, Kokkos::AUTO), functor);
+    }
+    Kokkos::finalize();
+    return 0
+    }
 ----
 
 Hierarchical parallelism is implemented as follows:
@@ -236,7 +235,7 @@ Explanations:
 ***  Scratch Memory can be use with the TeamPolicy to provide thread or team private memory.
 ***  Scratch memory exposes on-chip user managed caches (e.g. on NVIDIA GPUs)
 ***  The size must be determined before launching a kernel.
-***  Two levels are available: large/slow and small/fast. 
+***  Two levels are available: large/slow and small/fast.
 
 
 * *Tocken*

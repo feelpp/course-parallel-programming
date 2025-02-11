@@ -23,6 +23,12 @@ jobs:
         GITHUB_OAUTH: ${{ secrets.CR_PAT_WORKFLOW }}
     - name: Build
       run: |
+        if [ -f /data/cemosis/spack/share/spack/setup-env.sh ]; then
+          source /data/cemosis/spack/share/spack/setup-env.sh
+          spacktivate feelpp
+        else
+          echo "Spack environment setup script not found."
+        fi
         npm install
         npm run antora
       working-directory: docs
