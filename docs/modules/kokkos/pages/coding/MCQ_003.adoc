@@ -28,9 +28,9 @@ function checkAnswer(questionName, rightAnswer, resultId) {
 
 <div id="question2">
     <p>2. What Kokkos function is used to create a mirror ?</p>
-    <input type="radio" name="q2" value="a"> Kokkos::create_mirror()<br>
-    <input type="radio" name="q2" value="b"> Kokkos::create_mirror_view()<br>
-    <input type="radio" name="q2" value="c"> Kokkos::make_mirror()<br>
+    <input type="radio" name="q2" value="a"> <code>Kokkos::create_mirror()</code><br>
+    <input type="radio" name="q2" value="b"> <code>Kokkos::create_mirror_view()</code><br>
+    <input type="radio" name="q2" value="c"> <code>Kokkos::make_mirror()</code><br>
     <input type="radio" name="q2" value="d"> Answers a and b are correct<br>
     <button onclick="checkAnswer('q2', 'd', 'result2')">Submit</button>
     <p id="result2"></p>
@@ -47,11 +47,11 @@ function checkAnswer(questionName, rightAnswer, resultId) {
 </div>
 
 <div id="question4">
-    <p>4. What is the difference between create_mirror() and create_mirror_view() ?</p>
-    <input type="radio" name="q4" value="a"> create_mirror() always allocates memory, create_mirror_view() only if needed<br>
-    <input type="radio" name="q4" value="b"> create_mirror() only works on GPU, create_mirror_view() only on CPU<br>
+    <p>4. What is the difference between <code>create_mirror()</code> and <code>create_mirror_view()</code> ?</p>
+    <input type="radio" name="q4" value="a"> <code>create_mirror()</code> always allocates memory, <code>create_mirror_view()</code> only if needed<br>
+    <input type="radio" name="q4" value="b"> <code>create_mirror()</code> only works on GPU, <code>create_mirror_view()</code> only on CPU<br>
     <input type="radio" name="q4" value="c"> There is no difference<br>
-    <input type="radio" name="q4" value="d"> create_mirror() copies data, create_mirror_view() does not<br>
+    <input type="radio" name="q4" value="d"> <code>create_mirror()</code> copies data, <code>create_mirror_view()</code> does not<br>
     <button onclick="checkAnswer('q4', 'a', 'result4')">Submit</button>
     <p id="result4"></p>
 </div>
@@ -68,10 +68,10 @@ function checkAnswer(questionName, rightAnswer, resultId) {
 
 <div id="question6">
     <p>6. What function is used to copy data between a view and its mirror ?</p>
-    <input type="radio" name="q6" value="a"> Kokkos::copy()<br>
-    <input type="radio" name="q6" value="b"> Kokkos::deep_copy()<br>
-    <input type="radio" name="q6" value="c"> Kokkos::mirror_copy()<br>
-    <input type="radio" name="q6" value="d"> Kokkos::transfer()<br>
+    <input type="radio" name="q6" value="a"> <code>Kokkos::copy()</code><br>
+    <input type="radio" name="q6" value="b"> <code>Kokkos::deep_copy()</code><br>
+    <input type="radio" name="q6" value="c"> <code>Kokkos::mirror_copy()</code><br>
+    <input type="radio" name="q6" value="d"> <code>Kokkos::transfer()</code><br>
     <button onclick="checkAnswer('q6', 'b', 'result6')">Submit</button>
     <p id="result6"></p>
 </div>

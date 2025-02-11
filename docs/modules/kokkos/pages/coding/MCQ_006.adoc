@@ -58,10 +58,10 @@ function checkAnswer(questionName, rightAnswer, resultId) {
 
 <div id="question5">
     <p>5. What method is used to synchronize threads within a team?</p>
-    <input type="radio" name="q5" value="a"> team_sync()<br>
-    <input type="radio" name="q5" value="b"> team_barrier()<br>
-    <input type="radio" name="q5" value="c"> team_wait()<br>
-    <input type="radio" name="q5" value="d"> team_fence()<br>
+    <input type="radio" name="q5" value="a"> <code>team_sync()</code><br>
+    <input type="radio" name="q5" value="b"> <code>team_barrier()</code><br>
+    <input type="radio" name="q5" value="c"> <code>team_wait()</code><br>
+    <input type="radio" name="q5" value="d"> <code>team_fence()</code><br>
     <button onclick="checkAnswer('q5', 'b', 'result5')">Submit</button>
     <p id="result5"></p>
 </div>

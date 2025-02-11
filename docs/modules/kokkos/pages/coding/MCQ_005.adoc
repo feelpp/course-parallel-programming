@@ -28,7 +28,7 @@ function checkAnswer(questionName, rightAnswer, resultId) {
 </div>
 
 <div id="question2">
-    <p>2. What operation does the Kokkos::BAnd reducer perform?</p>
+    <p>2. What operation does the <code>Kokkos::BAnd</code> reducer perform?</p>
     <input type="radio" name="q2" value="a"> Binary addition<br>
     <input type="radio" name="q2" value="b"> Binary AND<br>
     <input type="radio" name="q2" value="c"> Binary OR<br>
@@ -39,10 +39,10 @@ function checkAnswer(questionName, rightAnswer, resultId) {
 
 <div id="question3">
     <p>3. What reducer allows us to find both the minimum value and its index?</p>
-    <input type="radio" name="q3" value="a"> Min<br>
-    <input type="radio" name="q3" value="b"> MinLoc<br>
-    <input type="radio" name="q3" value="c"> MinMax<br>
-    <input type="radio" name="q3" value="d"> MinMaxLoc<br>
+    <input type="radio" name="q3" value="a"> <code>Min</code><br>
+    <input type="radio" name="q3" value="b"> <code>MinLoc</code><br>
+    <input type="radio" name="q3" value="c"> <code>MinMax</code><br>
+    <input type="radio" name="q3" value="d"> <code>MinMaxLoc</code><br>
     <button onclick="checkAnswer('q3', 'b', 'result3')">Submit</button>
     <p id="result3"></p>
 </div>
@@ -58,7 +58,7 @@ function checkAnswer(questionName, rightAnswer, resultId) {
 </div>
 
 <div id="question5">
-    <p>5. What does the Kokkos::MinMaxLoc reducer do?</p>
+    <p>5. What does the <code>Kokkos::MinMaxLoc</code> reducer do?</p>
     <input type="radio" name="q5" value="a"> Find the minimum and maximum<br>
     <input type="radio" name="q5" value="b"> Find the minimum and maximum with their indices<br>
     <input type="radio" name="q5" value="c"> Find the minimum or maximum, whichever is closer<br>

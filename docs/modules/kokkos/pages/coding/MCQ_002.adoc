@@ -88,10 +88,10 @@ function checkAnswer(questionName, rightAnswer, resultId) {
 
 <div id="question8">
     <p>8. How do you access the elements of a Kokkos View ?</p>
-    <input type="radio" name="q8" value="a"> With brackets [ ]<br>
-    <input type="radio" name="q8" value="b"> With parentheses ( )<br>
-    <input type="radio" name="q8" value="c"> With the .at() method<br>
-    <input type="radio" name="q8" value="d"> With the .get() method<br>
+    <input type="radio" name="q8" value="a"> With brackets <code>[ ]</code><br>
+    <input type="radio" name="q8" value="b"> With parentheses <code>( )</code<br>
+    <input type="radio" name="q8" value="c"> With the <code>.at()</code> method<br>>
+    <input type="radio" name="q8" value="d"> With the <code>.get()</code> method<br>
     <button onclick="checkAnswer('q8', 'b', 'result8')">Submit</button>
     <p id="result8"></p>
 </div>
