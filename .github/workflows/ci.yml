@@ -25,7 +25,7 @@ jobs:
       run: |
         if [ -f /data/cemosis/spack/share/spack/setup-env.sh ]; then
           source /data/cemosis/spack/share/spack/setup-env.sh
-          spacktivate feelpp
+          spack env activate feelpp
         else
           echo "Spack environment setup script not found."
         fi
