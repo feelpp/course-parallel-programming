@@ -8,7 +8,7 @@
 #include <Kokkos_Core.hpp>
 
 int main(int argc, char *argv[]) {
-  Kokkos::initialize(argc, argv);
+  // Kokkos::initialize(argc, argv);
   {
     int provided;
     int initialized;
@@ -21,11 +21,18 @@ int main(int argc, char *argv[]) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &world_size);
 
+    Kokkos::Timer timer;
+
     try {
       Kokkos::InitializationSettings settings;
-      settings.set_device_id(rank % Kokkos::HIP::detect_device_count());
+      int num_gpus = Kokkos::HIP::detect_device_count();
+      int gpu_id = rank % num_gpus;
+      settings.set_device_id(gpu_id);
+
+      std::cout << "rank : [" << rank << "]  num gpu id : [" << gpu_id << "] "
+                << std::endl;
+
       if (!Kokkos::is_initialized()) {
-        // settings.set_num_threads(2); // if you want ... or more parameters
         Kokkos::initialize(settings);
       }
 
@@ -51,15 +58,16 @@ int main(int argc, char *argv[]) {
         MPI_Allreduce(&local_sum, &global_sum, 1, MPI_DOUBLE, MPI_SUM,
                       MPI_COMM_WORLD);
 
-        std::cout << "rank[" << rank << "] Lobale Sum : " << local_sum
+        std::cout << "rank[" << rank << "] Locale Sum : " << local_sum
                   << std::endl;
 
         if (rank == 0) {
-          std::cout << "Globale sum : " << global_sum << std::endl;
+          std::cout << "Globale Sum : " << global_sum << std::endl;
+          double elapsed_time = timer.seconds();
+          std::cout << "Elapsed time: " << elapsed_time << " seconds"
+                    << std::endl;
         }
       }
-
-      // Kokkos::finalize();
 
       if (Kokkos::is_initialized()) {
         Kokkos::finalize();
@@ -75,6 +83,6 @@ int main(int argc, char *argv[]) {
       MPI_Finalize();
     }
   }
-  Kokkos::finalize();
+  // Kokkos::finalize();
   return 0;
 }
