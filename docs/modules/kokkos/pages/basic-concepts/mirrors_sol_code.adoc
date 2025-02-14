@@ -10,7 +10,7 @@ add_executable(kokkos_mirror 05_kokkos_mirrors.cpp)
 target_link_libraries(kokkos_mirror Kokkos::kokkos)
 ----
 
-[%dynamic, cpp, filename="05_kokkos_mirrors.cpp"]
+[source, cpp, filename="05_kokkos_mirrors.cpp", compile=cmake]
 ----
 include::example$src/05_kokkos_mirrors.cpp[]
 ----

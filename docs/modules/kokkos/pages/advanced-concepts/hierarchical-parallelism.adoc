@@ -14,7 +14,7 @@ The paradigm employs a two-tiered approach: an outer level, often implemented us
 At the heart of Kokkos' *hierarchical parallelism* lies the ability to exploit multiple levels of *shared-memory parallelism*.
 This approach allows developers to map complex algorithms to the hierarchical nature of modern hardware, from multi-core CPUs to many-core GPUs and leverage more parallelism in their computations, potentially leading to significant performance improvements. The framework supports various levels of parallelism, including thread teams, threads within a team, and vector lanes, which can be nested to create complex parallel structures .
 
-*Similarities and Differences Between Outer and Inner Levels of Parallelism*
+=== Similarities and Differences Between Outer and Inner Levels of Parallelism
 
     - **Outer Level (League)**: The outermost level of parallelism, often referred to as the "league," typically corresponds to coarse-grained work distribution. This level is suitable for dividing large workloads across multiple compute units or NUMA domains.
 
@@ -24,7 +24,7 @@ This approach allows developers to map complex algorithms to the hierarchical na
 
     - **Differences**: Inner levels have access to fast, shared memory resources and synchronization primitives, while outer levels are more independent and lack direct communication mechanisms.
 
-*Thread Teams*
+=== Thread Teams
 
 Kokkos introduces the concept of *thread teams*, which organizes parallel work into a two-dimensional structure:
 
@@ -32,12 +32,12 @@ Kokkos introduces the concept of *thread teams*, which organizes parallel work i
     - **Team**: A group of threads that can synchronize and share resources.
     - **Thread**: The basic unit of parallel execution within a team.
 
-    This hierarchical structure allows for efficient mapping of algorithms to hardware:
+This hierarchical structure allows for efficient mapping of algorithms to hardware:
 
     - On *GPUs*, *teams* often correspond to thread blocks, with threads mapping to CUDA threads or vectorized operations.
     - On *CPUs*, *teams* might represent groups of cores, with threads corresponding to individual CPU threads or SIMD lanes.
 
-*Performance Improvement with Well-Coordinated Teams*
+=== Performance Improvement with Well-Coordinated Teams
 
 Well-coordinated teams can significantly boost performance by:
 
@@ -45,17 +45,21 @@ Well-coordinated teams can significantly boost performance by:
     - **Load Balancing**: The two-level structure allows for dynamic work distribution, adapting to varying workloads across different parts of the computation.
     - **Hardware Utilization**: By matching the team structure to hardware capabilities, Kokkos can achieve high occupancy and efficient resource usage [3].
 
-*Example*
 
+=== Example of implementation
+
+
+.`HierarchicalParallelism`
 [source, c++]
 ----
 struct HierarchicalParallelism {
     Kokkos::View<double**> matrix;
     HierarchicalParallelism(int N, int M) : matrix("matrix", N, M) {}
+
     KOKKOS_INLINE_FUNCTION
     void operator()(const Kokkos::TeamPolicy<>::member_type& team_member) const {
         const int i = team_member.league_rank();
-        Kokkos::parallel_for(Kokkos::TeamThreadRange(team_member, matrix.extent(1)),
+        Kokkos::parallel_for(Kokkos::TeamThreadRange(team_member, matrix.extent(1)), <2>
         [&] (const int j) {
             matrix(i, j) = i * matrix.extent(1) + j;
         });
@@ -63,36 +67,40 @@ struct HierarchicalParallelism {
         team_member.team_barrier();
         if (team_member.team_rank() == 0) {
         double sum = 0.0;
-        Kokkos::parallel_reduce(Kokkos::TeamThreadRange(team_member, matrix.extent(1)),
+        Kokkos::parallel_reduce(Kokkos::TeamThreadRange(team_member, matrix.extent(1)), <2>
             [&] (const int j, double& lsum) {
             lsum += matrix(i, j);
         }, sum);
 
-        Kokkos::single(Kokkos::PerTeam(team_member), [&] () {
+        Kokkos::single(Kokkos::PerTeam(team_member), [&] () { <3>
             matrix(i, 0) = sum;
         });
         }
     }
 };
+----
 
+.Execution
+[source, c++]
+----
 int main(int argc, char* argv[]) {
     Kokkos::initialize(argc, argv);
     {
         const int N = 1000;
         const int M = 100;
         HierarchicalParallelism functor(N, M);
-        Kokkos::parallel_for(Kokkos::TeamPolicy<>(N, Kokkos::AUTO), functor);
+        Kokkos::parallel_for(Kokkos::TeamPolicy<>(N, Kokkos::AUTO), functor); <1>
     }
     Kokkos::finalize();
-    return 0
-    }
+    return 0;
+}
 ----
 
 Hierarchical parallelism is implemented as follows:
 
-- The top level uses `Kokkos::TeamPolicy` to parallelize on the rows of the matrix.
-- `Kokkos::TeamThreadRange` is used to parallelize operations on columns within each team.
-- `Kokkos::single` is used to ensure that some operations are performed only once per team.
+. The top level uses `Kokkos::TeamPolicy` to parallelize on the rows of the matrix.
+. `Kokkos::TeamThreadRange` is used to parallelize operations on columns within each team.
+. `Kokkos::single` is used to ensure that some operations are performed only once per team.
 
 
 == Scratch Memory
@@ -130,6 +138,60 @@ To effectively use scratch memory:
     2. Create scratch views within kernels using `ScratchView` or `team_scratch()`/`thread_scratch()`.
     3. Use team barriers (`team.team_barrier()`) to ensure data consistency when sharing scratch memory among threads.
 
+.Example of Scratch Memory Usage
+[source, c++]
+----
+struct ScratchMemoryExample {
+    Kokkos::View<double*> data;
+    ScratchMemoryExample(int N) : data("data", N) {}
+
+    KOKKOS_INLINE_FUNCTION
+    void operator()(const Kokkos::TeamPolicy<>::member_type& team_member) const {
+        const int team_size = team_member.team_size();
+        const int team_rank = team_member.team_rank();
+        const int league_rank = team_member.league_rank();
+
+        // Allocate team scratch memory
+        double* team_scratch = (double*)team_member.team_shmem().get_shmem(team_size * sizeof(double)); <1>
+
+        // Each thread initializes its scratch memory
+        team_scratch[team_rank] = league_rank * team_size + team_rank;
+
+        // Synchronize to ensure all threads have written to scratch memory
+        team_member.team_barrier(); <3>
+
+        // Perform a reduction within the team
+        double team_sum = 0.0;
+        Kokkos::parallel_reduce(Kokkos::TeamThreadRange(team_member, team_size), [&](const int i, double& lsum) {
+            lsum += team_scratch[i];
+        }, team_sum);
+
+        // Only one thread writes the result back to global memory
+        if (team_rank == 0) {
+            data(league_rank) = team_sum;
+        }
+    }
+
+    // Specify the amount of scratch memory needed
+    size_t team_shmem_size(int team_size) const {
+        return team_size * sizeof(double);
+    }
+};
+
+int main(int argc, char* argv[]) {
+    Kokkos::initialize(argc, argv);
+    {
+        const int N = 1000;
+        ScratchMemoryExample functor(N);
+        Kokkos::parallel_for(Kokkos::TeamPolicy<>(N / 10, Kokkos::AUTO).set_scratch_size(0, Kokkos::PerTeam(functor.team_shmem_size(10))), functor); <2>
+    }
+    Kokkos::finalize();
+    return 0;
+}
+----
+
+
+
 
 == Unique Token
 
@@ -154,36 +216,35 @@ Kokkos offers two scopes for unique tokens: *Global Scope* and *Instance Scope*.
     - **Instance Scope**: Tokens are unique only within a specific instance of `UniqueToken`.
 
 
-*Example*
-
+.Tokens
 [source, c++]
 ----
-    Kokkos::initialize(argc, argv);
-    {
-        // Size of the array
-        const int N = 100;
-        // Kokkos view to store the results
-        Kokkos::View<int*> results("results", N);
-        // Create a UniqueToken (based on thread execution)
-        Kokkos::Experimental::UniqueToken<Kokkos::DefaultExecutionSpace> unique_token;
-        // Number of available threads
-        const int num_threads = unique_token.size();
-        std::cout << "Number of threads: " << num_threads << std::endl;
-        Kokkos::parallel_for("UniqueTokenExample", N, KOKKOS_LAMBDA(const int i) {
-            // Get a unique identifier for this thread
-            int token = unique_token.acquire();
-            results(i) = token;
-            unique_token.release(token);
-        });
-        // Copy the results to the host for display
-        auto host_results = Kokkos::create_mirror_view_and_copy(Kokkos::HostSpace(), results);
-        std::cout << "Results: ";
-        for (int i = 0; i < N; ++i) {
-            std::cout << host_results(i) << " ";
-        }
-        std::cout << std::endl;
+Kokkos::initialize(argc, argv);
+{
+    // Size of the array
+    const int N = 100;
+    // Kokkos view to store the results
+    Kokkos::View<int*> results("results", N);
+    // Create a UniqueToken (based on thread execution)
+    Kokkos::Experimental::UniqueToken<Kokkos::DefaultExecutionSpace> unique_token; <1>
+    // Number of available threads
+    const int num_threads = unique_token.size();
+    std::cout << "Number of threads: " << num_threads << std::endl;
+    Kokkos::parallel_for("UniqueTokenExample", N, KOKKOS_LAMBDA(const int i) {
+        // Get a unique identifier for this thread
+        int token = unique_token.acquire(); <2>
+        results(i) = token;
+        unique_token.release(token); <3>
+    });
+    // Copy the results to the host for display
+    auto host_results = Kokkos::create_mirror_view_and_copy(Kokkos::HostSpace(), results);
+    std::cout << "Results: ";
+    for (int i = 0; i < N; ++i) {
+        std::cout << host_results(i) << " ";
     }
-    Kokkos::finalize();
+    std::cout << std::endl;
+}
+Kokkos::finalize();
 ----
 
 Explanations:
@@ -203,7 +264,7 @@ Explanations:
 **Copying results**:
     Data is copied to the host using `Kokkos::create_mirror_view_and_copy` for display.
 
-...
+
 
 
 == References
@@ -250,11 +311,4 @@ Explanations:
 ***  UniqueToken can be sized to restrict ids to a range.
 ***  A Global UniqueToken is available.
 
-
 ****
-
-
-
-
-
-
