@@ -16,8 +16,8 @@ int main(int argc, char *argv[]) {
     // Print the view elements
     Kokkos::parallel_for(
         "PrintView", 10, KOKKOS_LAMBDA(const int i) {
-          printf("view(%d) = %f\n", i, view(i, 0));
-          printf("view(%d) = %f\n", i, view(i, 1));
+          printf("view(%d, 0) = %f\n", i, view(i, 0));
+          printf("view(%d, 1) = %f\n", i, view(i, 1));
         });
   }
   Kokkos::finalize();
