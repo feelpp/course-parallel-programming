@@ -239,7 +239,13 @@ MathJax.Hub.Config({
     <a class="nav-link" href="memory-spaces.html">Memory Spaces</a>
   </li>
   <li class="nav-item" data-depth="3">
+    <button class="nav-item-toggle"></button>
     <a class="nav-link" href="mirrors.html">Mirrors</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="mirrors_sol_code.html">Solution from Kokkos tutorial</a>
+  </li>
+</ul>
   </li>
   <li class="nav-item" data-depth="3">
     <a class="nav-link" href="memory-access-patterns.html">Memory Access Patterns</a>
@@ -261,6 +267,9 @@ MathJax.Hub.Config({
   </li>
   <li class="nav-item" data-depth="3">
     <a class="nav-link" href="../advanced-concepts/pgas.html">PGAS</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../advanced-concepts/mpi-vs-pgas.html">MPI vs PGAS</a>
   </li>
   <li class="nav-item" data-depth="3">
     <a class="nav-link" href="../advanced-concepts/multidimensional-loops-and-data-structure.html">Multidimensional Loops and Data Structure</a>
@@ -443,24 +452,28 @@ The <code>label</code> of the view is not mandatory, but it is useful for debugg
 <pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">#include &lt;Kokkos_Core.hpp&gt;
 #include &lt;iostream&gt;
 
-int main(int argc, char* argv[]) {
-Kokkos::initialize(argc, argv);
-{
+int main(int argc, char *argv[]) {
+  Kokkos::initialize(argc, argv);
+  {
     const size_t N = 100000;
     // Create a 1D View of doubles
-    Kokkos::View&lt;int*&gt; myView("MyView", N);
+    Kokkos::View&lt;int *&gt; myView("MyView", N);
     // Fill the View with data
-    Kokkos::parallel_for(N, KOKKOS_LAMBDA(const int i) { myView(i) = i; });
+    Kokkos::parallel_for(
+        N, KOKKOS_LAMBDA(const int i) { myView(i) = i; });
     // Compute the sum of all elements
     int sum = 0.0;
-    Kokkos::parallel_reduce(N, KOKKOS_LAMBDA(const int i, int&amp; partial_sum) {
-    partial_sum += myView(i);
-    }, sum);
+    Kokkos::parallel_reduce(
+        N,
+        KOKKOS_LAMBDA(const int i, int &amp;partial_sum) {
+          partial_sum += myView(i);
+        },
+        sum);
 
-    std::cout &lt;&lt; "Sum: " &lt;&lt; sum &lt;&lt;  std::endl;
-}
-Kokkos::finalize();
-return 0;
+    std::cout &lt;&lt; "Sum: " &lt;&lt; sum &lt;&lt; std::endl;
+  }
+  Kokkos::finalize();
+  return 0;
 }</code></pre>
 </div>
 </div>
@@ -471,26 +484,28 @@ return 0;
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">#include &lt;Kokkos_Core.hpp&gt;
 
-int main(int argc, char* argv[]) {
-    Kokkos::initialize(argc, argv);
-    {
-        // Define a 2D view of doubles with 10 elements
-        Kokkos::View&lt;double**&gt; view("view", 10, 2);
+int main(int argc, char *argv[]) {
+  Kokkos::initialize(argc, argv);
+  {
+    // Define a 2D view of doubles with 10 elements
+    Kokkos::View&lt;double **&gt; view("view", 10, 2);
 
-        // Initialize the view using parallel_for
-        Kokkos::parallel_for("InitView", 10, KOKKOS_LAMBDA(const int i) {
-            view(i, 0) = i * 1.0;
-            view(i, 1) = i * 2.0;
+    // Initialize the view using parallel_for
+    Kokkos::parallel_for(
+        "InitView", 10, KOKKOS_LAMBDA(const int i) {
+          view(i, 0) = i * 1.0;
+          view(i, 1) = i * 2.0;
         });
 
-        // Print the view elements
-        Kokkos::parallel_for("PrintView", 10, KOKKOS_LAMBDA(const int i) {
-            printf("view(%d) = %f\n", i, view(i, 0));
-            printf("view(%d) = %f\n", i, view(i, 1));
+    // Print the view elements
+    Kokkos::parallel_for(
+        "PrintView", 10, KOKKOS_LAMBDA(const int i) {
+          printf("view(%d, 0) = %f\n", i, view(i, 0));
+          printf("view(%d, 1) = %f\n", i, view(i, 1));
         });
-    }
-    Kokkos::finalize();
-    return 0;
+  }
+  Kokkos::finalize();
+  return 0;
 }</code></pre>
 </div>
 </div>
@@ -507,21 +522,22 @@ int main(int argc, char* argv[]) {
 <pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">#include &lt;Kokkos_Core.hpp&gt;
 #include &lt;iostream&gt;
 
-int main(int argc, char* argv[]) {
-    int N = 5, K = 10;
-    Kokkos::initialize(argc, argv);
-    {
-        Kokkos::View&lt;double*[5]&gt; a("a", N), b("b", K);
-        a = b;                                                  // a gets deallocated and both a and b are points to the same thing
-        Kokkos::View&lt;double**&gt; c(b);                            // copy constructor
-        std::cout &lt;&lt; "Label of c: " &lt;&lt; c.label() &lt;&lt; std::endl;  // The label of c is the same as the label of b
-        a(0, 2) = 1;
-        b(0, 2) = 2;
-        c(0, 2) = 3;
-        std::cout &lt;&lt; "a(0, 2) = " &lt;&lt; a(0, 2) &lt;&lt; std::endl;
-    }
-    Kokkos::finalize();
-    return 0;
+int main(int argc, char *argv[]) {
+  int N = 5, K = 10;
+  Kokkos::initialize(argc, argv);
+  {
+    Kokkos::View&lt;double *[5]&gt; a("a", N), b("b", K);
+    a = b; // a gets deallocated and both a and b are points to the same thing
+    Kokkos::View&lt;double **&gt; c(b); // copy constructor
+    std::cout &lt;&lt; "Label of c: " &lt;&lt; c.label()
+              &lt;&lt; std::endl; // The label of c is the same as the label of b
+    a(0, 2) = 1;
+    b(0, 2) = 2;
+    c(0, 2) = 3;
+    std::cout &lt;&lt; "a(0, 2) = " &lt;&lt; a(0, 2) &lt;&lt; std::endl;
+  }
+  Kokkos::finalize();
+  return 0;
 }</code></pre>
 </div>
 </div>

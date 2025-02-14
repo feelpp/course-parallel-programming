@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Installation :: Parallel Programming</title>
-    <link rel="canonical" href="https://feelpp.github.io/parallel-programming/parallel-programming/kokkos/introduction/installation.html">
+    <title>Welcome to MCQ Kokkos :: Parallel Programming</title>
+    <link rel="canonical" href="https://feelpp.github.io/parallel-programming/parallel-programming/kokkos/coding/MCQ_003.html">
     <meta name="generator" content="Antora 3.1.10">
     <link rel="stylesheet" href="../../../_/css/site.css">
 <link rel="icon" href="../../../_/img/favicon.ico" type="image/x-icon">
@@ -218,10 +218,10 @@ MathJax.Hub.Config({
     <span class="nav-text">Introduction</span>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="why-kokkos.html">Why Kokkos?</a>
+    <a class="nav-link" href="../introduction/why-kokkos.html">Why Kokkos?</a>
   </li>
-  <li class="nav-item is-current-page" data-depth="3">
-    <a class="nav-link" href="installation.html">Installation &amp; Setup</a>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../introduction/installation.html">Installation &amp; Setup</a>
   </li>
 </ul>
   </li>
@@ -328,14 +328,12 @@ MathJax.Hub.Config({
   <nav class="breadcrumbs" aria-label="breadcrumbs">
   <ul>
     <li><a href="../../index.html">Main</a></li>
-    <li><a href="../index.html">Kokkos</a></li>
-    <li>Introduction</li>
-    <li><a href="installation.html">Installation &amp; Setup</a></li>
+    <li><a href="MCQ_003.html">Welcome to MCQ Kokkos</a></li>
   </ul>
 </nav>
 
   
-    <div class="edit-this-page"><a href="https://github.com/feelpp/course-parallel-programming/edit/feature/kokkos/docs/modules/kokkos/pages/introduction/installation.adoc">Edit this Page</a></div>
+    <div class="edit-this-page"><a href="https://github.com/feelpp/course-parallel-programming/edit/feature/kokkos/docs/modules/kokkos/pages/coding/MCQ_003.adoc">Edit this Page</a></div>
   
   <div class="page-downloads">
   <span class="label">Download as</span>
@@ -355,113 +353,100 @@ MathJax.Hub.Config({
   <div class="toc-menu"></div>
 </aside>
 <article class="doc">
-<h1 class="page">Installation</h1>
-<div id="preamble">
-<div class="sectionbody">
+<h1 class="page">Welcome to MCQ Kokkos</h1>
 <div class="paragraph">
-<p>Kokkos is avaiable on a GitHub repository: <a href="https://github.com/kokkos/kokkos">github.com/kokkos/kokkos</a>.</p>
+<p><strong>Quiz on the concept of mirrors</strong></p>
 </div>
+<script>
+function checkAnswer(questionName, rightAnswer, resultId) {
+    let answer = document.querySelector(`input[name="${questionName}"]:checked`)?.value;
+    let result = document.getElementById(resultId);
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+
+<div id="question1">
+    <p>1. What are mirrors in Kokkos ?</p>
+    <input type="radio" name="q1" value="a"> Exact copies of the Views<br>
+    <input type="radio" name="q1" value="b"> Views of equivalent arrays potentially residing in different memory spaces<br>
+    <input type="radio" name="q1" value="c"> Pointers to GPU memory<br>
+    <input type="radio" name="q1" value="d"> Data structures for debugging<br>
+    <button onclick="checkAnswer('q1', 'b', 'result1')">Submit</button>
+    <p id="result1"></p>
 </div>
+
+<div id="question2">
+    <p>2. What Kokkos function is used to create a mirror ?</p>
+    <input type="radio" name="q2" value="a"> <code>Kokkos::create_mirror()</code><br>
+    <input type="radio" name="q2" value="b"> <code>Kokkos::create_mirror_view()</code><br>
+    <input type="radio" name="q2" value="c"> <code>Kokkos::make_mirror()</code><br>
+    <input type="radio" name="q2" value="d"> Answers a and b are correct<br>
+    <button onclick="checkAnswer('q2', 'd', 'result2')">Submit</button>
+    <p id="result2"></p>
 </div>
-<div class="sect1">
-<h2 id="_via_cmake"><a class="anchor" href="#_via_cmake"></a>1. Via CMake</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>To build Kokkos with CMake, you can use the following commands:</p>
+
+<div id="question3">
+    <p>3. What does the create_mirror_view() function do ?</p>
+    <input type="radio" name="q3" value="a"> It always allocates memory<br>
+    <input type="radio" name="q3" value="b"> It never allocates memory<br>
+    <input type="radio" name="q3" value="c"> It allocates memory only if the host process cannot access the view data<br>
+    <input type="radio" name="q3" value="d"> It always copies the data<br>
+    <button onclick="checkAnswer('q3', 'c', 'result3')">Submit</button>
+    <p id="result3"></p>
 </div>
-<div class="paragraph">
-<p>NOTE:</p>
+
+<div id="question4">
+    <p>4. What is the difference between <code>create_mirror()</code> and <code>create_mirror_view()</code> ?</p>
+    <input type="radio" name="q4" value="a"> <code>create_mirror()</code> always allocates memory, <code>create_mirror_view()</code> only if needed<br>
+    <input type="radio" name="q4" value="b"> <code>create_mirror()</code> only works on GPU, <code>create_mirror_view()</code> only on CPU<br>
+    <input type="radio" name="q4" value="c"> There is no difference<br>
+    <input type="radio" name="q4" value="d"> <code>create_mirror()</code> copies data, <code>create_mirror_view()</code> does not<br>
+    <button onclick="checkAnswer('q4', 'a', 'result4')">Submit</button>
+    <p id="result4"></p>
 </div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-sh hljs" data-lang="sh">cmake -DKokkos_&lt;BACKEND&gt;=ON</code></pre>
+
+<div id="question5">
+    <p>5. Does Kokkos automatically perform a deep copy when creating a mirror ?</p>
+    <input type="radio" name="q5" value="a"> Yes, always<br>
+    <input type="radio" name="q5" value="b"> No, never<br>
+    <input type="radio" name="q5" value="c"> Only if specified<br>
+    <input type="radio" name="q5" value="d"> Only for GPU views<br>
+    <button onclick="checkAnswer('q5', 'b', 'result5')">Submit</button>
+    <p id="result5"></p>
 </div>
+
+<div id="question6">
+    <p>6. What function is used to copy data between a view and its mirror ?</p>
+    <input type="radio" name="q6" value="a"> <code>Kokkos::copy()</code><br>
+    <input type="radio" name="q6" value="b"> <code>Kokkos::deep_copy()</code><br>
+    <input type="radio" name="q6" value="c"> <code>Kokkos::mirror_copy()</code><br>
+    <input type="radio" name="q6" value="d"> <code>Kokkos::transfer()</code><br>
+    <button onclick="checkAnswer('q6', 'b', 'result6')">Submit</button>
+    <p id="result6"></p>
 </div>
-<div class="paragraph">
-<p>Where <code>&lt;BACKEND&gt;</code> is one of the following:</p>
+
+<div id="question7">
+    <p>7. What is the main interest of using mirrors in Kokkos ?</p>
+    <input type="radio" name="q7" value="a"> Increase the calculation speed<br>
+    <input type="radio" name="q7" value="b"> Facilitate the transfer of data between different memory spaces<br>
+    <input type="radio" name="q7" value="c"> Reduce memory usage<br>
+    <input type="radio" name="q7" value="d"> Simplify the code syntax<br>
+    <button onclick="checkAnswer('q7', 'b', 'result7')">Submit</button>
+    <p id="result7"></p>
 </div>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Backend</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">SERIAL</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Enables serial execution backend</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">OPENMP</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Enables OpenMP backend</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">CUDA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Enables CUDA backend</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">HIP</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Enables HIP backend</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">SYCL</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Enables SYCL backend</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">THREADS</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Enables POSIX threads backend</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_via_spack"><a class="anchor" href="#_via_spack"></a>2. Via Spack</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p><a href="https://spack.io/">Spack</a> is a package manager for supercomputers, Linux, and macOS.
-It makes installing scientific software easy.
-To install Kokkos with Spack, you can use the following commands:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-sh hljs" data-lang="sh">spack install kokkos</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Some variants are available for Kokkos, you can use the following command to see the full list of variants:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-sh hljs" data-lang="sh">spack info kokkos</code></pre>
-</div>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-<div class="paragraph">
-<p>On <code>gaya</code>, there are environments already set with spack.
-You can load the environment with the following command:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-sh hljs" data-lang="sh">spacktivate feelpp-openmpi4-kokkos</code></pre>
-</div>
-</div>
-</td>
-</tr>
-</table>
-</div>
-</div>
+
+<div id="question8">
+    <p>8. When does a mirror reference the same data as the original view ?</p>
+    <input type="radio" name="q8" value="a"> Always<br>
+    <input type="radio" name="q8" value="b"> Never<br>
+    <input type="radio" name="q8" value="c"> When the original view is in the host's memory space<br>
+    <input type="radio" name="q8" value="d"> When the original view is in the device's memory space<br>
+    <button onclick="checkAnswer('q8', 'c', 'result8')">Submit</button>
+    <p id="result8"></p>
 </div>
 </article>
   </div>

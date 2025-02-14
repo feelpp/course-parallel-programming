@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Installation :: Parallel Programming</title>
-    <link rel="canonical" href="https://feelpp.github.io/parallel-programming/parallel-programming/kokkos/introduction/installation.html">
+    <title>Welcome to MCQ Kokkos :: Parallel Programming</title>
+    <link rel="canonical" href="https://feelpp.github.io/parallel-programming/parallel-programming/kokkos/coding/MCQ_007.html">
     <meta name="generator" content="Antora 3.1.10">
     <link rel="stylesheet" href="../../../_/css/site.css">
 <link rel="icon" href="../../../_/img/favicon.ico" type="image/x-icon">
@@ -218,10 +218,10 @@ MathJax.Hub.Config({
     <span class="nav-text">Introduction</span>
 <ul class="nav-list">
   <li class="nav-item" data-depth="3">
-    <a class="nav-link" href="why-kokkos.html">Why Kokkos?</a>
+    <a class="nav-link" href="../introduction/why-kokkos.html">Why Kokkos?</a>
   </li>
-  <li class="nav-item is-current-page" data-depth="3">
-    <a class="nav-link" href="installation.html">Installation &amp; Setup</a>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../introduction/installation.html">Installation &amp; Setup</a>
   </li>
 </ul>
   </li>
@@ -328,14 +328,12 @@ MathJax.Hub.Config({
   <nav class="breadcrumbs" aria-label="breadcrumbs">
   <ul>
     <li><a href="../../index.html">Main</a></li>
-    <li><a href="../index.html">Kokkos</a></li>
-    <li>Introduction</li>
-    <li><a href="installation.html">Installation &amp; Setup</a></li>
+    <li><a href="MCQ_007.html">Welcome to MCQ Kokkos</a></li>
   </ul>
 </nav>
 
   
-    <div class="edit-this-page"><a href="https://github.com/feelpp/course-parallel-programming/edit/feature/kokkos/docs/modules/kokkos/pages/introduction/installation.adoc">Edit this Page</a></div>
+    <div class="edit-this-page"><a href="https://github.com/feelpp/course-parallel-programming/edit/feature/kokkos/docs/modules/kokkos/pages/coding/MCQ_007.adoc">Edit this Page</a></div>
   
   <div class="page-downloads">
   <span class="label">Download as</span>
@@ -355,113 +353,108 @@ MathJax.Hub.Config({
   <div class="toc-menu"></div>
 </aside>
 <article class="doc">
-<h1 class="page">Installation</h1>
-<div id="preamble">
-<div class="sectionbody">
+<h1 class="page">Welcome to MCQ Kokkos</h1>
 <div class="paragraph">
-<p>Kokkos is avaiable on a GitHub repository: <a href="https://github.com/kokkos/kokkos">github.com/kokkos/kokkos</a>.</p>
+<p><strong>Quiz on the concept of Asynchronicity, Streams, and Task Parallelism</strong></p>
 </div>
+<script>
+function checkAnswer(questionName, rightAnswer, resultId) {
+    let answer = document.querySelector(`input[name="${questionName}"]:checked`)?.value;
+    let result = document.getElementById(resultId);
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+
+
+<div id="question1">
+  <p>1. What does asynchronous execution mean in Kokkos?</p>
+  <input type="radio" name="q1" value="a"> Operations are always executed in order<br>
+  <input type="radio" name="q1" value="b"> Operations may return before they are completed<br>
+  <input type="radio" name="q1" value="c"> Operations cannot be parallelized<br>
+  <input type="radio" name="q1" value="d"> Operations are always synchronous<br>
+  <button onclick="checkAnswer('q1', 'b', 'result1')">Submit</button>
+  <p id="result1"></p>
 </div>
+
+
+<div id="question2">
+  <p>2. How do I force completion of all pending operations in Kokkos?</p>
+  <input type="radio" name="q2" value="a"> With the <code>wait()</code> function<br>
+  <input type="radio" name="q2" value="b"> With the <code>sync()</code> function<br>
+  <input type="radio" name="q2" value="c"> With the <code>fence()</code> function<br>
+  <input type="radio" name="q2" value="d"> With the <code>complete()</code> function<br>
+  <button onclick="checkAnswer('q2', 'c', 'result2')">Submit</button>
+  <p id="result2"></p>
 </div>
-<div class="sect1">
-<h2 id="_via_cmake"><a class="anchor" href="#_via_cmake"></a>1. Via CMake</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>To build Kokkos with CMake, you can use the following commands:</p>
+
+
+<div id="question3">
+  <p>3. What is the main purpose of Task Parallelism in Kokkos?</p>
+  <input type="radio" name="q3" value="a"> Optimize memory usage<br>
+  <input type="radio" name="q3" value="b"> Manage dependencies between irregular tasks<br>
+  <input type="radio" name="q3" value="c"> Replace data parallelism<br>
+  <input type="radio" name="q3" value="d"> Simplify sequential programming<br>
+  <button onclick="checkAnswer('q3', 'b', 'result3')">Submit</button>
+  <p id="result3"></p>
 </div>
-<div class="paragraph">
-<p>NOTE:</p>
+
+
+<div id="question4">
+  <p>4. How do I create a task in Kokkos?</p>
+  <input type="radio" name="q4" value="a"> With <code>task.create()</code><br>
+  <input type="radio" name="q4" value="b"> With <code>policy.create()</code><br>
+  <input type="radio" name="q4" value="c"> With <code>Kokkos::create_task()</code><br>
+  <input type="radio" name="q4" value="d"> With <code>new Task()</code><br>
+  <button onclick="checkAnswer('q4', 'c', 'result4')">Submit</button>
+  <p id="result4"></p>
 </div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-sh hljs" data-lang="sh">cmake -DKokkos_&lt;BACKEND&gt;=ON</code></pre>
+
+
+<div id="question5">
+  <p>5. What does the task respawn mechanism in Kokkos allow?</p>
+  <input type="radio" name="q5" value="a"> Create a new task<br>
+  <input type="radio" name="q5" value="b"> Complete a current task<br>
+  <input type="radio" name="q5" value="c"> Restart a task without waiting for its dependencies<br>
+  <input type="radio" name="q5" value="d"> Delete a task<br>
+  <button onclick="checkAnswer('q5', 'c', 'result5')">Submit</button>
+  <p id="result5"></p>
 </div>
+
+
+<div id="question6">
+  <p>6. What Kokkos concept allows to execute operations in parallel on different streams?</p>
+  <input type="radio" name="q6" value="a"> TaskPolicy<br>
+  <input type="radio" name="q6" value="b"> StreamPolicy<br>
+  <input type="radio" name="q6" value="c"> Runtime Space Instances<br>
+  <input type="radio" name="q6" value="d"> ParallelPolicy<br>
+  <button onclick="checkAnswer('q6', 'c', 'result6')">Submit</button>
+  <p id="result6"></p>
 </div>
-<div class="paragraph">
-<p>Where <code>&lt;BACKEND&gt;</code> is one of the following:</p>
+
+
+<div id="question7">
+  <p>7. How can we implement nested parallelism in a Kokkos task?</p>
+  <input type="radio" name="q7" value="a"> It is not possible<br>
+  <input type="radio" name="q7" value="b"> Using TeamThreadRange<br>
+  <input type="radio" name="q7" value="c"> By creating a new task<br>
+  <input type="radio" name="q7" value="d"> Only with sequential loops<br>
+  <button onclick="checkAnswer('q7', 'b', 'result7')">Submit</button>
+  <p id="result7"></p>
 </div>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Backend</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">SERIAL</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Enables serial execution backend</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">OPENMP</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Enables OpenMP backend</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">CUDA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Enables CUDA backend</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">HIP</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Enables HIP backend</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">SYCL</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Enables SYCL backend</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">THREADS</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Enables POSIX threads backend</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_via_spack"><a class="anchor" href="#_via_spack"></a>2. Via Spack</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p><a href="https://spack.io/">Spack</a> is a package manager for supercomputers, Linux, and macOS.
-It makes installing scientific software easy.
-To install Kokkos with Spack, you can use the following commands:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-sh hljs" data-lang="sh">spack install kokkos</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Some variants are available for Kokkos, you can use the following command to see the full list of variants:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-sh hljs" data-lang="sh">spack info kokkos</code></pre>
-</div>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-<div class="paragraph">
-<p>On <code>gaya</code>, there are environments already set with spack.
-You can load the environment with the following command:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-sh hljs" data-lang="sh">spacktivate feelpp-openmpi4-kokkos</code></pre>
-</div>
-</div>
-</td>
-</tr>
-</table>
-</div>
-</div>
+
+
+<div id="question8">
+  <p>8. What is the main advantage of combining Task Parallelism and Data Parallelism in Kokkos?</p>
+  <input type="radio" name="q8" value="a"> Reduce memory consumption<br>
+  <input type="radio" name="q8" value="b"> Increase the accuracy of calculations<br>
+  <input type="radio" name="q8" value="c"> Improve locality and exploit material hierarchy<br>
+  <input type="radio" name="q8" value="d"> Simplify the code<br>
+  <button onclick="checkAnswer('q8', 'c', 'result8')">Submit</button>
+  <p id="result8"></p>
 </div>
 </article>
   </div>
