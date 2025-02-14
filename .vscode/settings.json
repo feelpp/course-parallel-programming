@@ -2,6 +2,13 @@
     "C_Cpp.default.configurationProvider": "vector-of-bool.cmake-tools",
     "cmake.buildDirectory": "${workspaceFolder}/build-${variant:buildType}",
     "files.associations": {
+        "*.json": "jsonc",
+        "*.dat": "csv (whitespace)",
+        "*.pgf": "tex",
+        "*.pdf_tex": "tex",
+        ".py.in": "Python",
+        "*.tikz": "tex",
+        "*.slurm": "shellscript",
         "cctype": "cpp",
         "clocale": "cpp",
         "cmath": "cpp",
@@ -94,6 +101,8 @@
         "variant": "cpp",
         "expected": "cpp",
         "spanstream": "cpp",
-        "stacktrace": "cpp"
+        "stacktrace": "cpp",
+        "format": "cpp",
+        "__nullptr": "cpp"
     }
 }

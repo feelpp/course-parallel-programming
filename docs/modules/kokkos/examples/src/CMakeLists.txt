@@ -43,6 +43,10 @@ if (FEELPP_ENABLE_KOKKOS)
     #add_executable(16_kokkos_simd 16_kokkos_simd.cpp)
     #add_executable(17_kokkos_polynom_jacobi_1 17_kokkos_polynom_jacobi_1.cpp)
 
+    add_executable(22_hierarchical_parallelism 22_1_hierarchical_parallelism.cpp)
+    add_executable(22_scratch_memory 22_2_scratch_memory.cpp)
+    add_executable(22_token 22_3_token.cpp)
+
     #feelpp_add_application(kokkos SRCS feelpp_kokkos.cpp)
 
     # Link Kokkos to the executable
@@ -61,6 +65,10 @@ if (FEELPP_ENABLE_KOKKOS)
     #target_link_libraries(15_kokkos_dual_view Kokkos::kokkos)
     #target_link_libraries(16_kokkos_simd Kokkos::kokkos)
     #target_link_libraries(17_kokkos_polynom_jacobi_1 Kokkos::kokkos);
+
+    target_link_libraries(22_hierarchical_parallelism Kokkos::kokkos)
+    target_link_libraries(22_scratch_memory Kokkos::kokkos)
+    target_link_libraries(22_token Kokkos::kokkos)
 
 
 endif()
