@@ -47,6 +47,8 @@ if (FEELPP_ENABLE_KOKKOS)
     add_executable(22_scratch_memory 22_2_scratch_memory.cpp)
     add_executable(22_token 22_3_token.cpp)
 
+    add_executable(31_multidim_loops 31_multidim_loops.cpp)
+
     #feelpp_add_application(kokkos SRCS feelpp_kokkos.cpp)
 
     # Link Kokkos to the executable
@@ -69,6 +71,8 @@ if (FEELPP_ENABLE_KOKKOS)
     target_link_libraries(22_hierarchical_parallelism Kokkos::kokkos)
     target_link_libraries(22_scratch_memory Kokkos::kokkos)
     target_link_libraries(22_token Kokkos::kokkos)
+
+    target_link_libraries(31_multidim_loops Kokkos::kokkos)
 
 
 endif()

@@ -5,65 +5,79 @@
 [.text-justify]
 Kokkos offers powerful abstractions for handling *multidimensional loops*, *data structures*, and *memory management*. Here we will look at several key aspects of Kokkos, providing an overview of its capabilities and best practices for effective parallel programming.
 
-...
+
 
 == MultiDimensional Loops and Data Structures in Kokkos
 
 [.text-justify]
-Kokkos provides the *MDRangePolicy*, a sophisticated tool for parallelizing tightly nested loops across multiple dimensions. This policy allows developers to express complex multidimensional algorithms with ease and efficiency [5]. The *MDRangePolicy* can handle loops of 2 to 6 dimensions, making it suitable for a wide range of scientific and engineering applications [1].
+Kokkos provides the *`MDRangePolicy`*, a sophisticated tool for parallelizing tightly nested loops across multiple dimensions. This policy allows developers to express complex multidimensional algorithms with ease and efficiency [5]. The *`MDRangePolicy`* can handle loops of 2 to 6 dimensions, making it suitable for a wide range of scientific and engineering applications [1].
 
-To utilize the *MDRangePolicy*, one must specify the dimensionality of the loop using the Rank<DIM> template parameter. The syntax for creating an MDRangePolicy is as follows:
+To utilize the *`MDRangePolicy`*, one must specify the dimensionality of the loop using the `Rank<DIM>`` template parameter. The syntax for creating an `MDRangePolicy` is as follows:
 
+. Create an MDRangePolicy with 3 dimensions
 [source,c++]
 ----
-    Kokkos::parallel_for("Label", 
-    Kokkos::MDRangePolicy<Kokkos::Rank<3>>({0,0,0}, {N0,N1,N2}),
-    KOKKOS_LAMBDA (int64_t i, int64_t j, int64_t k) {
+Kokkos::parallel_for("Label",
+    Kokkos::MDRangePolicy<Kokkos::Rank<3>>({0, 0, 0}, {N0, N1, N2}), <1>
+    KOKKOS_LAMBDA (int64_t i, int64_t j, int64_t k) { <2>
         // Loop body
     }
-    );
+);
 ----
 
-[.text-justify]
-In this example, we create a three-dimensional iteration space. The policy takes two required arguments: an initializer list for the beginning indices and another for the end indices[5]. Optionally, a third argument can be provided to specify tiling dimensions, which can be crucial for performance tuning[9].
+<1> Creation of a three-dimensional iteration space. The policy takes two required arguments: an initializer list for the beginning indices and another for the end indices [5]. Optionally, a third argument can be provided to specify tiling dimensions, which can be crucial for performance tuning [9].
+<2> The lambda function defines the loop body, which will be executed in parallel across the specified iteration space, with the indices `i`, `j`, and `k` ranging from the start to the end values.
 
-A more elaborate example demonstrating the use of *MDRangePolicy* in the context of tensor operations is as follows:
 
-[source,c++]
+.Example
+[source, c++]
 ----
-    Kokkos::parallel_for("mdr_for_all_cells",
-    Kokkos::MDRangePolicy<Kokkos::Rank<3>>({0,0,0}, {C,F,P}),
-    KOKKOS_LAMBDA (const int c, const int f, const int p) {
-        auto result = Kokkos::subview(outputField, c, f, p, Kokkos::ALL);
-        auto left = Kokkos::subview(inputData, c, p, Kokkos::ALL, Kokkos::ALL);
-        auto right = Kokkos::subview(inputField, c, f, p, Kokkos::ALL);
-        for (int i=0; i<D; ++i) {
-            double tmp(0);
-            for (int j=0; j<D; ++j)
-                tmp += left(i, j)*right(j);
-            result(i) = tmp;
-        }
-    }
-    );
+include::example$src/31_multidim_loops.cpp[]
 ----
 
-This code snippet showcases how MDRangePolicy can be used in conjunction with subviews to perform complex tensor operations efficiently [9].
 
 == Subviews: Taking Slices of Views with Kokkos
 
-[.text-justify]
-*Subviews* in Kokkos provide a powerful mechanism for creating views that reference a subset of an existing view's data. This capability is essential for efficient data manipulation and algorithm implementation.
+*Subviews* in Kokkos provide a powerful mechanism for creating views that reference a subset of an existing view's data.
+This capability is essential for efficient data manipulation and algorithm implementation.
 
 The basic syntax for creating a subview is:
 
 [source,c++]
 ----
-    auto subview = Kokkos::subview(view, index1, index2, ...);
+auto subview = Kokkos::subview(view, index1, index2, ...);
 ----
 
-Kokkos offers flexible indexing options for *subviews*. You can use integer indices for single elements, Kokkos::ALL for entire dimensions, or Kokkos::pair<int,int> for ranges [9].
+
+Kokkos offers flexible indexing options for *subviews*. You can use integer indices for single elements, `Kokkos::ALL` for entire dimensions, or `Kokkos::pair<int,int>` for ranges [9].
 
 When working with *subviews*, it's important to understand the view assignment rules. Kokkos ensures that view assignments are only allowed when the memory spaces are compatible and the shapes match. This strict checking helps prevent errors and ensures performance portability across different architectures.
+
+
+A more elaborate example demonstrating the use of *`MDRangePolicy`* in the context of tensor operations is as follows:
+
+[source,c++]
+----
+Kokkos::parallel_for("mdr_for_all_cells",
+    Kokkos::MDRangePolicy<Kokkos::Rank<3>>({0, 0, 0}, {C, F, P}),
+    KOKKOS_LAMBDA (const int c, const int f, const int p) {
+        auto result = Kokkos::subview(outputField, c, f, p, Kokkos::ALL);
+        auto left = Kokkos::subview(inputData, c, p, Kokkos::ALL, Kokkos::ALL);
+        auto right = Kokkos::subview(inputField, c, f, p, Kokkos::ALL);
+        for (int i = 0; i < D; ++i) {
+            double tmp(0);
+            for (int j = 0; j < D; ++j)
+                tmp += left(i, j) * right(j);
+            result(i) = tmp;
+        }
+    }
+);
+----
+
+This code snippet showcases how `MDRangePolicy` can be used in conjunction with subviews to perform complex tensor operations efficiently [9].
+
+
+
 
 == Unmanaged Views: Dealing with External Memory with Kokkos
 
@@ -74,8 +88,7 @@ To create an unmanaged view, you can use the following syntax:
 
 [source,c++]
 ----
-    Kokkos::View<double*, Kokkos::HostSpace, Kokkos::MemoryTraits<Kokkos::Unmanaged>> 
-    unmanaged_view(external_ptr, size);
+Kokkos::View<double*, Kokkos::HostSpace, Kokkos::MemoryTraits<Kokkos::Unmanaged>> unmanaged_view(external_ptr, size);
 ----
 
 Unmanaged views are essential when you need to wrap externally allocated data into Kokkos views. This is often necessary when Kokkos is used in a library that receives pointers to data allocations as input [6].
@@ -95,7 +108,7 @@ To use atomic operations in Kokkos, you can employ the Kokkos::atomic_* function
 
 [source,c++]
 ----
-    Kokkos::atomic_add(&value, increment);
+Kokkos::atomic_add(&value, increment);
 ----
 
 It's important to note that while atomics provide a solution for thread safety, they should be used judiciously, as overuse can lead to performance bottlenecks.
@@ -106,9 +119,9 @@ Atomics: the portable and thread-scalable solution
 
 [source,c++]
 ----
-    parallel_for(N, KOKKOS_LAMBDA(const size_t index) { const Something value = ...;
-        const int bucketIndex = computeBucketIndex(value); Kokkos::atomic_add(&_histogram(bucketIndex), 1);
-    });
+parallel_for(N, KOKKOS_LAMBDA(const size_t index) { const Something value = ...;
+    const int bucketIndex = computeBucketIndex(value); Kokkos::atomic_add(&_histogram(bucketIndex), 1);
+});
 ----
 
 Atomics are the only scalable solution to thread safety.
@@ -119,33 +132,33 @@ Data replication is not thread scalable.
 
 [source, c++]
 ----
-    struct AtomicCounter {
-        // Shared atomic counter
-        Kokkos::Atomic<int> counter;
-        // Constructor to initialize the counter
-        AtomicCounter() : counter(0) {}
-        // Function to increment the counter atomically
-        KOKKOS_INLINE_FUNCTION
-        void operator()(const int i) const {
-            counter.fetch_add(1); // Atomically increment the counter
-        }
-    };
-    
-    int main(int argc, char* argv[]) {
-        Kokkos::initialize(argc, argv);
-        {
-            const int numIterations = 1234567; // Number of increments
-            AtomicCounter atomicCounter;
-            // Launch a parallel for loop to increment the counter
-            Kokkos::parallel_for("IncrementCounter", numIterations, atomicCounter);
-            // Synchronize to ensure all increments are complete
-            Kokkos::fence();
-            // Output the final value of the counter
-            std::cout << "Final Counter Value: " << atomicCounter.counter << std::endl;
-        }
-        Kokkos::finalize();
-        return 0;
+struct AtomicCounter {
+    // Shared atomic counter
+    Kokkos::Atomic<int> counter;
+    // Constructor to initialize the counter
+    AtomicCounter() : counter(0) {}
+    // Function to increment the counter atomically
+    KOKKOS_INLINE_FUNCTION
+    void operator()(const int i) const {
+        counter.fetch_add(1); // Atomically increment the counter
     }
+};
+
+int main(int argc, char* argv[]) {
+    Kokkos::initialize(argc, argv);
+    {
+        const int numIterations = 1234567; // Number of increments
+        AtomicCounter atomicCounter;
+        // Launch a parallel for loop to increment the counter
+        Kokkos::parallel_for("IncrementCounter", numIterations, atomicCounter);
+        // Synchronize to ensure all increments are complete
+        Kokkos::fence();
+        // Output the final value of the counter
+        std::cout << "Final Counter Value: " << atomicCounter.counter << std::endl;
+    }
+    Kokkos::finalize();
+    return 0;
+}
 ----
 
 Explanations: The `AtomicCounter` structure contains an atomic integer `counter` that will be incremented by multiple threads. The `Kokkos::Atomic` type ensures that operations on the counter are thread-safe.  The `operator()` function uses `fetch_add(1)` to atomically increment the `counter`. This operation guarantees that even if multiple threads attempt to update the counter simultaneously, each update will be executed safely without race conditions. After launching the parallel loop, `Kokkos::fence()` is called to ensure that all increments are completed before accessing the final value of the counter.
@@ -164,10 +177,10 @@ To create a DualView, you can use the following syntax:
 
 [source,c++]
 ----
-    Kokkos::DualView<double*> dual_data("label", size);
+Kokkos::DualView<double*> dual_data("label", size);
 ----
 
-*DualView* provides methods like *sync()* and *modify()* to manage data coherency between *host* and *device*. This abstraction significantly simplifies the development of applications that need to work efficiently across different memory spaces, enhancing both productivity and performance portability.
+`DualView` provides methods like `sync()` and `modify()` to manage data coherency between *host* and *device*. This abstraction significantly simplifies the development of applications that need to work efficiently across different memory spaces, enhancing both productivity and performance portability.
 
 
 *Kokkos* offers a rich set of tools and abstractions for high-performance, portable parallel programming. By leveraging features like *MDRangePolicy*, *subviews*, *unmanaged views*, *atomic operations*, and *DualView*, developers can create efficient, scalable applications that perform well across a wide range of hardware architectures.
@@ -176,52 +189,52 @@ To create a DualView, you can use the following syntax:
 
 [source, c++]
 ----
-    struct DualViewExample {
-        // Define the dual view type
-        using dual_view_type = Kokkos::DualView<double*, Kokkos::LayoutLeft>;
-        
-        // Function to initialize device view
-        static void initialize(dual_view_type& dv) {
-            // Initialize the device view with values
-            Kokkos::parallel_for("Initialize DeviceView", dv.d_view.extent(0), KOKKOS_LAMBDA(const int i) {
-                dv.d_view(i) = static_cast<double>(i); // Assign values based on index
-            });
-            // Synchronize to update the host mirror
-            dv.template sync<Kokkos::HostSpace>();
-        }
-        // Function to print values from both views
-        static void printValues(const dual_view_type& dv) {
-            std::cout << "Host View Values: ";
-            for (int i = 0; i < dv.h_view.extent(0); ++i) {
-                std::cout << dv.h_view(i) << " "; // Access host view
-            }
-            std::cout << std::endl;
-            std::cout << "Device View Values: ";
-            Kokkos::parallel_for("Print DeviceView", dv.d_view.extent(0), KOKKOS_LAMBDA(const int i) {
-                printf("%f ", dv.d_view(i)); // Access device view
-            });
-            std::cout << std::endl;
-        }
-    };
+struct DualViewExample {
+    // Define the dual view type
+    using dual_view_type = Kokkos::DualView<double*, Kokkos::LayoutLeft>;
 
-    int main( int argc, char* argv[] )
-    {
-        Kokkos::initialize(argc, argv);
-        {
-            const int N = 10; // Size of the DualView
-            // Create a DualView with N elements
-            DualViewExample::dual_view_type dv("MyDualView", N);
-            // Initialize the device view
-            DualViewExample::initialize(dv);
-            // Print values from both views
-            DualViewExample::printValues(dv);
-        }
-        Kokkos::finalize();
-        return 0;
+    // Function to initialize device view
+    static void initialize(dual_view_type& dv) {
+        // Initialize the device view with values
+        Kokkos::parallel_for("Initialize DeviceView", dv.d_view.extent(0), KOKKOS_LAMBDA(const int i) {
+            dv.d_view(i) = static_cast<double>(i); // Assign values based on index
+        });
+        // Synchronize to update the host mirror
+        dv.template sync<Kokkos::HostSpace>();
     }
+    // Function to print values from both views
+    static void printValues(const dual_view_type& dv) {
+        std::cout << "Host View Values: ";
+        for (int i = 0; i < dv.h_view.extent(0); ++i) {
+            std::cout << dv.h_view(i) << " "; // Access host view
+        }
+        std::cout << std::endl;
+        std::cout << "Device View Values: ";
+        Kokkos::parallel_for("Print DeviceView", dv.d_view.extent(0), KOKKOS_LAMBDA(const int i) {
+            printf("%f ", dv.d_view(i)); // Access device view
+        });
+        std::cout << std::endl;
+    }
+};
+
+int main( int argc, char* argv[] )
+{
+    Kokkos::initialize(argc, argv);
+    {
+        const int N = 10; // Size of the DualView
+        // Create a DualView with N elements
+        DualViewExample::dual_view_type dv("MyDualView", N);
+        // Initialize the device view
+        DualViewExample::initialize(dv);
+        // Print values from both views
+        DualViewExample::printValues(dv);
+    }
+    Kokkos::finalize();
+    return 0;
+}
 ----
 
-Explanations: This example effectively demonstrates how to use *DualView* in Kokkos to manage data across different memory spaces while ensuring synchronization between them.  The program starts by initializing the Kokkos runtime environment.  A `DualView` is defined as `dual_view_type`, which can hold data in both host and device memory. 
+Explanations: This example effectively demonstrates how to use *DualView* in Kokkos to manage data across different memory spaces while ensuring synchronization between them.  The program starts by initializing the Kokkos runtime environment.  A `DualView` is defined as `dual_view_type`, which can hold data in both host and device memory.
 
 
 == References
@@ -264,7 +277,7 @@ Explanations: This example effectively demonstrates how to use *DualView* in Kok
 
 * *Atomic operations*
 ** Atomic functions available on the host or the device (e.g. Kokkos::atomic add).
-** Use Atomic memory trait for atomic accesses on Views. 
+** Use Atomic memory trait for atomic accesses on Views.
     View<int*> v("v", N0);
     View <int*, MemoryTraits <Atomic >> v_atomic = v;
 **  Use ScatterView for scatter-add parallel pattern. ScatterView can transparently switch between Atomic and Data Replication based scatter algorithms.

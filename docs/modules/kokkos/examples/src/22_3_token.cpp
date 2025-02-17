@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
       Kokkos::parallel_for("UniqueTokenExample", N, KOKKOS_LAMBDA(const int i) {
           // Get a unique identifier for this thread
           int token = unique_token.acquire();
-          results(i) = i;
+          results(i) = token;
           unique_token.release(token);
       });
       // Copy the results to the host for display
