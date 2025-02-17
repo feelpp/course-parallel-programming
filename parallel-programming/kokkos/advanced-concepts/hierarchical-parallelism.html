@@ -689,32 +689,43 @@ int main(int argc, char* argv[]) {
 <div class="listingblock">
 <div class="title">Tokens</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">Kokkos::initialize(argc, argv);
-{
-    // Size of the array
-    const int N = 100;
-    // Kokkos view to store the results
-    Kokkos::View&lt;int*&gt; results("results", N);
-    // Create a UniqueToken (based on thread execution)
-    Kokkos::Experimental::UniqueToken&lt;Kokkos::DefaultExecutionSpace&gt; unique_token; <i class="conum" data-value="1"></i><b>(1)</b>
-    // Number of available threads
-    const int num_threads = unique_token.size();
-    std::cout &lt;&lt; "Number of threads: " &lt;&lt; num_threads &lt;&lt; std::endl;
-    Kokkos::parallel_for("UniqueTokenExample", N, KOKKOS_LAMBDA(const int i) {
-        // Get a unique identifier for this thread
-        int token = unique_token.acquire(); <i class="conum" data-value="2"></i><b>(2)</b>
-        results(i) = token;
-        unique_token.release(token); <i class="conum" data-value="3"></i><b>(3)</b>
-    });
-    // Copy the results to the host for display
-    auto host_results = Kokkos::create_mirror_view_and_copy(Kokkos::HostSpace(), results);
-    std::cout &lt;&lt; "Results: ";
-    for (int i = 0; i &lt; N; ++i) {
-        std::cout &lt;&lt; host_results(i) &lt;&lt; " ";
-    }
-    std::cout &lt;&lt; std::endl;
-}
-Kokkos::finalize();</code></pre>
+<pre class="highlightjs highlight"><code class="language-c++ hljs" data-lang="c++">#include &lt;cmath&gt;
+#include &lt;cstdio&gt;
+#include &lt;cstdlib&gt;
+#include &lt;cstring&gt;
+#include &lt;iostream&gt;
+#include &lt;limits&gt;
+
+#include &lt;Kokkos_Core.hpp&gt;
+
+int main(int argc, char *argv[]) {
+  Kokkos::initialize(argc, argv);
+  {
+      // Size of the array
+      const int N = 100;
+      // Kokkos view to store the results
+      Kokkos::View&lt;int*&gt; results("results", N);
+      // Create a UniqueToken (based on thread execution)
+      Kokkos::Experimental::UniqueToken&lt;Kokkos::DefaultExecutionSpace&gt; unique_token;
+      // Number of available threads
+      const int num_threads = unique_token.size();
+      std::cout &lt;&lt; "Number of threads: " &lt;&lt; num_threads &lt;&lt; std::endl;
+      Kokkos::parallel_for("UniqueTokenExample", N, KOKKOS_LAMBDA(const int i) {
+          // Get a unique identifier for this thread
+          int token = unique_token.acquire();
+          results(i) = token;
+          unique_token.release(token);
+      });
+      // Copy the results to the host for display
+      auto host_results = Kokkos::create_mirror_view_and_copy(Kokkos::HostSpace(), results);
+      std::cout &lt;&lt; "Results: ";
+      for (int i = 0; i &lt; N; ++i) {
+          std::cout &lt;&lt; host_results(i) &lt;&lt; " ";
+      }
+      std::cout &lt;&lt; std::endl;
+  }
+  Kokkos::finalize();
+}</code></pre>
 </div>
 </div>
 <div class="paragraph">
