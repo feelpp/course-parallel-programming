@@ -155,6 +155,12 @@ xref:ROOT:attachment$Session6_ParallelProgramming_Specx.pdf[SPECX],...
 xref:ROOT:attachment$OpenMP-API-Specification-5-2.pdf[OpenMP 5.0],
 xref:ROOT:attachment$OpenMP-Technical-Report -12-Version 6-0.pdf[OpenMP 6.0],...
 
+
+xref:ROOT:attachment$KokkosSession1.pdf[Kokkos Session 1],
+xref:ROOT:attachment$KokkosSession2.pdf[Kokkos Session 2],
+xref:ROOT:attachment$KokkosSession3.pdf[Kokkos Session 3],...
+
+
 ****
 
 
