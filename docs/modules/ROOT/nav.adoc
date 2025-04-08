@@ -10,6 +10,7 @@
 ** xref:architectures/PPChapter1_DPU.adoc[DPU Architecture]
 ** xref:architectures/PPChapter1_SIMD.adoc[SIMD Architecture]
 ** xref:architectures/PPChapter1_AMD_CUDA.adoc[AMD CUDA Architecture]
+** xref:architectures/PPChapter1_QPU.adoc[QPU Architecture]
 
 * MPI/OpenMP/Hybrid
 ** xref:PPChapter2_MPI.adoc[MPI (Message Passing Interface)]
