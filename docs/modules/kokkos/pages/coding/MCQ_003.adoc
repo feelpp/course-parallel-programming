@@ -1,0 +1,98 @@
+
+= Welcome to MCQ Kokkos
+
+*Quiz on the concept of mirrors*
+
+++++
+<script>
+function checkAnswer(questionName, rightAnswer, resultId) {
+    let answer = document.querySelector(`input[name="${questionName}"]:checked`)?.value;
+    let result = document.getElementById(resultId);
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+
+<div id="question1">
+    <p>1. What are mirrors in Kokkos ?</p>
+    <input type="radio" name="q1" value="a"> Exact copies of the Views<br>
+    <input type="radio" name="q1" value="b"> Views of equivalent arrays potentially residing in different memory spaces<br>
+    <input type="radio" name="q1" value="c"> Pointers to GPU memory<br>
+    <input type="radio" name="q1" value="d"> Data structures for debugging<br>
+    <button onclick="checkAnswer('q1', 'b', 'result1')">Submit</button>
+    <p id="result1"></p>
+</div>
+
+<div id="question2">
+    <p>2. What Kokkos function is used to create a mirror ?</p>
+    <input type="radio" name="q2" value="a"> <code>Kokkos::create_mirror()</code><br>
+    <input type="radio" name="q2" value="b"> <code>Kokkos::create_mirror_view()</code><br>
+    <input type="radio" name="q2" value="c"> <code>Kokkos::make_mirror()</code><br>
+    <input type="radio" name="q2" value="d"> Answers a and b are correct<br>
+    <button onclick="checkAnswer('q2', 'd', 'result2')">Submit</button>
+    <p id="result2"></p>
+</div>
+
+<div id="question3">
+    <p>3. What does the create_mirror_view() function do ?</p>
+    <input type="radio" name="q3" value="a"> It always allocates memory<br>
+    <input type="radio" name="q3" value="b"> It never allocates memory<br>
+    <input type="radio" name="q3" value="c"> It allocates memory only if the host process cannot access the view data<br>
+    <input type="radio" name="q3" value="d"> It always copies the data<br>
+    <button onclick="checkAnswer('q3', 'c', 'result3')">Submit</button>
+    <p id="result3"></p>
+</div>
+
+<div id="question4">
+    <p>4. What is the difference between <code>create_mirror()</code> and <code>create_mirror_view()</code> ?</p>
+    <input type="radio" name="q4" value="a"> <code>create_mirror()</code> always allocates memory, <code>create_mirror_view()</code> only if needed<br>
+    <input type="radio" name="q4" value="b"> <code>create_mirror()</code> only works on GPU, <code>create_mirror_view()</code> only on CPU<br>
+    <input type="radio" name="q4" value="c"> There is no difference<br>
+    <input type="radio" name="q4" value="d"> <code>create_mirror()</code> copies data, <code>create_mirror_view()</code> does not<br>
+    <button onclick="checkAnswer('q4', 'a', 'result4')">Submit</button>
+    <p id="result4"></p>
+</div>
+
+<div id="question5">
+    <p>5. Does Kokkos automatically perform a deep copy when creating a mirror ?</p>
+    <input type="radio" name="q5" value="a"> Yes, always<br>
+    <input type="radio" name="q5" value="b"> No, never<br>
+    <input type="radio" name="q5" value="c"> Only if specified<br>
+    <input type="radio" name="q5" value="d"> Only for GPU views<br>
+    <button onclick="checkAnswer('q5', 'b', 'result5')">Submit</button>
+    <p id="result5"></p>
+</div>
+
+<div id="question6">
+    <p>6. What function is used to copy data between a view and its mirror ?</p>
+    <input type="radio" name="q6" value="a"> <code>Kokkos::copy()</code><br>
+    <input type="radio" name="q6" value="b"> <code>Kokkos::deep_copy()</code><br>
+    <input type="radio" name="q6" value="c"> <code>Kokkos::mirror_copy()</code><br>
+    <input type="radio" name="q6" value="d"> <code>Kokkos::transfer()</code><br>
+    <button onclick="checkAnswer('q6', 'b', 'result6')">Submit</button>
+    <p id="result6"></p>
+</div>
+
+<div id="question7">
+    <p>7. What is the main interest of using mirrors in Kokkos ?</p>
+    <input type="radio" name="q7" value="a"> Increase the calculation speed<br>
+    <input type="radio" name="q7" value="b"> Facilitate the transfer of data between different memory spaces<br>
+    <input type="radio" name="q7" value="c"> Reduce memory usage<br>
+    <input type="radio" name="q7" value="d"> Simplify the code syntax<br>
+    <button onclick="checkAnswer('q7', 'b', 'result7')">Submit</button>
+    <p id="result7"></p>
+</div>
+
+<div id="question8">
+    <p>8. When does a mirror reference the same data as the original view ?</p>
+    <input type="radio" name="q8" value="a"> Always<br>
+    <input type="radio" name="q8" value="b"> Never<br>
+    <input type="radio" name="q8" value="c"> When the original view is in the host's memory space<br>
+    <input type="radio" name="q8" value="d"> When the original view is in the device's memory space<br>
+    <button onclick="checkAnswer('q8', 'c', 'result8')">Submit</button>
+    <p id="result8"></p>
+</div>
+++++

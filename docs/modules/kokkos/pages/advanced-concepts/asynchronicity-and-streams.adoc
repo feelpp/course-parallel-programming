@@ -1,0 +1,98 @@
+= Kokkos Asynchronicity, Streams, and Task Parallelism
+
+== Introduction
+
+[.text-justify]
+
+Kokkos C++ supports *asynchronous* execution through its parallel dispatch operations, which may return before completion while executing in sequence with other Kokkos operations [1][2]. Streams in Kokkos, particularly for CUDA, allow for overlapping kernels and can be used to create CUDA instances, enabling concurrent execution of multiple kernels.
+
+
+== Asynchronicity and Streams
+
+Asynchronous execution and streams are essential for maximizing hardware utilization, especially on GPUs. Kokkos provides mechanisms for managing asynchronous operations and concurrent kernel execution.
+
+*Blocking and Non-blocking Operations* : Kokkos operations can be either blocking or non-blocking:
+
+- Blocking operations: These operations wait for completion before returning control to the caller.
+- Non-blocking operations: These operations initiate work but return control immediately, allowing other computations to proceed concurrently.
+
+*Overlapping Work* : Non-blocking operations enable work overlap, which can improve overall performance. Types of work that can overlap include:
+
+1. Host-to-device data transfers
+2. Device-to-host data transfers
+3. Kernel executions
+4. Host computations
+
+*Waiting for Completion* : To ensure that all asynchronous operations have completed, Kokkos provides synchronization mechanisms:
+
+1. `Kokkos::fence()`: Waits for all outstanding asynchronous operations to complete.
+2. `Kokkos::wait()`: Can be used with specific futures or task policies to wait for particular operations.
+
+*Running Kernels Simultaneously on a GPU* : To run kernels simultaneously on a GPU, Kokkos leverages streams. While not explicitly shown in the provided search results, Kokkos supports concurrent kernel execution through its execution policies and asynchronous launch capabilities
+
+...
+
+
+
+
+== Task Parallelism
+
+*Task parallelism* in Kokkos allows for fine-grained dependent execution, which is particularly useful for irregular problems and algorithms with complex dependency structures.
+
+*Basic Interface for Fine-grained Tasking* :
+
+Kokkos provides a TaskPolicy for coordinating task execution [2]. The basic interface includes:
+
+1. Creating tasks: `policy.create(Functor<exec_space>())`
+2. Adding dependencies: `policy.add_dependence(task1, task2)`
+3. Spawning tasks: `policy.spawn(task)`
+4. Waiting for completion: `Kokkos::wait(task)` or `Kokkos::wait(policy)`
+
+*Expressing Dynamic Dependency Structures* :
+
+Dynamic dependency structures can be expressed using the `add_dependence` method, allowing for the creation of complex task graphs[2]. For example:
+
+[source, c++]
+----
+    auto fx = policy.create(Functor<exec_space>(x));
+    auto fy = policy.create(Functor<exec_space>(y));
+    policy.add_dependence(fx, fy); // fx is scheduled after fy
+----
+
+*When to Use Kokkos Tasking* :
+
+Kokkos tasking is particularly useful in the following scenarios:
+
+1. Irregular problems with complex dependencies
+2. Producer-consumer patterns
+3. Recursive algorithms
+4. When fine-grained parallelism is needed within tasks
+
+Tasking in Kokkos allows for better locality exploitation by enabling nested data-parallelism within a task, which can be particularly beneficial for heterogeneous devices [2].
+
+
+...
+
+
+
+== References
+
+** [1] https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/SIMD.html
+** [2] https://trilinos.github.io/pdfs/KokkosPortableAPI.pdf
+** [3] https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/Machine-Model.html
+
+
+
+.*Points to keep in mind*
+****
+
+*Asynchronicity* in Kokkos means that parallel operations are executed in a non-blocking manner, possibly returning before they are fully completed, while maintaining sequential order relative to other Kokkos operations in the same execution or memory space.
+
+*Streams* are abstractions representing queues of parallel operations associated with a specific execution space instance, allowing asynchronous and ordered execution of tasks.
+
+*Task Parallelism* in Kokkos is a programming model enabling the asynchronous execution of interdependent tasks, organized in a directed acyclic graph (DAG), suitable for irregular and recursive problems, and providing a high-level abstraction for parallelization on heterogeneous architectures.
+
+
+****
+
+

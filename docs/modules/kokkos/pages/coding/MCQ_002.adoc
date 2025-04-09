@@ -1,0 +1,98 @@
+
+= Welcome to MCQ Kokkos
+
+*Quiz on the concept of View*
+
+++++
+<script>
+function checkAnswer(questionName, rightAnswer, resultId) {
+    let answer = document.querySelector(`input[name="${questionName}"]:checked`)?.value;
+    let result = document.getElementById(resultId);
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+
+<div id="question1">
+    <p>1. What is a View Kokkos ?</p>
+    <input type="radio" name="q1" value="a"> A simple pointer<br>
+    <input type="radio" name="q1" value="b"> A multidimensional array with memory management<br>
+    <input type="radio" name="q1" value="c"> A tree data structure<br>
+    <input type="radio" name="q1" value="d"> A graphics window<br>
+    <button onclick="checkAnswer('q1', 'b', 'result1')">Submit</button>
+    <p id="result1"></p>
+</div>
+
+<div id="question2">
+    <p>2. How does Kokkos manage memory for Views ?</p>
+    <input type="radio" name="q2" value="a"> Manually by the programmer<br>
+    <input type="radio" name="q2" value="b"> Automatically with a reference counter<br>
+    <input type="radio" name="q2" value="c"> Only on CPU<br>
+    <input type="radio" name="q2" value="d"> Without any memory management<br>
+    <button onclick="checkAnswer('q2', 'b', 'result2')">Submit</button>
+    <p id="result2"></p>
+</div>
+
+<div id="question3">
+    <p>3. What is special about the dimensions of a View Kokkos ?</p>
+    <input type="radio" name="q3" value="a"> They are always dynamic<br>
+    <input type="radio" name="q3" value="b"> They are always static<br>
+    <input type="radio" name="q3" value="c"> They can be defined at compile time or at run time<br>
+    <input type="radio" name="q3" value="d"> They are limited to 3 dimensions maximum<br>
+    <button onclick="checkAnswer('q3', 'c', 'result3')">Submit</button>
+    <p id="result3"></p>
+</div>
+
+<div id="question4">
+    <p>4. How is a Kokkos View copied ?</p>
+    <input type="radio" name="q4" value="a"> Default deep copy<br>
+    <input type="radio" name="q4" value="b"> Shallow copy by default<br>
+    <input type="radio" name="q4" value="c"> Unable to copy a View<br>
+    <input type="radio" name="q4" value="d"> Copy only to the same type of memory<br>
+    <button onclick="checkAnswer('q4', 'b', 'result4')">Submit</button>
+    <p id="result4"></p>
+</div>
+
+<div id="question5">
+    <p>5. What is the maximum number of dimensions for a Kokkos View ?</p>
+    <input type="radio" name="q5" value="a"> 3<br>
+    <input type="radio" name="q5" value="b"> 5<br>
+    <input type="radio" name="q5" value="c"> 8<br>
+    <input type="radio" name="q5" value="d"> Unlimited<br>
+    <button onclick="checkAnswer('q5', 'c', 'result5')">Submit</button>
+    <p id="result5"></p>
+</div>
+
+<div id="question6">
+    <p>6. What does the Layout parameter represent in a Kokkos View ?</p>
+    <input type="radio" name="q6" value="a"> The size of the View<br>
+    <input type="radio" name="q6" value="b"> The organization of data in memory<br>
+    <input type="radio" name="q6" value="c"> The type of data stored<br>
+    <input type="radio" name="q6" value="d"> The execution space<br>
+    <button onclick="checkAnswer('q6', 'b', 'result6')">Submit</button>
+    <p id="result6"></p>
+</div>
+
+<div id="question7">
+    <p>7. What is special about the default layout on CUDA GPU ?</p>
+    <input type="radio" name="q7" value="a"> LayoutRight<br>
+    <input type="radio" name="q7" value="b"> LayoutLeft<br>
+    <input type="radio" name="q7" value="c"> LayoutRandom<br>
+    <input type="radio" name="q7" value="d"> No default layout<br>
+    <button onclick="checkAnswer('q7', 'b', 'result7')">Submit</button>
+    <p id="result7"></p>
+</div>
+
+<div id="question8">
+    <p>8. How do you access the elements of a Kokkos View ?</p>
+    <input type="radio" name="q8" value="a"> With brackets <code>[ ]</code><br>
+    <input type="radio" name="q8" value="b"> With parentheses <code>( )</code<br>
+    <input type="radio" name="q8" value="c"> With the <code>.at()</code> method<br>>
+    <input type="radio" name="q8" value="d"> With the <code>.get()</code> method<br>
+    <button onclick="checkAnswer('q8', 'b', 'result8')">Submit</button>
+    <p id="result8"></p>
+</div>
+++++

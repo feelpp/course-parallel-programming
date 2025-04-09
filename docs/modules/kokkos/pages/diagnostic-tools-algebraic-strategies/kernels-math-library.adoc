@@ -1,0 +1,83 @@
+= Kokkos Kernels Math Library
+
+== Introduction
+
+[.text-justify]
+The **Kokkos Kernels Math Library** is a high-performance library specifically designed to provide computational kernels for linear algebra and graph operations. Built on top of the Kokkos programming model, it ensures performance portability across diverse hardware architectures, including CPUs, GPUs, and other accelerators. The library supports dense and sparse linear algebra operations, graph computations, and machine learning kernels. It can be used as a standalone library or integrated into larger frameworks like Tpetra for distributed parallelism.
+
+== Kokkos Ecosystem for Performance Portability
+[.text-justify]
+The **Kokkos Ecosystem** is a comprehensive framework aimed at achieving performance portability for high-performance computing (HPC) applications. It includes:
+
+- **Kokkos Core**, which provides abstractions for parallel execution and memory management.
+
+- **Kokkos Kernels**, offering dense and sparse linear algebra kernels as well as graph algorithms.
+
+- **Profiling and Debugging Tools**, enabling developers to analyze and optimize their applications.
+[.text-justify]
+This ecosystem allows developers to write architecture-agnostic code that performs efficiently on both current and future HPC platforms. By leveraging hierarchical parallelism (team-level, thread-level, and vector-level), Kokkos ensures scalability across heterogeneous architectures.
+
+
+== BLAS and LAPACK
+[.text-justify]
+*Motivation for BLAS/LAPACK Functions* : BLAS (Basic Linear Algebra Subprograms) and LAPACK (Linear Algebra Package) are foundational libraries for numerical computing. They provide highly optimized routines for vector and matrix operations, such as matrix multiplication, eigenvalue computations, and solving linear systems. Their inclusion in Kokkos Kernels ensures that scientific applications can leverage these standard interfaces while benefiting from performance portability.
+
+[.text-justify]
+*Algorithm Specialization for Applications* : Kokkos Kernels supports algorithm specialization to optimize performance on different architectures. For example, it provides multiple implementations of key BLAS/LAPACK routines tailored to specific hardware backends like CUDA or OpenMP.
+[.text-justify]
+*Calling BLAS/LAPACK Functions* : Developers can call BLAS/LAPACK functions using Kokkos' abstractions. These calls are typically embedded within team-level or serial execution contexts to ensure efficient resource utilization.
+
+
+== Batched BLAS and LAPACK
+[.text-justify]
+*Motivation for Batched Functions* : Batched BLAS/LAPACK functions address scenarios where many small independent linear algebra problems need to be solved simultaneously. This approach minimizes synchronization overhead and improves cache efficiency, making it ideal for applications like finite element methods or particle simulations.
+
+[.text-justify]
+*Two Namespaces with BLAS and LAPACK Functions* : Kokkos Kernels provides two namespaces for batched operations:
+
+- **Standard Batched BLAS Interfaces**, which mimic traditional BLAS routines.
+- **Team-Level Batched Interfaces**, optimized for use within hierarchical parallelism contexts.
+
+[.text-justify]
+*Calling Batched Functions* : Batched functions are invoked using Kokkos' execution policies, enabling parallel processing of multiple small problems in a single call.
+
+
+
+== Sparse Linear Algebra
+[.text-justify]
+Sparse linear algebra is a critical component of scientific computing, especially in simulations involving large but sparsely populated matrices.
+
+[.text-justify]
+*Key Characteristics of Algorithms* : Sparse algorithms in Kokkos Kernels focus on reducing memory usage and optimizing data access patterns. They leverage compressed storage formats to minimize the footprint of sparse matrices.
+
+*Containers*: CrsMatrix, StaticCrsGraph, Vector
+
+- **CrsMatrix**: A compressed row storage matrix format.
+- **StaticCrsGraph**: Represents the sparsity pattern of a matrix.
+- **Vector**: A container optimized for sparse vector operations.
+
+*Key Operations* :
+
+- **SpMV (Sparse Matrix-Vector Multiplication)**: Efficiently multiplies a sparse matrix with a dense vector.
+- **SpADD (Sparse Matrix Addition)**: Combines two sparse matrices.
+- **SpGEMM (Sparse General Matrix-Matrix Multiplication)**: Multiplies two sparse matrices.
+
+
+== Graph Kernels
+[.text-justify]
+Kokkos Kernels includes graph algorithms essential for tasks like coloring and partitioning.
+[.text-justify]
+*Distance-1 Graph Coloring* : Assigns colors to vertices such that no two adjacent vertices share the same color. This is useful in scheduling problems or parallel preconditioners.
+[.text-justify]
+*Distance-2 Graph Coloring* : Ensures that vertices up to two edges apart have distinct colors. This is particularly relevant in higher-order finite element methods.
+[.text-justify]
+*Bipartite Graph Partial Coloring* : Focuses on bipartite graphs, assigning colors to one set of vertices while considering constraints from the other set.
+
+...
+
+== References
+** [1] https://github.com/kokkos/kokkos-kernels
+** [2] https://kokkos.org/kokkos-core-wiki/
+** [3] https://community.intel.com/t5/Intel-oneAPI-Math-Kernel-Library/link-with-blas-and-lapack-in-Intel-MKL-kit/m-p/1262137?profile.language=fr
+
+

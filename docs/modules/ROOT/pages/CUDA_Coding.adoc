@@ -2,7 +2,7 @@
 
 image::CUDA_Logo.png[Img401,50,50,role="left"]
 
-* Compiling a program for CUDA 
+* Compiling a program for CUDA
 *** For example, to compile MyProg.cu you would use a command like
 *** nvcc -o MyProg MyProg.cu
 

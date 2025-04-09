@@ -1,7 +1,7 @@
 
 #project(MPI_bcast)
 
-######## A simple cmakelists.txt file for ... #############  
+######## A simple cmakelists.txt file for ... #############
 
 cmake_minimum_required(VERSION 3.17)
 #set(CMAKE_CXX_STANDARD 14)
@@ -60,4 +60,4 @@ foreach (myfile ${WFOPenMP_SRC})
     #endif()
 endforeach (file ${WFOPenMP_SRC})
 
-########### end ####################################  
+########### end ####################################

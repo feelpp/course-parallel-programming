@@ -27,7 +27,7 @@ ext:
         base: modules/ROOT/attachments/
     - run:
         command: |
-          ./generate-jupyter.sh docs/modules/exos
+          ./generate-jupyter.sh docs/modules
       scan:
         dir: jupyter/exos/
         files: '**/*.ipynb'

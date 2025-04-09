@@ -1,0 +1,105 @@
+= Welcome to MCQ Kokkos
+
+*Quiz on the concept of Asynchronicity, Streams, and Task Parallelism*
+
+++++
+<script>
+function checkAnswer(questionName, rightAnswer, resultId) {
+    let answer = document.querySelector(`input[name="${questionName}"]:checked`)?.value;
+    let result = document.getElementById(resultId);
+    if (answer === rightAnswer) {
+        result.innerHTML = "Correct!";
+    } else {
+        result.innerHTML = "Wrong answer, try again.";
+    }
+}
+</script>
+
+
+<div id="question1">
+  <p>1. What does asynchronous execution mean in Kokkos?</p>
+  <input type="radio" name="q1" value="a"> Operations are always executed in order<br>
+  <input type="radio" name="q1" value="b"> Operations may return before they are completed<br>
+  <input type="radio" name="q1" value="c"> Operations cannot be parallelized<br>
+  <input type="radio" name="q1" value="d"> Operations are always synchronous<br>
+  <button onclick="checkAnswer('q1', 'b', 'result1')">Submit</button>
+  <p id="result1"></p>
+</div>
+
+
+<div id="question2">
+  <p>2. How do I force completion of all pending operations in Kokkos?</p>
+  <input type="radio" name="q2" value="a"> With the <code>wait()</code> function<br>
+  <input type="radio" name="q2" value="b"> With the <code>sync()</code> function<br>
+  <input type="radio" name="q2" value="c"> With the <code>fence()</code> function<br>
+  <input type="radio" name="q2" value="d"> With the <code>complete()</code> function<br>
+  <button onclick="checkAnswer('q2', 'c', 'result2')">Submit</button>
+  <p id="result2"></p>
+</div>
+
+
+<div id="question3">
+  <p>3. What is the main purpose of Task Parallelism in Kokkos?</p>
+  <input type="radio" name="q3" value="a"> Optimize memory usage<br>
+  <input type="radio" name="q3" value="b"> Manage dependencies between irregular tasks<br>
+  <input type="radio" name="q3" value="c"> Replace data parallelism<br>
+  <input type="radio" name="q3" value="d"> Simplify sequential programming<br>
+  <button onclick="checkAnswer('q3', 'b', 'result3')">Submit</button>
+  <p id="result3"></p>
+</div>
+
+
+<div id="question4">
+  <p>4. How do I create a task in Kokkos?</p>
+  <input type="radio" name="q4" value="a"> With <code>task.create()</code><br>
+  <input type="radio" name="q4" value="b"> With <code>policy.create()</code><br>
+  <input type="radio" name="q4" value="c"> With <code>Kokkos::create_task()</code><br>
+  <input type="radio" name="q4" value="d"> With <code>new Task()</code><br>
+  <button onclick="checkAnswer('q4', 'c', 'result4')">Submit</button>
+  <p id="result4"></p>
+</div>
+
+
+<div id="question5">
+  <p>5. What does the task respawn mechanism in Kokkos allow?</p>
+  <input type="radio" name="q5" value="a"> Create a new task<br>
+  <input type="radio" name="q5" value="b"> Complete a current task<br>
+  <input type="radio" name="q5" value="c"> Restart a task without waiting for its dependencies<br>
+  <input type="radio" name="q5" value="d"> Delete a task<br>
+  <button onclick="checkAnswer('q5', 'c', 'result5')">Submit</button>
+  <p id="result5"></p>
+</div>
+
+
+<div id="question6">
+  <p>6. What Kokkos concept allows to execute operations in parallel on different streams?</p>
+  <input type="radio" name="q6" value="a"> TaskPolicy<br>
+  <input type="radio" name="q6" value="b"> StreamPolicy<br>
+  <input type="radio" name="q6" value="c"> Runtime Space Instances<br>
+  <input type="radio" name="q6" value="d"> ParallelPolicy<br>
+  <button onclick="checkAnswer('q6', 'c', 'result6')">Submit</button>
+  <p id="result6"></p>
+</div>
+
+
+<div id="question7">
+  <p>7. How can we implement nested parallelism in a Kokkos task?</p>
+  <input type="radio" name="q7" value="a"> It is not possible<br>
+  <input type="radio" name="q7" value="b"> Using TeamThreadRange<br>
+  <input type="radio" name="q7" value="c"> By creating a new task<br>
+  <input type="radio" name="q7" value="d"> Only with sequential loops<br>
+  <button onclick="checkAnswer('q7', 'b', 'result7')">Submit</button>
+  <p id="result7"></p>
+</div>
+
+
+<div id="question8">
+  <p>8. What is the main advantage of combining Task Parallelism and Data Parallelism in Kokkos?</p>
+  <input type="radio" name="q8" value="a"> Reduce memory consumption<br>
+  <input type="radio" name="q8" value="b"> Increase the accuracy of calculations<br>
+  <input type="radio" name="q8" value="c"> Improve locality and exploit material hierarchy<br>
+  <input type="radio" name="q8" value="d"> Simplify the code<br>
+  <button onclick="checkAnswer('q8', 'c', 'result8')">Submit</button>
+  <p id="result8"></p>
+</div>
+++++

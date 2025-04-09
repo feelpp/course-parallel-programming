@@ -1,7 +1,7 @@
 = OpenMP (Open Multi-Processing)
 
 
-== Definition 
+== Definition
 [.text-justify]
 OpenMP ( Open Multi-Processing ) is a programming interface for parallel
 computing on shared memory architecture.
@@ -122,32 +122,32 @@ subroutine or set the OMP_DYNAMIC environment variable to true. It is
 possible to nest (nesting) parallel regions, but this only has an effect if this mode has been activated by calling the OMP_SET_NESTED subroutine or by setting the OMP_NESTED environment variable.
 
     *Examples*
-    
+
     #include <omp.h>
-    int main() 
-    { 
+    int main()
+    {
     int row;
-        #pragma omp parallel private(rank) num_threads(3) 
-        { 
-        rank=omp_get_thread_num(); 
+        #pragma omp parallel private(rank) num_threads(3)
+        {
+        rank=omp_get_thread_num();
         printf("My rank in region 1: %d \n",rank);
-            #pragma omp parallel private(rank) num_threads(2) 
-            { 
-            rank=omp_get_thread_num(); 
-            printf(" My rank in region 2: %d \n",rank); 
+            #pragma omp parallel private(rank) num_threads(2)
+            {
+            rank=omp_get_thread_num();
+            printf(" My rank in region 2: %d \n",rank);
             }
         }
-    return 0; 
+    return 0;
     }
-    
-    My rank in region 1: 0 
-    My rank in region 2: 1 
-    My rank in region 2: 0 
-    My rank in region 1: 2 
-    My rank in region 2: 1 
-    My rank in region 2: 0 
-    My rank in region 1: 1 
-    My rank in region 2: 0 
+
+    My rank in region 1: 0
+    My rank in region 2: 1
+    My rank in region 2: 0
+    My rank in region 1: 2
+    My rank in region 2: 1
+    My rank in region 2: 0
+    My rank in region 1: 1
+    My rank in region 2: 0
     My rank in region 2: 1
 
 *Work sharing*
@@ -350,10 +350,10 @@ block or an OpenMP Construct. A “structured block” is a single statement
 or a compound statement with a single entry at the top and a single exit
 at the bottom.
 
-    
+
     The *parallel* construction forms To team of threads and starts parallel
     execution.
-    
+
     *#pragma comp parallel* _[clause[ [_ *,* _]clause] ...] new-line
     structured-block_
     _clause_ : *if(* _scalar- expression_ *)*
@@ -388,7 +388,7 @@ distributed among and executed by the meeting team of threads.
     _[_ *#pragma comp section* _new-line] structured-block_
     _[_ *#pragma comp section* _new-line structured-block ]_
     _clause_ : *private(* _list_ *)*
-    *firstprivate(* _list_ *) 
+    *firstprivate(* _list_ *)
     lastprivate(* _list_ *) reduce(* _operator_
     *:* _list_ *) nowait*
 
@@ -398,7 +398,7 @@ a|
 executed by only one of the threads in the team (not necessarily the
 master thread), in the context of its implicit task.
 
-    
+
     *#pragma comp single* _[clause[[_ *,* _] clause] ...] new-line
     structured-block_
     _clause_ : *private(* _list_ *)*
@@ -423,18 +423,18 @@ allowed for the *parallel* and worksharing constructs.
     *#pragma comp task* _[clause[ [_ *,* _]clause] ...] new-line
     structured-block_
     _clause_ : *if(* _scalar- expression_ *)*
-    
+
     === untied
-    
-    
+
+
     *default(shared  none) private(* _list_ *) firstprivate(* _list_ *)
     shared(* _list_ *)*
-    
+
     *Master* construction specifies To structured block that is executed by
     the Master thread of the team. There is no implied barriers either on
     entry to, or exit from, the master construct.
-    
-    
+
+
     *#pragma comp Master* _new-line structured-block_
 
 a|
@@ -447,12 +447,12 @@ block to a single thread at a time.
 
     The *barriers* construction specifies year explicit barriers did the
     point did which the construct appears.
-    
+
     *#pragma comp barriers* _new- line_
-    
+
     The *taskwait* construction specifies To wait we the completion of child
     tasks generated since the beginning of the current task.
-    
+
     *#pragma comp you asked* _new line_
 
 a|
@@ -488,13 +488,13 @@ allowing code outside the region to run in parallel.
 
 
     *#pragma comp ordered* _new-line structured-block_
-    
-    
+
+
     a|
     *threadprivate* guideline specifies that variables are replicated, with
     each thread having its own copy.
-    
-    
+
+
     *#pragma comp threadprivate* _( list) new- line_
 
 |===
@@ -521,17 +521,17 @@ The loop iteration variable is private by default, so it is not necessary to spe
         for (i=1; i<n; i++) /* i is private by default */
         b[i] = (a[i] + a[i-1]) / 2.0;
     }
-    
+
 _    |The Parallel Construct a|
     The parallel construct can be used in coarse-grain parallel programs._
-    
+
     void subdomain(float *x, int istart, int ipoints)
     {
         int i;
         for (i = 0; i < ipoints; i++)
         x[istart+i] = 123.456;
     }
-    
+
     void sub(float *x, int npoints)
     {
     int iam, nt, ipoints, istart;
@@ -546,7 +546,7 @@ _    |The Parallel Construct a|
             subdomain(x, istart, ipoints);
         }
     }
-    
+
     main()
     {
         float array[10000]
@@ -562,7 +562,7 @@ multiple nesting levels
 The call to the omp_set_dynamic routine with argument 0 in C/C++,
 disables the dynamic adjustment of the number of threads in OpenMP
 implementations that support it.
-    
+
     #include <omp.h>
     int main()
     {
@@ -576,7 +576,7 @@ implementations that support it.
 
 |The nowait Clause a|
 If there are multiple independent loops within a parallel region, you can use the nowait clause to avoid the implied barrier at the end of the loop construct
-    
+
     #include <math.h>
     void nowait_example(int n, int m, float *a, float *b, float *y, float *z)
     {
@@ -692,8 +692,8 @@ assumptions as to which thread will execute a single region.
         printf("Finished work1 and beginning work2.\n");
         work2();
     }
-    
-    
+
+
     |The master Construct a|
     #include <stdio.h>
     extern float average(float,float,float);
@@ -781,7 +781,7 @@ visible in the construct on which the clause appears. Not all of the
 clauses are valid on all directives. The set of clauses that is valid we
 To particular guideline is described with the directive. Most of the
 clauses accept a comma-separated list of list items. All list items
-appearing in a clause must be visible._ 
+appearing in a clause must be visible._
 
 
 
@@ -953,7 +953,7 @@ void omp_get_schedule (omp_sched_t *kind, int *edit)s;
 |Returns the schedule applied when *run-time* schedule is used.
 
 a|
-int omp_get_thread_limit(void)* 
+int omp_get_thread_limit(void)*
 
 |Returns the maximum number of OpenMP threads available to the program.
 
@@ -1168,7 +1168,7 @@ a|
 
 a|
 
-|
+\|
 
 
 |0
@@ -1185,7 +1185,7 @@ a|
 |1
 a|
 
-||
+\|\|
 
 
 |0

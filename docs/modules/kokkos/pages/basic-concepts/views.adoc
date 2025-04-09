@@ -1,0 +1,115 @@
+= Views
+
+== What is Kokkos View ?
+
+[.text-justify]
+Kokkos Views are a fundamental abstraction in the Kokkos programming model, designed to provide a portable and efficient way to manage multidimensional arrays across diverse computing architectures. These Views serve as the primary data structure in Kokkos, offering a powerful mechanism for handling data in high-performance computing applications.
+[.text-justify]
+Views can have up to eight dimensions, and these dimensions can be specified at either compile-time or run-time. The flexibility in dimension specification allows for efficient memory management and optimization across different hardware architectures.
+[.text-justify]
+The motivation behind the View abstraction stems from the evolving landscape of high-performance computing. The memory space, which can be explicitly specified as an additional template parameter, determines where the data resides and which execution units can access it.
+[.text-justify]
+The View life cycle is an essential aspect of using Kokkos effectively. When a View is constructed, it allocates memory in the specified memory space. Kokkos employs a reference-counting mechanism to manage the lifetime of this allocation. As Views are copied or assigned, the reference count is adjusted accordingly. The View abstraction is part of Kokkos' broader machine model, which assumes a hierarchy of execution spaces and memory spaces. This model anticipates future shared-memory computing architectures, where nodes might contain multiple types of compute engines and memory systems. By abstracting these details through Views, Kokkos allows developers to write code that can adapt to evolving hardware landscapes without significant rewrites.
+[.text-justify]
+In the context of high-performance computing, Kokkos Views shine in their ability to handle large, multidimensional data structures efficiently. They are particularly useful in scientific simulations, linear algebra operations, and other computationally intensive tasks.
+
+
+
+== View key concepts and template parameters
+
+
+A _view_ is a lightweight object that provides a way to access data in a multi-dimensional array.
+They behave like pointers, so they can be used in the same way as pointers in (C++).
+
+[source,c++]
+----
+View<double*, ...> x(...), y(...);
+...
+
+parallel_for("DAXPY", N, [=] const int64_t i {
+    // Views x and y are captured by value (copy)
+  y(i) = a * x(i) + y(i);
+});
+----
+
+Some general aspects of views:
+
+* They are *multi-diemensional arrays* of dimension 0 (scalar), 1 (vector), 2 (matrix), etc (to 8). Their number of dimension (named _rank_) is fixed at compilation.
+* They are *rectangular* arrays, i.e., all dimensions are fixed at construction, and
+* the sizes of dimensions are set either at compile-time or runtime.
+* The elements can easily be accessed via the operator `()`.
+
+.Example of a 3D array with dimension set either at compilation or at runtime
+[source,c++]
+----
+View<double***> data("label", N, M, K);     // 3 at runtime, 0 at compilation
+View<double**[K]> data("label", N, M);      // 2 at runtime, 1 at compilation
+View<double[N][M][K]> data("label");        // 3 at compilation
+
+data(i, j, k) = 3.14;
+----
+
+NOTE: The `label` of the view is not mandatory, but it is useful for debugging and profiling.
+
+
+== Usage
+
+
+.*First example:* build and fill-up a view
+[tabs]
+[%collapsible]
+====
+1D example::
++
+[source,c++]
+----
+include::example$src/01_views_1D.cpp[indent=0]
+----
+
+2D example::
++
+[source,c++]
+----
+include::example$src/02_views_2D.cpp[indent=0]
+----
+
+====
+
+
+Views behave like `std::shared_ptr` in the sense that they are reference-counted objects. They are automatically deleted when the last reference to them is removed:
+
+[source, c++]
+----
+include::example$src/00_views.cpp[indent=0]
+----
+.Result
+[source]
+----
+Label of c: b
+a(0, 2) = 3
+----
+
+
+== Properties
+
+Views have several properties that can be queried at runtime:
+
+* `label()`: the label of the view
+* `rank()`: the number of dimensions of the view
+* `extent(i)`: the size of the `i`-th dimension
+* `span()`: the total number of elements in the view
+* `data()`: a pointer to the data
+* `operator()`: access to the data
+
+
+== Exercice
+
+Exercice taken from the Kokkos tutorial: xref:basic-concepts/views_exercice_tutorial.adoc[Inner Product, Flat Parallelism an the CPU, with Views].
+
+
+
+[bibliography]
+== References
+
+. Kokkos documentation API https://kokkos.org/kokkos-core-wiki/API/core/view/view.html
+. Kokkos package description https://docs.trilinos.org/dev/packages/kokkos/doc/html/classKokkos_1_1View.html

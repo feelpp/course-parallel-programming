@@ -1,0 +1,135 @@
+= Kokkos Memory Spaces
+
+
+image::kokkos-node-doc.png[xref=#fragment101,width=322,height=181]
+
+== Introduction
+
+[.text-justify]
+Kokkos, a performance portability programming model, introduces the concept of _Memory Spaces_ as a fundamental abstraction to address the complexities of heterogeneous computing environments. Memory Spaces [1] in Kokkos represent distinct memory areas with specific characteristics and accessibility patterns. These abstractions enable programmers to express algorithms independently of hardware specifics while maintaining control over data placement and movement. The Kokkos machine model envisions future computing nodes as complex systems with multiple execution units and memory hierarchies.
+
+[.text-justify]
+In heterogeneous nodes, Kokkos' space abstractions prove particularly valuable. Such nodes may include CPU cores, GPU accelerators, and other specialized processing units, each with access to different memory types like host memory, device memory, or high-bandwidth memory. Kokkos abstracts these hardware-specific details, allowing developers to focus on algorithm structure rather than platform intricacies [2][3].
+
+[.text-justify]
+To control data residence, Kokkos provides mechanisms to specify the desired Memory Space when creating Views. A View in Kokkos is a multidimensional array abstraction encapsulating both data and layout. By specifying the appropriate Memory Space template parameter, developers can dictate where data should reside, enabling optimizations based on access patterns and hardware characteristics.
+
+[.text-justify]
+Kokkos annotation macros play a vital role in achieving portability across architectures, allowing developers to provide hints and directives to the runtime. These macros are particularly important in performance-critical code sections, enabling expression of parallelism, memory access, and execution space preferences.
+
+[.text-justify]
+In conclusion, Kokkos' Memory Spaces, initialization/finalization procedures, and annotation macros form a cohesive framework for developing portable, high-performance code for heterogeneous computing environments, allowing efficient utilization of diverse hardware resources while maintaining a single, portable codebase.
+
+
+== Instances of Kokkos Memory Spaces
+
+[.text-justify]
+Memory spaces in Kokkos are dynamic and flexible, offering programmers the ability to allocate data across various memory types, including on-package memory, DRAM, and non-volatile memories. Each memory space has specific instances that enable precise data storage allocation, with flexibility for developers to strategically choose memory locations for different data structures. As follows :
+
+* *Memory Spaces* :
+   - Memory spaces, like execution spaces, have specific instances.
+   - An instance of a memory space allows the programmer to request data storage allocations.
+   - Different types of memory are available, such as on-package memory, slower DRAM, and non-volatile memories.
+   - GPUs may have their own local memory space.
+
+* *Memory Allocation*:
+   - The programmer can choose where to allocate each data structure.
+   - Kokkos provides abstraction for allocation routines and memory management operations.
+
+* *Atomic Accesses*:
+   - Used to prevent race conditions when multiple threads access the same memory address.
+   - Atomic operations ensure that a read, simple computation, and write to memory are completed as a single unit.
+
+* *Memory Consistency*:
+   - Kokkos assumes a very weak memory consistency model.
+   - Programmers should not assume any specific ordering of memory operations within a kernel.
+   - Kokkos provides a fence operation to ensure completion of memory operations.
+
+
+== Illustration of some memory space concepts
+
+* *Memory Spaces and Allocation*
+
+** Allocating in default memory space:
+[source, c++]
+----
+    Kokkos::View<double*> defaultView("defaultView", 1000);
+----
+** Allocating in CUDA memory space:
+[source, c++]
+----
+    Kokkos::View<double*, Kokkos::CudaSpace> cudaView("cudaView", 1000);
+----
+** Allocating in host memory space:
+[source, c++]
+----
+    Kokkos::View<double*, Kokkos::HostSpace> hostView("hostView", 1000);
+
+----
+* *Atomic Accesses*
+
+** Example of atomic addition:
+
+[source, c++]
+----
+        KOKKOS_INLINE_FUNCTION
+        void atomicAdd(int* addr, int val) {
+            Kokkos::atomic_add(addr, val);
+        }
+----
+
+* *Memory Consistency*
+
+** Using fence operation:
+[source, c++]
+----
+        Kokkos::fence();
+----
+
+*  *Memory Space Instances*
+
+** Creating a memory pool for custom allocation:
+[source, c++]
+----
+        Kokkos::MemoryPool<Kokkos::CudaSpace> memoryPool(cudaSpace, totalSize);
+        void* ptr = memoryPool.allocate(allocSize);
+----
+
+[.text-justify]
+These examples demonstrate how Kokkos allows flexible memory allocation across different memory spaces, provides atomic operations for thread-safe memory access, and offers memory consistency control through fencing. The MemoryPool example shows how specific instances of memory spaces can be used for custom allocation strategies [5].
+
+...
+
+== References
+
+** [1] https://kokkos.org/kokkos-core-wiki/API/core/memory_spaces.html
+** [2] https://www.epj-conferences.org/articles/epjconf/pdf/2021/05/epjconf_chep2021_03034.pdf
+** [3] https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/HierarchicalParallelism.html
+** [4] https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/Machine-Model.html
+** [5] https://docs.trilinos.org/dev/packages/kokkos/doc/html/
+
+
+
+
+.*Points to keep in mind*
+****
+
+* *Memory Spaces*
+
+Memory Spaces represent the places where data physically resides. They specify:
+
+*** The physical location of the data (e.g., CPU memory, GPU memory).
+*** The access characteristics to that data.
+
+Each execution space in Kokkos has a default Memory Space associated with it.
+
+
+The main difference between *Memory Spaces* and *Space Accessibility* is that:
+
+** Memory Spaces define **where** data is stored.
+** Space Accessibility determines **how** these spaces can interact with each other.
+
+Space Accessibility therefore provides an additional layer of abstraction to manage the complex relationships between different spaces in a heterogeneous architecture.
+
+****
+

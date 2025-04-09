@@ -4,8 +4,8 @@
 
 #define NUM_MESSAGES 3*NUM_PHILOSOPHERS*NUM_DINNERS
 
-const int NUM_DINNERS;
-const int NUM_PHILOSOPHERS;
+int NUM_DINNERS;
+int NUM_PHILOSOPHERS;
 const int NEED_LEFT_CHOPSTICK = 0;
 const int NEED_RIGHT_CHOPSTICK = 1;
 const int RELEASE_CHOPSTICKS = 2;
@@ -16,7 +16,7 @@ void philosopher(int rank)
   int leftChopstick;
   int rightChopstick;
   int dummy;
-  
+
   if(rank == NUM_PHILOSOPHERS)
   {
 
@@ -46,7 +46,7 @@ void philosopher(int rank)
     printf("Philosopher %d is eating meal %d.\n", rank, i);
 
     MPI_Send(&dummy, 1, MPI_INT, 0, RELEASE_CHOPSTICKS, MPI_COMM_WORLD);
-  }  
+  }
 }
 
 void server()
@@ -221,7 +221,7 @@ int main(int argc, char ** argv)
 
   if(argc != 3)
     exit(0);
-  
+
   sscanf(argv[1], "%d", &NUM_PHILOSOPHERS);
   printf("The number of philosophers is %d\n", NUM_PHILOSOPHERS);
   sscanf(argv[2], "%d", &NUM_DINNERS);

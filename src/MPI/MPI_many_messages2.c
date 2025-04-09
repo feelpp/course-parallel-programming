@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "mpi.h"
+#include <string.h>
+
 
 #define NUM_MESSAGES 20
 
@@ -21,13 +23,13 @@ int main (int argc, char** argv)
     if(my_rank == 0)
     {
       printf("Hello from the server!\n");
-     
+
       int i;
       char msg_to_send[100];
       for(i = 0; i < NUM_MESSAGES; i++)
       {
         sprintf(msg_to_send, "Hi from server, this is msg %d\n", i);
-        mpi_error_code = MPI_Isend(msg_to_send, strlen(msg_to_send)+1, 
+        mpi_error_code = MPI_Isend(msg_to_send, strlen(msg_to_send)+1,
           MPI_CHAR, 1, i, MPI_COMM_WORLD, &req[i]);
       }
 
@@ -43,7 +45,7 @@ int main (int argc, char** argv)
       int i;
       int j;
       for(i = 0; i < NUM_MESSAGES; i++)
-        mpi_error_code = MPI_Irecv(str[i], 100, 
+        mpi_error_code = MPI_Irecv(str[i], 100,
           MPI_CHAR, 0, i, MPI_COMM_WORLD, &req[i]);
 
       for(j = 0; j < 999; j++)

@@ -1,0 +1,121 @@
+= Mirrors
+
+== Overview
+
+_Mirrors_ are views that reference data in a possibly different memory space.
+They are used to access data in a different memory space without copying it.
+
+.Mirroring schematic
+[source, c++]
+----
+Kokkos::View<double**, Space> view(...);
+auto host_mirror = Kokkos::create_mirror_view(view);
+----
+
+image::kokkos-mirrors-schematic.png[]
+
+Two views are created: `view` in the memory space `Space` and `host_mirror` in the host memory space.
+The data are copied back and forth between the two views using the `Kokkos::deep_copy` function.
+
+
+== Mirroring pattern
+
+. *Create* a `view` in a specific memory space.
+
+[source, c++]
+----
+Kokkos::View<double**, Space> view(...);
+----
+
+[start=2]
+. *Create* a mirror view in the host memory space, `host_mirror`.
+
+[source, c++]
+----
+auto host_mirror = Kokkos::create_mirror_view(view);
+----
+
+[start=3]
+. *Populate* `host_mirror` with data (from file, user input, etc.).
+. *Copy* data from `host_mirror` to `view` using `Kokkos::deep_copy`.
+. *Perform* computations on `view`:
+
+[source, c++]
+----
+Kokkos::parallel_for("Operation",
+    RangePolicy<Space>(0, view.extent(0)),
+    KOKKOS_LAMBDA(...) { /* use and change view */ }
+);
+----
+
+[start=6]
+. If nedded, *copy* data back to `host_mirror` using `Kokkos::deep_copy`.
+
+[source, c++]
+----
+Kokkos::deep_copy(host_mirror, view);
+----
+
+
+NOTE: `create_mirror_view` allocates data only if the host process cannon access `view` 's data.
+Otherwise, it returns a view that references the same data as `view`.
+The ++command++ `create_mirror` makes always make data allocation.
+
+== Example
+
+We present the https://github.com/kokkos/kokkos-tutorials/tree/main/Exercises/04[example `04`] from the tutorial of Kokkos.
+
+
+.Allocate the matrices and vectors on the device
+[source, cpp]
+----
+typedef Kokkos::View<double*, Kokkos::LayoutLeft, MemSpace>   ViewVectorType;
+typedef Kokkos::View<double**, Kokkos::LayoutLeft, MemSpace>  ViewMatrixType;
+ViewVectorType y( "y", N );
+ViewVectorType x( "x", M );
+ViewMatrixType A( "A", N, M );
+
+// Create host mirrors of device views.
+ViewVectorType::HostMirror h_y = Kokkos::create_mirror_view( y );
+ViewVectorType::HostMirror h_x = Kokkos::create_mirror_view( x );
+ViewMatrixType::HostMirror h_A = Kokkos::create_mirror_view( A );
+----
+
+.Deep copy host views to device views.
+[source, cpp]
+----
+Kokkos::deep_copy( y, h_y );
+Kokkos::deep_copy( x, h_x );
+Kokkos::deep_copy( A, h_A );
+----
+
+Then the code computes the quantity stem:[\left<y, Ax\right>].
+
+The full code is present in xref:basic-concepts/mirrors_sol_code.adoc[the file `05_kokkos_mirrors.cpp`].
+
+
+=== Performance comparisons
+
+On `gaya`:
+
+[source, bash]
+----
+./kokkos_mirros -nrepeat 1000
+  Total size S = 4194304 N = 4096 M = 1024
+Kokkos::HostSpace
+  Computed result for 4096 x 1024 is 4194304.000000
+  N( 4096 ) M( 1024 ) nrepeat ( 1000 ) problem( 33.5954 MB ) time( 0.323193 s ) bandwidth( 103.949 GB/s )
+----
+
+
+On `gaya-gpu`:
+
+[source, bash]
+----
+./kokkos_mirros -nrepeat 1000
+  Total size S = 4194304 N = 4096 M = 1024
+Kokkos::HIPSpace
+  Computed result for 4096 x 1024 is 4194304.000000
+  N( 4096 ) M( 1024 ) nrepeat ( 1000 ) problem( 33.5954 MB ) time( 0.485132 s ) bandwidth( 69.25 GB/s )
+----
+
