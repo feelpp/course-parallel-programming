@@ -62,6 +62,9 @@ In conclusion, the main difference between the three architectures CPU, GPU and 
 [.text-justify]
 * *DPU*: A Data Processing Unit (DPU) is a specialized processor designed to optimize data-centric workloads in modern computing environments. It combines a multi-core CPU, hardware accelerators, and high-speed networking capabilities into a single system-on-chip (SoC). DPUs are primarily used to offload networking, security, and storage functions from the main CPU, allowing it to focus on running operating systems and applications. This new class of programmable processors is becoming increasingly important in data centers and cloud computing, where they help improve overall system efficiency and performance. DPUs can handle tasks such as packet processing, encryption, and data compression, effectively becoming a third pillar of computing alongside CPUs and GPUs. As data-intensive applications continue to grow, DPUs are expected to play a crucial role in optimizing data movement and processing in large-scale computing environments.
 
+[.text-justify]
+*QPUs*: Quantum processing units (QPUs) process information by using qubits instead of binary bits and are designed to perform complex quantum algorithms. QPUs are best used for certain kinds of highly complicated problems, and many of today’s promising quantum algorithms provide probabilistic solutions instead of precise answers.
+
 
 *3. Why Use Parallel Computing ?*
 
